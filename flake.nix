@@ -10,7 +10,7 @@
     tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
     playground.url = "github:darksoil-studio/holochain-playground/main-0.4";
 
-    service-providers.url = "github:darksoil-studio/service-providers/main";
+    service-providers.url = "/home/guillem/projects/darksoil/service-providers";
   };
 
   nixConfig = {

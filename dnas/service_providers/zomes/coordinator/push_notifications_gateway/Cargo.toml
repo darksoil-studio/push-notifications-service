@@ -1,0 +1,13 @@
+[package]
+name = "push_notifications_gateway"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "push_notifications_gateway "
+
+[dependencies]
+hdk = { workspace = true }
+
+serde = { workspace = true }

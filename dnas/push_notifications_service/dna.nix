@@ -9,7 +9,7 @@
   perSystem = { inputs', self', lib, system, ... }: {
     packages.push_notifications_service =
       inputs.tnesh-stack.outputs.builders.${system}.dna {
-        dnaManifest = ./dna.yaml;
+        dnaManifest = ./workdir/dna.yaml;
         zomes = {
           # This overrides all the "bundled" properties for the DNA manifest
           push_notifications_service_integrity =

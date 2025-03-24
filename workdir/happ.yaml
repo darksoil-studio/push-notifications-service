@@ -3,15 +3,39 @@ manifest_version: "1"
 name: push-notifications-service-provider_test
 description: ~
 roles:   
-  - name: push_notifications_service_provider_test
+  - name: push_notifications_service_providers_manager
     provisioning:
       strategy: create
       deferred: false
     dna:
-      bundled: "./push_notifications_service_provider_test.dna"
+      bundled: ""
       modifiers:
         network_seed: ~
         properties: ~
         origin_time: ~
       version: ~
       clone_limit: 0
+  - name: push_notifications_service
+    provisioning:
+      strategy: create
+      deferred: false
+    dna:
+      bundled: ""
+      modifiers:
+        network_seed: ~
+        properties: ~
+        origin_time: ~
+      version: ~
+      clone_limit: 100000
+  - name: happ_care_service
+    provisioning:
+      strategy: create
+      deferred: false
+    dna:
+      bundled: ""
+      modifiers:
+        network_seed: ~
+        properties: ~
+        origin_time: ~
+      version: ~
+      clone_limit: 100000
