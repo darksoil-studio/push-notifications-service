@@ -26,13 +26,7 @@
 
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        ./zomes/integrity/push_notifications_service_provider/zome.nix
-        ./zomes/coordinator/push_notifications_service_provider/zome.nix
-        # Just for testing purposes
-        ./workdir/dna.nix
-        ./workdir/happ.nix
-      ];
+      imports = [ ./workdir/happ.nix ];
 
       systems = builtins.attrNames inputs.holonix.devShells;
       perSystem = { inputs', config, pkgs, system, ... }: {
@@ -50,22 +44,22 @@
         };
         devShells.npm-ci = inputs'.tnesh-stack.devShells.synchronized-pnpm;
 
-        packages.scaffold = pkgs.symlinkJoin {
-          name = "scaffold-remote-zome";
-          paths = [ inputs'.tnesh-stack.packages.scaffold-remote-zome ];
-          buildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            wrapProgram $out/bin/scaffold-remote-zome \
-              --add-flags "push-notifications-service-provider-zome \
-                --integrity-zome-name push_notifications_service_provider_integrity \
-                --coordinator-zome-name push_notifications_service_provider \
-                --remote-zome-git-url github:darksoil-studio/push-notifications-service-provider-zome \
-                --remote-npm-package-name @darksoil-studio/push-notifications-service-provider-zome \
-                --remote-zome-git-branch main-0.4 \
-                --context-element push-notifications-service-provider-context \
-                --context-element-import @darksoil-studio/push-notifications-service-provider-zome/dist/elements/push-notifications-service-provider-context.js" 
-          '';
-        };
+        # packages.scaffold = pkgs.symlinkJoin {
+        #   name = "scaffold-remote-zome";
+        #   paths = [ inputs'.tnesh-stack.packages.scaffold-remote-zome ];
+        #   buildInputs = [ pkgs.makeWrapper ];
+        #   postBuild = ''
+        #     wrapProgram $out/bin/scaffold-remote-zome \
+        #       --add-flags "push-notifications-service-provider-zome \
+        #         --integrity-zome-name push_notifications_service_provider_integrity \
+        #         --coordinator-zome-name push_notifications_service_provider \
+        #         --remote-zome-git-url github:darksoil-studio/push-notifications-service-provider-zome \
+        #         --remote-npm-package-name @darksoil-studio/push-notifications-service-provider-zome \
+        #         --remote-zome-git-branch main-0.4 \
+        #         --context-element push-notifications-service-provider-context \
+        #         --context-element-import @darksoil-studio/push-notifications-service-provider-zome/dist/elements/push-notifications-service-provider-context.js" 
+        #   '';
+        # };
       };
     };
 }

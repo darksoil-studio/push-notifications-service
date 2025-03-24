@@ -1,0 +1,15 @@
+[package]
+name = "push_notifications_service"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "push_notifications_service"
+
+[dependencies]
+hdk = { workspace = true }
+
+serde = { workspace = true }
+
+push_notifications_service = { path = "../../integrity/push_notifications_service" }
