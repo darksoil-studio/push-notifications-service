@@ -7,7 +7,7 @@
       (builtins.attrNames (builtins.readDir ./zomes/integrity)));
 
   perSystem = { inputs', self', lib, system, ... }: {
-    packages.push_notifications_service_providers_manager =
+    packages.push_notifications_service_providers_manager_dna =
       inputs.tnesh-stack.outputs.builders.${system}.dna {
         dnaManifest = ./workdir/dna.yaml;
         zomes = {

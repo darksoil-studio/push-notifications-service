@@ -27,7 +27,7 @@ roles:
         origin_time: ~
       version: ~
       clone_limit: 100000
-  - name: happ_care_service
+  - name: service_providers
     provisioning:
       strategy: create
       deferred: false
