@@ -1,5 +1,27 @@
 
-## hApp-care Setup
+## hApp-care setup
+
+```mermaid
+sequenceDiagram
+
+box grey HappDeveloper
+    participant HDOC as OrganizationCell
+    participant HDHC as HappCareCell
+end
+
+box grey DarksoilStudio
+    participant DSOC as OrganizationCell
+    participant DSHC as HappCareCell
+    participant DSSPMC as ServiceProviderManagerCell
+end
+
+HDOC->>DSOC: create_happ()
+DSOC->>DSOC: clone cell()
+
+
+```
+
+## hApp-care enabling push notifications
 
 Note: each happ has its own PushNotificationsService dna where all the tokens for the users and the services account keys are stored.
 
