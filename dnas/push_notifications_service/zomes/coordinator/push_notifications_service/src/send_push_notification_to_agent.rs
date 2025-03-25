@@ -1,4 +1,5 @@
 use hdk::prelude::*;
+use push_notifications_service_integrity::get_properties;
 use push_notifications_types::{SendPushNotificationSignal, SendPushNotificationToAgentInput};
 
 use crate::{
@@ -22,8 +23,9 @@ pub fn send_push_notification_to_agent(
     };
 
     let signal = SendPushNotificationSignal {
-        notification: input.notification,
         token,
+        fcm_project_id: get_properties()?.fcm_project_id,
+        notification: input.notification,
         service_account_key,
     };
 

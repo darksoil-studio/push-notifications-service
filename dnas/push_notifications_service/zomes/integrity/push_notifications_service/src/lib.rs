@@ -3,6 +3,7 @@ pub use fcm_token::*;
 pub mod service_account_key;
 use hdi::prelude::*;
 
+use push_notifications_types::PushNotificationsServiceProperties;
 pub use service_account_key::*;
 
 #[derive(Serialize, Deserialize)]
@@ -20,10 +21,19 @@ pub enum LinkTypes {
     ServiceAccountKeys,
 }
 
+pub fn get_properties() -> ExternResult<PushNotificationsServiceProperties> {
+    let dna_info = dna_info()?;
+
+    let properties = PushNotificationsServiceProperties::try_from(dna_info.modifiers.properties)
+        .map_err(|err| wasm_error!(err))?;
+    Ok(properties)
+}
+
 // Validation you perform during the genesis process. Nobody else on the network performs it, only you.
 // There *is no* access to network calls in this callback
 #[hdk_extern]
 pub fn genesis_self_check(_data: GenesisSelfCheckData) -> ExternResult<ValidateCallbackResult> {
+    get_properties()?;
     Ok(ValidateCallbackResult::Valid)
 }
 

@@ -19,3 +19,10 @@ tx5-signal = "0.1.5-beta"
 log = "0.4"
 env_logger = "0.11"
 chrono = "0.4"
+
+yup-oauth2 = "8"
+fcm_v1 = "0.3"
+serde_json = "1"
+
+
+push_notifications_types = { path = "../push_notifications_types" }

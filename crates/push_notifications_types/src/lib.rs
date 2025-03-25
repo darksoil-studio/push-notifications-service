@@ -33,10 +33,17 @@ pub struct ServiceAccountKey {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct PushNotification {
+    pub title: String,
+    pub body: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SendPushNotificationSignal {
-    pub notification: SerializedBytes,
     pub token: String,
+    pub fcm_project_id: String,
     pub service_account_key: ServiceAccountKey,
+    pub notification: PushNotification,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -48,5 +55,10 @@ pub struct RegisterFcmTokenInput {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SendPushNotificationToAgentInput {
     pub agent: AgentPubKey,
-    pub notification: SerializedBytes,
+    pub notification: PushNotification,
+}
+
+#[derive(Serialize, Deserialize, Debug, SerializedBytes)]
+pub struct PushNotificationsServiceProperties {
+    pub fcm_project_id: String,
 }

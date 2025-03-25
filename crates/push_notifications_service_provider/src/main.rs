@@ -2,17 +2,18 @@ use anyhow::{anyhow, Result};
 use clap::Parser;
 use env_logger::Builder;
 use holochain::conductor::manager::handle_shutdown;
-use holochain_client::ZomeCallTarget;
+use holochain_client::{AppWebsocket, ZomeCallTarget};
 use holochain_conductor_api::CellInfo;
 use holochain_runtime::*;
 use holochain_types::prelude::*;
 use log::Level;
+use push_notifications_types::SendPushNotificationSignal;
+use send_push_notification::send_push_notification;
 use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
-use std::sync::Arc;
-use std::time::Duration;
-use url2::Url2;
+
+mod send_push_notification;
 
 const SIGNAL_URL: &'static str = "wss://sbd.holo.host";
 const BOOTSTRAP_URL: &'static str = "https://bootstrap.holo.host";
@@ -77,19 +78,60 @@ async fn main() -> Result<()> {
 
     let config = HolochainRuntimeConfig::new(data_dir.clone(), wan_config);
 
-    let mut runtime = HolochainRuntime::launch(vec_to_locked(vec![])?, config).await?;
-    let admin_ws = runtime.admin_websocket().await?;
+    let runtime = HolochainRuntime::launch(vec_to_locked(vec![])?, config).await?;
+    let app_ws = setup(&runtime, &args.push_notifications_service_provider_happ).await?;
 
+    app_ws
+        .on_signal(|signal| {
+            let Signal::App { signal, .. } = signal else {
+                return ();
+            };
+
+            let Ok(send_push_notification_signal) =
+                signal.into_inner().decode::<SendPushNotificationSignal>()
+            else {
+                return ();
+            };
+
+            tokio::spawn(async move {
+                if let Err(err) = send_push_notification(
+                    send_push_notification_signal.fcm_project_id,
+                    send_push_notification_signal.service_account_key,
+                    send_push_notification_signal.token,
+                    send_push_notification_signal.notification,
+                )
+                .await
+                {
+                    log::error!("Failed to send push notification: {err:?}");
+                }
+            });
+        })
+        .await;
+
+    log::info!("Starting push notifications service provider.");
+
+    // wait for a unix signal or ctrl-c instruction to
+    // shutdown holochain
+    tokio::signal::ctrl_c()
+        .await
+        .unwrap_or_else(|e| log::error!("Could not handle termination signal: {:?}", e));
+    log::info!("Gracefully shutting down conductor...");
+    let shutdown_result = runtime.conductor_handle.shutdown().await;
+    handle_shutdown(shutdown_result);
+
+    Ok(())
+}
+
+async fn setup(
+    runtime: &HolochainRuntime,
+    push_notifications_service_provider_happ_path: &PathBuf,
+) -> Result<AppWebsocket> {
+    let admin_ws = runtime.admin_websocket().await?;
     let installed_apps = admin_ws
         .list_apps(None)
         .await
         .map_err(|err| anyhow!("{err:?}"))?;
-
-    let mut app_ids: Vec<String> = installed_apps
-        .iter()
-        .map(|app| app.installed_app_id.clone())
-        .collect();
-    let happ_bundle = read_from_file(&args.push_notifications_service_provider_happ).await?;
+    let happ_bundle = read_from_file(push_notifications_service_provider_happ_path).await?;
 
     let app_id = happ_bundle.manifest().app_name().to_string();
 
@@ -134,23 +176,15 @@ async fn main() -> Result<()> {
             }
         }
 
-        app_ids.push(app_id.clone());
-
         log::info!("Installed app for hApp {}", app_id);
     }
-
-    log::info!("Starting push notifications service provider.");
-
-    // wait for a unix signal or ctrl-c instruction to
-    // shutdown holochain
-    tokio::signal::ctrl_c()
-        .await
-        .unwrap_or_else(|e| log::error!("Could not handle termination signal: {:?}", e));
-    log::info!("Gracefully shutting down conductor...");
-    let shutdown_result = runtime.conductor_handle.shutdown().await;
-    handle_shutdown(shutdown_result);
-
-    Ok(())
+    let app_ws = runtime
+        .app_websocket(
+            app_id.clone(),
+            holochain_types::websocket::AllowedOrigins::Any,
+        )
+        .await?;
+    Ok(app_ws)
 }
 
 async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
