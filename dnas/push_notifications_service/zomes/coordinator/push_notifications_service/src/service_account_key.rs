@@ -2,7 +2,7 @@ use hdk::prelude::*;
 use push_notifications_service_integrity::*;
 
 fn service_account_key_path() -> Path {
-    Path::from("service_account_keys")
+    Path::from(format!("service_account_keys"))
 }
 
 #[hdk_extern]

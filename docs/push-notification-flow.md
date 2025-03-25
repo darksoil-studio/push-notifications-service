@@ -23,8 +23,6 @@ DSOC->>DSOC: clone cell()
 
 ## hApp-care enabling push notifications
 
-Note: each happ has its own PushNotificationsService dna where all the tokens for the users and the services account keys are stored.
-
 ```mermaid
 sequenceDiagram
 
@@ -36,24 +34,46 @@ end
 
 box grey DarksoilStudio
     participant DSHC as HappCareCell
-    participant DSSPMC as ServiceProviderManagerCell
+    participant DSPNS as PushNotificationsServiceCell
 end
 
 box grey PushNotificationsServiceProvider
-    participant PNSPSPMC as ServiceProviderManagerCell
-    participant PNSC as PushNotificationsServiceCell
+    participant PNSPPNS as PushNotificationsServiceCell
     participant PNSPSC as HappCareServiceCell
     participant PNSP as ServiceProvider
 end
 
+HDHC->>DSHC: enable push notifications
+DSHC->>DSPNS: enable push notifications
+DSPNS->>PNSPPNS: enable push notifications
+PNSPPNS->>PNSPSC: clone cell
+PNSPSC->>PNSPSC: announce as provider
+
+```
+
+## hApp-care configuring push notifications for a runtime
+
+```mermaid
+sequenceDiagram
+
+participant FCM
+
+box grey HappDeveloper
+    participant HDHC as HappCareCell
+end
+
+box grey PushNotificationsServiceProvider
+    participant PNSPSC as HappCareServiceCell
+    participant PNSP as ServiceProvider
+    participant PNSPPNS as PushNotificationsServiceCell
+end
+
 HDHC->>FCM: get service account key
-FCM->>HDHC: service account key
-HDHC->>DSHC: enable push notifications(service account key)
-DSHC->>DSSPMC: enable push notifications for happ(service account key)
-DSSPMC->>PNSPSPMC: enable push notifications for happ(service account key)
-PNSPSPMC->>PNSPSPMC: clone PushNotificiationsServiceCell(service account key)
-PNSPSPMC->>PNSC: publish service account key
-PNSC->>PNSPSC: announce as provider
+FCM->>HDHC: (fcm_project_id, service_account_key)
+HDHC->>PNSPSC: configure push notifications(fcm_project_id, service_account_key)
+PNSPSC->>PNSP: validate(fcm_project_id, service_account_key)
+PNSP->>PNSPPNS: configure push notifications(fcm_project_id, service_account_key)
+PNSPPNS->>PNSPPNS: publish (fcm_project_id, service_account_key)
 ```
 
 ## Device setup
@@ -82,9 +102,9 @@ HappDeveloper->>AliceApp: google services api key
 AliceApp->>ANP: google services api key
 ANP->>FCM: get fcm token
 ANP->>AliceApp: new_fcm_token
-AliceApp->>AHSC: request_register_new_fcm_token
-AHSC->>PNSPSC: register_new_fcm_token
-PNSPSC->>PNSC: register_new_fcm_token
+AliceApp->>AHSC: request_register(fcm_project_id,fcm_token)
+AHSC->>PNSPSC: register(fcm_project_id,fcm_token)
+PNSPSC->>PNSC: register(fcm_project_id,fcm_token)
 
 ```
 
