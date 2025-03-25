@@ -1,5 +1,4 @@
 use hdk::prelude::*;
-use push_notifications_service_provider_integrity::*;
 
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
@@ -19,5 +18,5 @@ pub fn post_commit(committed_actions: Vec<SignedActionHashed>) {
     }
 }
 fn signal_action(action: SignedActionHashed) -> ExternResult<()> {
-  Ok(())
+    Ok(())
 }

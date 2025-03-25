@@ -13,3 +13,4 @@ hdk = { workspace = true }
 serde = { workspace = true }
 
 push_notifications_service_integrity = { path = "../../integrity/push_notifications_service" }
+push_notifications_types = { path = "../../../../../crates/push_notifications_types" }

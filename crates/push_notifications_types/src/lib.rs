@@ -33,14 +33,20 @@ pub struct ServiceAccountKey {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct NotifyAgentSignal {
+pub struct SendPushNotificationSignal {
     pub notification: SerializedBytes,
     pub token: String,
     pub service_account_key: ServiceAccountKey,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RegisterFCMTokenInput {
+pub struct RegisterFcmTokenInput {
     pub token: String,
     pub agent: AgentPubKey,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SendPushNotificationToAgentInput {
+    pub agent: AgentPubKey,
+    pub notification: SerializedBytes,
 }

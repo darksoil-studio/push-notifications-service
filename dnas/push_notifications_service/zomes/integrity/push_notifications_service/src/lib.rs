@@ -17,6 +17,7 @@ pub enum EntryTypes {
 #[hdk_link_types]
 pub enum LinkTypes {
     FcmToken,
+    ServiceAccountKeys,
 }
 
 // Validation you perform during the genesis process. Nobody else on the network performs it, only you.
@@ -173,6 +174,9 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             LinkTypes::FcmToken => {
                 validate_create_link_fcm_token(action, base_address, target_address, tag)
             }
+            LinkTypes::ServiceAccountKeys => {
+                validate_create_link_service_account_keys(action, base_address, target_address, tag)
+            }
         },
         FlatOp::RegisterDeleteLink {
             link_type,
@@ -183,6 +187,13 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             action,
         } => match link_type {
             LinkTypes::FcmToken => validate_delete_link_fcm_token(
+                action,
+                original_action,
+                base_address,
+                target_address,
+                tag,
+            ),
+            LinkTypes::ServiceAccountKeys => validate_delete_link_service_account_keys(
                 action,
                 original_action,
                 base_address,
@@ -332,6 +343,12 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     LinkTypes::FcmToken => {
                         validate_create_link_fcm_token(action, base_address, target_address, tag)
                     }
+                    LinkTypes::ServiceAccountKeys => validate_create_link_service_account_keys(
+                        action,
+                        base_address,
+                        target_address,
+                        tag,
+                    ),
                 },
                 // Complementary validation to the `RegisterDeleteLink` Op, in which the record itself is validated
                 // If you want to optimize performance, you can remove the validation for an entry type here and keep it in `RegisterDeleteLink`
@@ -362,6 +379,13 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     };
                     match link_type {
                         LinkTypes::FcmToken => validate_delete_link_fcm_token(
+                            action,
+                            create_link.clone(),
+                            base_address,
+                            create_link.target_address,
+                            create_link.tag,
+                        ),
+                        LinkTypes::ServiceAccountKeys => validate_delete_link_service_account_keys(
                             action,
                             create_link.clone(),
                             base_address,

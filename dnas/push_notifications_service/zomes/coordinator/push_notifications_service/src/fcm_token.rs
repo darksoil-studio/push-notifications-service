@@ -1,36 +1,40 @@
 use hdk::prelude::*;
 use push_notifications_service_integrity::*;
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AddFcmTokenForAgentInput {
-    pub agent: AgentPubKey,
-    pub fcm_token: String,
-}
+use push_notifications_types::RegisterFcmTokenInput;
 
 #[hdk_extern]
-pub fn add_fcm_token_for_agent(input: AddFcmTokenForAgentInput) -> ExternResult<()> {
+pub fn register_fcm_token_for_agent(input: RegisterFcmTokenInput) -> ExternResult<()> {
+    let links = get_links(
+        GetLinksInputBuilder::try_new(input.agent.clone(), LinkTypes::FcmToken)?.build(),
+    )?;
+
+    for link in links {
+        delete_link(link.create_link_hash)?;
+    }
+
     create_link(
         input.agent.clone(),
         input.agent,
         LinkTypes::FcmToken,
-        input.fcm_token,
+        input.token.as_bytes().to_vec(),
     )?;
+
     Ok(())
 }
 
-#[hdk_extern]
-pub fn get_fcm_tokens_for_agent(agent: AgentPubKey) -> ExternResult<Vec<String>> {
-    let links = get_links(GetLinksInputBuilder::try_new(agent, LinkTypes::FcmToken)?.build())?;
-    let fcm_token = links
-        .into_iter()
-        .map(|link| {
-            String::from_utf8(link.tag.into_inner()).map_err(|e| {
-                wasm_error!(WasmErrorInner::Guest(format!(
-                    "Error converting link tag to string: {:?}",
-                    e
-                )))
-            })
-        })
-        .collect::<ExternResult<Vec<String>>>()?;
-    Ok(fcm_token)
+pub fn get_fcm_token_for_agent(agent: AgentPubKey) -> ExternResult<Option<String>> {
+    let links =
+        get_links(GetLinksInputBuilder::try_new(agent.clone(), LinkTypes::FcmToken)?.build())?;
+
+    let Some(link) = links.first().cloned() else {
+        return Ok(None);
+    };
+
+    let token = String::from_utf8(link.tag.into_inner()).map_err(|err| {
+        wasm_error!(WasmErrorInner::Guest(format!(
+            "Malformed token tag {err:?}"
+        )))
+    })?;
+
+    Ok(Some(token))
 }

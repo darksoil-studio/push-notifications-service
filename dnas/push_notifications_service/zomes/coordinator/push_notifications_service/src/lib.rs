@@ -1,7 +1,9 @@
-pub mod fcm_token;
-pub mod service_account_key;
 use hdk::prelude::*;
-use push_notifications_service_provider_integrity::*;
+use push_notifications_service_integrity::*;
+
+pub mod fcm_token;
+pub mod send_push_notification_to_agent;
+pub mod service_account_key;
 
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {

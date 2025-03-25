@@ -26,13 +26,17 @@
 
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ ./workdir/happ.nix ];
+      imports = [
+        ./workdir/happ.nix
+        ./crates/push_notifications_service_provider/default.nix
+      ];
 
       systems = builtins.attrNames inputs.holonix.devShells;
       perSystem = { inputs', config, pkgs, system, ... }: {
         devShells.default = pkgs.mkShell {
           inputsFrom = [
             inputs'.tnesh-stack.devShells.synchronized-pnpm
+            inputs'.tnesh-stack.devShells.holochainDev
             inputs'.holonix.devShells.default
           ];
 
