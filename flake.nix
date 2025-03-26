@@ -28,6 +28,7 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         ./workdir/happ.nix
+        ./tests/test-happs.nix
         ./crates/push_notifications_service_provider/default.nix
       ];
 

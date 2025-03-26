@@ -1,6 +1,6 @@
 ---
 manifest_version: "1"
-name: push-notifications-service-provider_test
+name: push-notifications-service-provider
 description: ~
 roles:   
   - name: push_notifications_service_providers_manager
