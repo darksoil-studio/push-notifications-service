@@ -1,11 +1,13 @@
 import {
 	ActionHash,
 	Delete,
+	DnaModifiers,
 	Record,
 	SignedActionHashed,
+	encodeHashToBase64,
 } from '@holochain/client';
-import { dhtSync, runScenario } from '@holochain/tryorama';
-import { decode } from '@msgpack/msgpack';
+import { Player, Scenario, dhtSync, runScenario } from '@holochain/tryorama';
+import { decode, encode } from '@msgpack/msgpack';
 import { toPromise } from '@tnesh-stack/signals';
 import { EntryRecord } from '@tnesh-stack/utils';
 import { cleanNodeDecoding } from '@tnesh-stack/utils/dist/clean-node-decoding.js';
@@ -13,38 +15,96 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { assert, test } from 'vitest';
 
-// import { setup } from './setup.js';
-
-const serviceProviderHapp =
-	dirname(fileURLToPath(import.meta.url)) +
-	'/../../workdir/push-notifications-service-provider.happ';
-
-const endUserHapp =
-	dirname(fileURLToPath(import.meta.url)) + '/../end-user.happ';
-
-const happDeveloperHapp =
-	dirname(fileURLToPath(import.meta.url)) + '/../happ-developer.happ';
-
-const infraProviderHapp =
-	dirname(fileURLToPath(import.meta.url)) + '/../infra-provider.happ';
+import {
+	endUserHapp,
+	happDeveloperHapp,
+	infraProviderHapp,
+	serviceProviderHapp,
+	setupInfraProvider,
+} from './setup.js';
 
 test('setup and send a push notification', async () => {
 	await runScenario(async scenario => {
-		const sender = await scenario.addPlayerWithApp({
-			path: endUserHapp,
-		});
-		const recipient = await scenario.addPlayerWithApp({
-			path: endUserHapp,
-		});
-		const serviceProvider = await scenario.addPlayerWithApp({
-			path: serviceProviderHapp,
-		});
-		const happDevelop = await scenario.addPlayerWithApp({
-			path: happDeveloperHapp,
-		});
-		const infraProvider = await scenario.addPlayerWithApp({
-			path: infraProviderHapp,
-		});
+		const network_seed = `${Math.random()}`;
+		const infraProvider = await setupInfraProvider(scenario);
+
+		const serviceProvider = await scenario.addPlayerWithApp(
+			{
+				path: serviceProviderHapp,
+			},
+			{
+				rolesSettings: {
+					push_notifications_service_providers_manager: {
+						type: 'Provisioned',
+						modifiers: {
+							properties: {
+								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
+							},
+						},
+					},
+					service_providers: {
+						type: 'Provisioned',
+						modifiers: {
+							properties: {
+								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
+							},
+						},
+					},
+				},
+			},
+		);
+
+		const happDeveloper = await scenario.addPlayerWithApp(
+			{
+				path: happDeveloperHapp,
+			},
+			{
+				rolesSettings: {
+					service_providers: {
+						type: 'Provisioned',
+						modifiers: {
+							properties: {
+								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
+							},
+						},
+					},
+				},
+			},
+		);
+		const sender = await scenario.addPlayerWithApp(
+			{
+				path: endUserHapp,
+			},
+			{
+				rolesSettings: {
+					service_providers: {
+						type: 'Provisioned',
+						modifiers: {
+							properties: {
+								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
+							},
+						},
+					},
+				},
+			},
+		);
+		const recipient = await scenario.addPlayerWithApp(
+			{
+				path: endUserHapp,
+			},
+			{
+				rolesSettings: {
+					service_providers: {
+						type: 'Provisioned',
+						modifiers: {
+							properties: {
+								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
+							},
+						},
+					},
+				},
+			},
+		);
 
 		await scenario.shareAllAgents();
 
@@ -53,7 +113,17 @@ test('setup and send a push notification', async () => {
 			.callZome({
 				zome_name: 'push_notifications_service_providers_manager',
 				fn_name: 'create_clone_service_request',
-				payload: {},
+				payload: {
+					dna_modifiers: {
+						properties: encode({}),
+						network_seed,
+						origin_time: new Date().valueOf() * 1000,
+						quantum_time: {
+							nanos: 0,
+							secs: 1,
+						},
+					} as DnaModifiers,
+				},
 			});
 
 		await dhtSync(

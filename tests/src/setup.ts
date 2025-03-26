@@ -7,13 +7,21 @@ import {
 	EntryHash,
 	NewEntryAction,
 	Record,
+	RoleSettingsMap,
 	encodeHashToBase64,
 	fakeActionHash,
 	fakeAgentPubKey,
 	fakeDnaHash,
 	fakeEntryHash,
 } from '@holochain/client';
-import { Player, Scenario, dhtSync, pause } from '@holochain/tryorama';
+import {
+	AgentApp,
+	Player,
+	Scenario,
+	dhtSync,
+	enableAndGetAgentApp,
+	pause,
+} from '@holochain/tryorama';
 import { encode } from '@msgpack/msgpack';
 import { EntryRecord } from '@tnesh-stack/utils';
 import { dirname } from 'path';
@@ -22,85 +30,61 @@ import { fileURLToPath } from 'url';
 import { PushNotificationsServiceProviderClient } from '../../ui/src/push-notifications-service-provider-client.js';
 import { PushNotificationsServiceProviderStore } from '../../ui/src/push-notifications-service-provider-store.js';
 
-const testHappUrl =
+export const serviceProviderHapp =
 	dirname(fileURLToPath(import.meta.url)) +
-	'/../../workdir/push-notifications-service-provider_test.happ';
+	'/../../workdir/push-notifications-service-provider.happ';
 
-export async function setup(scenario: Scenario, numPlayers = 2) {
-	const players = await promiseAllSequential(
-		Array.from(new Array(numPlayers)).map(() => () => addPlayer(scenario)),
-	);
+export const endUserHapp =
+	dirname(fileURLToPath(import.meta.url)) + '/../end-user.happ';
 
-	// Shortcut peer discovery through gossip and register all agents in every
-	// conductor of the scenario.
-	await scenario.shareAllAgents();
+export const happDeveloperHapp =
+	dirname(fileURLToPath(import.meta.url)) + '/../happ-developer.happ';
 
-	await dhtSync(
-		players.map(p => p.player),
-		players[0].player.cells[0].cell_id[0],
-	);
+export const infraProviderHapp =
+	dirname(fileURLToPath(import.meta.url)) + '/../infra-provider.happ';
 
-	console.log('Setup completed!');
+export async function setupInfraProvider(scenario: Scenario): Promise<Player> {
+	const infraProviderConductor = await scenario.addConductor();
 
-	return players;
-}
-
-async function addPlayer(scenario: Scenario) {
-	const player = await scenario.addPlayerWithApp({ path: testHappUrl });
-
-	patchCallZome(player.appWs as AppWebsocket);
-	await player.conductor
+	const infraProviderPubKey = await infraProviderConductor
 		.adminWs()
-		.authorizeSigningCredentials(player.cells[0].cell_id);
-	const store = new PushNotificationsServiceProviderStore(
-		new PushNotificationsServiceProviderClient(
-			player.appWs as any,
-			'push_notifications_service_provider_test',
-		),
-	);
-	return {
-		store,
-		player,
-		startUp: async () => {
-			await player.conductor.startUp();
-			const port = await player.conductor.attachAppInterface();
-			const issued = await player.conductor
-				.adminWs()
-				.issueAppAuthenticationToken({
-					installed_app_id: player.appId,
-				});
-			const appWs = await player.conductor.connectAppWs(issued.token, port);
-			patchCallZome(appWs);
-			store.client.client = appWs;
+		.generateAgentPubKey();
+
+	const rolesSettings: RoleSettingsMap = {
+		push_notifications_service_providers_manager: {
+			type: 'Provisioned',
+			modifiers: {
+				properties: {
+					progenitors: [encodeHashToBase64(infraProviderPubKey)],
+				},
+			},
 		},
 	};
-}
 
-async function promiseAllSequential<T>(
-	promises: Array<() => Promise<T>>,
-): Promise<Array<T>> {
-	const results: Array<T> = [];
-	for (const promise of promises) {
-		results.push(await promise());
-	}
-	return results;
-}
+	const appInfo = await infraProviderConductor.installApp(
+		{ path: infraProviderHapp },
+		{
+			agentPubKey: infraProviderPubKey,
+			networkSeed: scenario.networkSeed,
+			rolesSettings,
+		},
+	);
 
-function patchCallZome(appWs: AppWebsocket) {
-	const callZome = appWs.callZome;
-	appWs.callZome = async req => {
-		try {
-			const result = await callZome(req);
-			return result;
-		} catch (e) {
-			if (
-				!e.toString().includes('Socket is not open') &&
-				!e.toString().includes('ClientClosedWithPendingRequests')
-			) {
-				throw e;
-			}
-		}
-	};
+	const port = await infraProviderConductor.attachAppInterface();
+
+	const issued = await infraProviderConductor
+		.adminWs()
+		.issueAppAuthenticationToken({
+			installed_app_id: appInfo.installed_app_id,
+		});
+	const appWs = await infraProviderConductor.connectAppWs(issued.token, port);
+
+	const infraProvider: AgentApp = await enableAndGetAgentApp(
+		infraProviderConductor.adminWs(),
+		appWs,
+		appInfo,
+	);
+	return { conductor: infraProviderConductor, appWs, ...infraProvider };
 }
 
 export async function waitUntil(

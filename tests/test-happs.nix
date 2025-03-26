@@ -50,22 +50,9 @@
                   origin_time: ~
                 version: ~
                 clone_limit: 0
-            - name: service_providers
-              provisioning:
-                strategy: create
-                deferred: false
-              dna:
-                bundled: ""
-                modifiers:
-                  network_seed: ~
-                  properties: ~
-                  origin_time: ~
-                version: ~
-                clone_limit: 100000
         '';
 
         dnas = {
-          service_providers = self'.packages.service_providers_dna;
           push_notifications_service_providers_manager =
             self'.packages.push_notifications_service_providers_manager_dna;
         };
