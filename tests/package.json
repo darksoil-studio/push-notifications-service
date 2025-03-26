@@ -2,8 +2,7 @@
 	"name": "tests",
 	"private": true,
 	"scripts": {
-		"test": "pnpm build:test-happs && vitest run",
-		"build:end-user-happ": "nix build -L .#end_user_test_happ.meta.debug -o end_user.happ",
+		"test": "pnpm build:end-user-happ && pnpm build:infra-provider-happ && pnpm build:happ-developer-happ && vitest run",
 		"build:infra-provider-happ": "nix build -L .#infra_provider_test_happ.meta.debug -o infra-provider.happ",
 		"build:happ-developer-happ": "nix build -L .#happ_developer_test_happ.meta.debug -o happ-developer.happ",
 		"build:end-user-happ": "nix build -L .#end_user_test_happ.meta.debug -o end-user.happ"

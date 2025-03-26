@@ -7,7 +7,7 @@
 		"launch": "echo pass | RUST_LOG=warn hc launch --piped -n $AGENTS workdir/push-notifications-service-provider.happ --ui-port $UI_PORT network --bootstrap http://127.0.0.1:$BOOTSTRAP_PORT webrtc ws://127.0.0.1:$SIGNAL_PORT",
 		"local-services": "hc run-local-services --bootstrap-port $BOOTSTRAP_PORT --signal-port $SIGNAL_PORT",
 		"test": "pnpm build:happ && pnpm -F tests test",
-		"build:happ": "nix build -L .#push_notifications_service_provider_test_happ.meta.debug -o workdir/push-notifications-service-provider.happ"
+		"build:happ": "nix build -L .#push_notifications_service_provider_happ.meta.debug -o workdir/push-notifications-service-provider.happ"
 	},
 	"devDependencies": {
 		"@trivago/prettier-plugin-sort-imports": "^4.3.0",

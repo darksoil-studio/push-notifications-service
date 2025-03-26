@@ -8,12 +8,12 @@ integrity:
   zomes:
     - name: push_notifications_service_providers_manager_integrity
       hash: ~
-      bundled: "../target/wasm32-unknown-unknown/release/push_notifications_service_integrity.wasm"
+      bundled: "../target/wasm32-unknown-unknown/release/push_notifications_service_providers_manager_integrity.wasm"
       dependencies: ~
 coordinator:
   zomes:
     - name: push_notifications_service_providers_manager
       hash: ~
-      bundled: "../target/wasm32-unknown-unknown/release/push_notifications_service_integrity.wasm"
+      bundled: "../target/wasm32-unknown-unknown/release/push_notifications_service_providers_manager.wasm"
       dependencies:
         - name: push_notifications_service_providers_manager_integrity    
