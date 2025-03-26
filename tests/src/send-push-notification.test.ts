@@ -52,7 +52,7 @@ test('setup and send a push notification', async () => {
 			.get('push_notifications_service_providers_manager')
 			.callZome({
 				zome_name: 'push_notifications_service_providers_manager',
-				fn_name: 'enable_service',
+				fn_name: 'create_clone_service_request',
 				payload: {},
 			});
 
