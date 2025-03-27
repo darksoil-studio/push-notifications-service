@@ -1,16 +1,17 @@
 use anyhow::{anyhow, Result};
+use fcm_client::FcmClient;
 use holochain::conductor::manager::handle_shutdown;
 use holochain_client::{AppWebsocket, ZomeCallTarget};
 use holochain_conductor_api::CellInfo;
 use holochain_runtime::*;
 use holochain_types::prelude::*;
 use push_notifications_types::SendPushNotificationSignal;
-use send_push_notification::send_push_notification;
 use std::path::PathBuf;
 
-mod send_push_notification;
+mod fcm_client;
+pub use fcm_client::RealFcmClient;
 
-pub async fn run(
+pub async fn run<T: FcmClient>(
     data_dir: PathBuf,
     wan_config: Option<WANNetworkConfig>,
     push_notifications_service_provider_happ_path: PathBuf,
@@ -26,22 +27,11 @@ pub async fn run(
                 return ();
             };
 
-            let Ok(send_push_notification_signal) =
-                signal.into_inner().decode::<SendPushNotificationSignal>()
-            else {
-                return ();
-            };
-
             tokio::spawn(async move {
-                if let Err(err) = send_push_notification(
-                    send_push_notification_signal.fcm_project_id,
-                    send_push_notification_signal.service_account_key,
-                    send_push_notification_signal.token,
-                    send_push_notification_signal.notification,
-                )
+                if let Err(err) = handle_signal::<T>(signal)
                 .await
                 {
-                    log::error!("Failed to send push notification: {err:?}");
+                    log::error!("Failed to handle signal: {err:?}");
                 }
             });
         })
@@ -57,6 +47,22 @@ pub async fn run(
     log::info!("Gracefully shutting down conductor...");
     let shutdown_result = runtime.conductor_handle.shutdown().await;
     handle_shutdown(shutdown_result);
+
+    Ok(())
+}
+
+async fn handle_signal<T: FcmClient>(signal: AppSignal) -> anyhow::Result<()> {
+    let Ok(send_push_notification_signal) =
+        signal.into_inner().decode::<SendPushNotificationSignal>()
+    else {
+        return Ok(());
+    };
+    T::send_push_notification(
+        send_push_notification_signal.fcm_project_id,
+        into(send_push_notification_signal.service_account_key),
+        send_push_notification_signal.token,
+        send_push_notification_signal.notification,
+    ).await?;
 
     Ok(())
 }
@@ -126,7 +132,7 @@ async fn setup(
     Ok(app_ws)
 }
 
-async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
+pub async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
     mr_bundle::Bundle::read_from_file(happ_bundle_path)
         .await
         .map(Into::into)
@@ -138,5 +144,20 @@ fn cell_id(cell_info: &CellInfo) -> Option<CellId> {
         CellInfo::Provisioned(provisioned) => Some(provisioned.cell_id.clone()),
         CellInfo::Cloned(cloned) => Some(cloned.cell_id.clone()),
         CellInfo::Stem(_) => None,
+    }
+}
+
+fn into(key: push_notifications_types::ServiceAccountKey) -> yup_oauth2::ServiceAccountKey {
+    yup_oauth2::ServiceAccountKey {
+        key_type: key.key_type,
+        project_id: key.project_id,
+        private_key_id: key.private_key_id,
+        private_key: key.private_key,
+        client_email: key.client_email,
+        client_id: key.client_id,
+        auth_uri: key.auth_uri,
+        token_uri: key.token_uri,
+        auth_provider_x509_cert_url: key.auth_provider_x509_cert_url,
+        client_x509_cert_url: key.client_x509_cert_url,
     }
 }

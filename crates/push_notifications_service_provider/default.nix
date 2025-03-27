@@ -104,7 +104,8 @@
       check = craneLib.buildPackage (commonArgs // {
         inherit cargoArtifacts;
         doCheck = true;
-
+        # sandbox = false;
+        __noChroot = true;
         # For the integration test
         inherit END_USER_HAPP INFRA_PROVIDER_HAPP SERVICE_PROVIDER_HAPP
           HAPP_DEVELOPER_HAPP;

@@ -1,10 +1,5 @@
 use hdi::prelude::*;
-
-#[derive(Clone, PartialEq)]
-#[hdk_entry_helper]
-pub struct CloneServiceRequest {
-    pub dna_modifiers: DnaModifiers,
-}
+pub use push_notifications_types::CloneServiceRequest;
 
 pub fn validate_create_clone_service_request(
     _action: EntryCreationAction,

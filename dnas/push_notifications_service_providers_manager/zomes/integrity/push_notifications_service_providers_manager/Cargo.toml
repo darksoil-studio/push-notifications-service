@@ -11,3 +11,5 @@ name = "push_notifications_service_providers_manager_integrity"
 hdi = { workspace = true }
 
 serde = { workspace = true }
+
+push_notifications_types = { path = "../../../../../crates/push_notifications_types" }

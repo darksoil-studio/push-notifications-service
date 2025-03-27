@@ -7,8 +7,6 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-mod send_push_notification;
-
 const SIGNAL_URL: &'static str = "wss://sbd.holo.host";
 const BOOTSTRAP_URL: &'static str = "https://bootstrap.holo.host";
 
@@ -68,7 +66,7 @@ async fn main() -> Result<()> {
         std::fs::create_dir_all(data_dir.clone())?;
     }
 
-    push_notifications_service_provider::run(
+    push_notifications_service_provider::run::<push_notifications_service_provider::RealFcmClient>(
         data_dir,
         wan_network_config(),
         args.push_notifications_service_provider_happ,
