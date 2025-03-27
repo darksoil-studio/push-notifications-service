@@ -3,7 +3,7 @@
 
   inputs = {
     holonix.url = "github:holochain/holonix/main-0.4";
-
+    crane.follows = "holonix/crane";
     nixpkgs.follows = "holonix/nixpkgs";
     flake-parts.follows = "holonix/flake-parts";
 
@@ -28,7 +28,6 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         ./workdir/happ.nix
-        ./tests/test-happs.nix
         ./crates/push_notifications_service_provider/default.nix
       ];
 

@@ -1,18 +1,11 @@
 import {
-	ActionHash,
-	Delete,
+	AppWebsocket,
 	DnaModifiers,
-	Record,
-	SignedActionHashed,
+	Link,
 	encodeHashToBase64,
 } from '@holochain/client';
 import { Player, Scenario, dhtSync, runScenario } from '@holochain/tryorama';
 import { decode, encode } from '@msgpack/msgpack';
-import { toPromise } from '@tnesh-stack/signals';
-import { EntryRecord } from '@tnesh-stack/utils';
-import { cleanNodeDecoding } from '@tnesh-stack/utils/dist/clean-node-decoding.js';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { assert, test } from 'vitest';
 
 import {
@@ -28,6 +21,10 @@ test('setup and send a push notification', async () => {
 		const network_seed = `${Math.random()}`;
 		const infraProvider = await setupInfraProvider(scenario);
 
+		const properties = {
+			progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
+		};
+
 		const serviceProvider = await scenario.addPlayerWithApp(
 			{
 				path: serviceProviderHapp,
@@ -37,17 +34,13 @@ test('setup and send a push notification', async () => {
 					push_notifications_service_providers_manager: {
 						type: 'Provisioned',
 						modifiers: {
-							properties: {
-								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
-							},
+							properties,
 						},
 					},
 					service_providers: {
 						type: 'Provisioned',
 						modifiers: {
-							properties: {
-								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
-							},
+							properties,
 						},
 					},
 				},
@@ -63,9 +56,7 @@ test('setup and send a push notification', async () => {
 					service_providers: {
 						type: 'Provisioned',
 						modifiers: {
-							properties: {
-								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
-							},
+							properties,
 						},
 					},
 				},
@@ -80,9 +71,7 @@ test('setup and send a push notification', async () => {
 					service_providers: {
 						type: 'Provisioned',
 						modifiers: {
-							properties: {
-								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
-							},
+							properties,
 						},
 					},
 				},
@@ -97,9 +86,7 @@ test('setup and send a push notification', async () => {
 					service_providers: {
 						type: 'Provisioned',
 						modifiers: {
-							properties: {
-								progenitors: [encodeHashToBase64(infraProvider.agentPubKey)],
-							},
+							properties,
 						},
 					},
 				},
@@ -115,12 +102,12 @@ test('setup and send a push notification', async () => {
 				fn_name: 'create_clone_service_request',
 				payload: {
 					dna_modifiers: {
-						properties: encode({}),
+						properties: encode(properties),
 						network_seed,
 						origin_time: new Date().valueOf() * 1000,
 						quantum_time: {
 							nanos: 0,
-							secs: 1,
+							secs: 60 * 5,
 						},
 					} as DnaModifiers,
 				},
@@ -130,5 +117,36 @@ test('setup and send a push notification', async () => {
 			[infraProvider, serviceProvider],
 			infraProvider.cells[0].cell_id[0],
 		);
+
+		const cloneServicesRequests: Array<CloneServiceRequest> =
+			await serviceProvider.namedCells
+				.get('push_notifications_service_providers_manager')
+				.callZome({
+					zome_name: 'push_notifications_service_providers_manager',
+					fn_name: 'get_all_clone_service_requests',
+					payload: undefined,
+				});
+
+		assert.equal(cloneServicesRequests.length, 1);
+
+		await (serviceProvider.appWs as AppWebsocket).createCloneCell({
+			modifiers: {
+				...cloneServicesRequests[0].dna_modifiers,
+				properties: decode(cloneServicesRequests[0].dna_modifiers.properties),
+			},
+			role_name: 'push_notifications_service',
+		});
+
+		await (serviceProvider.appWs as AppWebsocket).createCloneCell({
+			modifiers: {
+				...cloneServicesRequests[0].dna_modifiers,
+				properties: decode(cloneServicesRequests[0].dna_modifiers.properties),
+			},
+			role_name: 'service_providers',
+		});
 	});
 });
+
+export interface CloneServiceRequest {
+	dna_modifiers: DnaModifiers;
+}

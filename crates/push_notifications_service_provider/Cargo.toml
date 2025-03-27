@@ -3,6 +3,14 @@ name = "push-notifications-service-provider"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "push_notifications_service_provider"
+path = "src/lib.rs"
+
+[[bin]]
+name = "push-notifications-service-provider"
+path = "src/main.rs"
+
 [dependencies]
 holochain_runtime = { git = "https://github.com/darksoil-studio/p2p-shipyard", branch = "main-0.4" }
 holochain = "0.4"
