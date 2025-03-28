@@ -1,6 +1,6 @@
 use hdk::prelude::*;
 use push_notifications_service_integrity::*;
-use push_notifications_types::RegisterFcmTokenInput;
+use push_notifications_types::RegisterFcmTokenForAgentInput;
 
 #[derive(Serialize, Deserialize, Debug, SerializedBytes)]
 pub struct FcmTokenTag {
@@ -9,7 +9,7 @@ pub struct FcmTokenTag {
 }
 
 #[hdk_extern]
-pub fn register_fcm_token_for_agent(input: RegisterFcmTokenInput) -> ExternResult<()> {
+pub fn register_fcm_token_for_agent(input: RegisterFcmTokenForAgentInput) -> ExternResult<()> {
     let links = get_links(
         GetLinksInputBuilder::try_new(input.agent.clone(), LinkTypes::FcmToken)?.build(),
     )?;

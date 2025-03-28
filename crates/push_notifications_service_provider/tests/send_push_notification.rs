@@ -5,9 +5,10 @@ use common::*;
 use holochain::prelude::DnaModifiers;
 use holochain_client::{AgentPubKey, ExternIO, SerializedBytes, Timestamp, ZomeCallTarget};
 use push_notifications_types::{
-    CloneServiceRequest, PublishServiceAccountKeyInput, ServiceAccountKey,
+    CloneServiceRequest, PublishServiceAccountKeyInput, RegisterFcmTokenInput, ServiceAccountKey,
 };
 use roles_types::Properties;
+use service_providers_types::MakeServiceRequestInput;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn send_push_notification() {
@@ -30,8 +31,10 @@ async fn send_push_notification() {
         quantum_time: Duration::from_secs(60 * 5),
     };
 
+    let fcm_project_id = String::from("FCM_PROJECT_1");
+
     let input = PublishServiceAccountKeyInput {
-        fcm_project_id: String::from("FCM_PROJECT_1"),
+        fcm_project_id: fcm_project_id.clone(),
         service_account_key: ServiceAccountKey {
             key_type: None,
             project_id: Some(String::from("GOOGLE_CLOUD_PROJECT_1")),
@@ -105,4 +108,28 @@ async fn send_push_notification() {
         .unwrap();
 
     assert_eq!(service_providers.len(), 1);
+
+    let token = String::from("myfcmtoken");
+
+    let response: ExternIO = recipient
+        .0
+        .call_zome(
+            ZomeCallTarget::RoleName("service_providers".into()),
+            "service_providers".into(),
+            "make_service_request".into(),
+            ExternIO::encode(MakeServiceRequestInput {
+                service_id: push_notifications_service_trait_service_id,
+                fn_name: "register_fcm_token".into(),
+                payload: ExternIO::encode(RegisterFcmTokenInput {
+                    fcm_project_id: fcm_project_id.clone(),
+                    token: token.clone(),
+                })
+                .unwrap(),
+            })
+            .unwrap(),
+        )
+        .await
+        .unwrap()
+        .decode()
+        .unwrap();
 }

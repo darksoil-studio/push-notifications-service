@@ -56,6 +56,12 @@ pub struct SendPushNotificationSignal {
 pub struct RegisterFcmTokenInput {
     pub fcm_project_id: String,
     pub token: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RegisterFcmTokenForAgentInput {
+    pub fcm_project_id: String,
+    pub token: String,
     pub agent: AgentPubKey,
 }
 

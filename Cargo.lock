@@ -5435,6 +5435,7 @@ dependencies = [
  "roles_types",
  "serde_json",
  "serde_yaml",
+ "service_providers_types",
  "sha256",
  "tempdir",
  "tokio",
@@ -6753,6 +6754,15 @@ dependencies = [
  "ryu",
  "serde",
  "unsafe-libyaml",
+]
+
+[[package]]
+name = "service_providers_types"
+version = "0.1.0"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main#741376b072f0f64a8e9ae1b461fb697b19398cb7"
+dependencies = [
+ "hdi",
+ "serde",
 ]
 
 [[package]]

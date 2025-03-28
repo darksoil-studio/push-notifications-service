@@ -6,7 +6,11 @@ mod push_notifications_service;
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
     let mut fns: BTreeSet<GrantedFunction> = BTreeSet::new();
-    fns.insert((zome_info()?.name, FunctionName::from("recv_remote_signal")));
+    fns.insert((zome_info()?.name, FunctionName::from("register_fcm_token")));
+    fns.insert((
+        zome_info()?.name,
+        FunctionName::from("send_push_notification"),
+    ));
     let functions = GrantedFunctions::Listed(fns);
     let cap_grant = ZomeCallCapGrant {
         tag: String::from("send_push_notification"),

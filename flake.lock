@@ -15436,11 +15436,11 @@
         "tnesh-stack": "tnesh-stack_33"
       },
       "locked": {
-        "lastModified": 1743162505,
-        "narHash": "sha256-yA6uwz/3RAYeh29F4GC4ZFwLFB6T7DWA5CBMeXauBDk=",
+        "lastModified": 1743178127,
+        "narHash": "sha256-EgXKzBrRTQwCGEgo2NwIBDwUQhVLObEYHTAXQh1jTKE=",
         "ref": "refs/heads/main",
-        "rev": "5ad18c514087b1ffb7585b2287fa545017ec41df",
-        "revCount": 6,
+        "rev": "741376b072f0f64a8e9ae1b461fb697b19398cb7",
+        "revCount": 8,
         "type": "git",
         "url": "file:///home/guillem/projects/darksoil/service-providers"
       },
