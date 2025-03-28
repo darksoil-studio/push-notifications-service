@@ -16,6 +16,10 @@
             self'.packages.push_notifications_service_integrity;
           push_notifications_service =
             self'.packages.push_notifications_service;
+          push_notifications_service_providers_manager_integrity =
+            self'.packages.push_notifications_service_providers_manager_integrity;
+          push_notifications_service_providers_manager =
+            self'.packages.push_notifications_service_providers_manager;
         };
       };
   };
