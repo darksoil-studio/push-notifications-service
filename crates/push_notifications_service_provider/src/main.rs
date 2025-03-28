@@ -2,6 +2,7 @@ use anyhow::{anyhow, Result};
 use clap::Parser;
 use env_logger::Builder;
 use holochain::core::AgentPubKeyB64;
+use holochain_client::InstalledAppId;
 use holochain_runtime::WANNetworkConfig;
 use log::Level;
 use std::io::Write;
@@ -17,6 +18,9 @@ const BOOTSTRAP_URL: &'static str = "https://bootstrap.holo.host";
 #[command(version, about, long_about = None)]
 struct Args {
     push_notifications_service_provider_happ: PathBuf,
+
+    #[arg(long)]
+    app_id: InstalledAppId,
 
     /// Directory to store all holochain data
     #[arg(long)]
@@ -75,6 +79,7 @@ async fn main() -> Result<()> {
     push_notifications_service_provider::run::<RealFcmClient>(
         data_dir,
         wan_network_config(),
+        args.app_id,
         args.push_notifications_service_provider_happ,
         args.progenitors.into_iter().map(|p| p.into()).collect(),
     )

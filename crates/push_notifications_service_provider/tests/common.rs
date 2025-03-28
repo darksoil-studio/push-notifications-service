@@ -179,6 +179,7 @@ pub async fn setup() -> Scenario {
                 .expect("Could not make tempdir")
                 .into_path(),
             None,
+            String::from("test-app"),
             service_provider_happ_path(),
             vec![infra_provider_pubkey],
         )
@@ -204,7 +205,7 @@ pub async fn setup() -> Scenario {
     )
     .await;
 
-    std::thread::sleep(Duration::from_secs(15));
+    std::thread::sleep(Duration::from_secs(20));
 
     Scenario {
         infra_provider,

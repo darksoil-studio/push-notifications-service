@@ -36,7 +36,7 @@
             name: infra_provider_test_happ
             description: ~
             roles:   
-              - name: push_notifications_service_providers_manager
+              - name: push_notifications_service
                 provisioning:
                   strategy: create
                   deferred: false
@@ -51,8 +51,8 @@
           '';
 
           dnas = {
-            push_notifications_service_providers_manager =
-              self'.packages.push_notifications_service_providers_manager_dna;
+            push_notifications_service =
+              self'.packages.push_notifications_service_dna;
           };
         }).meta.debug;
 
@@ -122,8 +122,9 @@
           } ''
             mkdir $out
             mkdir $out/bin
+            DNA_HASHES=$(cat ${self'.packages.push_notifications_service_provider_happ.dna_hashes})
             makeWrapper ${binary}/bin/push-notifications-service-provider $out/bin/push-notifications-service-provider \
-              --add-flags "${self'.packages.push_notifications_service_provider_happ}"
+              --add-flags "${self'.packages.push_notifications_service_provider_happ} --app-id $DNA_HASHES"
           '';
       in binaryWithHapp;
 

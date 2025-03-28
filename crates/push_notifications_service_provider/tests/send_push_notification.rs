@@ -34,7 +34,7 @@ async fn send_push_notification() {
         fcm_project_id: String::from("FCM_PROJECT_1"),
         service_account_key: ServiceAccountKey {
             key_type: None,
-            project_id: Some(String::from("FCM_PROJECT_1")),
+            project_id: Some(String::from("GOOGLE_CLOUD_PROJECT_1")),
             private_key_id: None,
             client_id: None,
             auth_uri: None,
@@ -45,6 +45,21 @@ async fn send_push_notification() {
             token_uri: String::from("random://token.uri"),
         },
     };
+
+    let service_providers: Vec<AgentPubKey> = infra_provider
+        .0
+        .call_zome(
+            ZomeCallTarget::RoleName("push_notifications_service".into()),
+            "push_notifications_service_providers_manager".into(),
+            "get_service_providers".into(),
+            ExternIO::encode(()).unwrap(),
+        )
+        .await
+        .unwrap()
+        .decode()
+        .unwrap();
+
+    assert_eq!(service_providers.len(), 1);
 
     infra_provider
         .0
@@ -89,18 +104,5 @@ async fn send_push_notification() {
         .decode()
         .unwrap();
 
-    let service_providers: Vec<AgentPubKey> = happ_developer
-        .0
-        .call_zome(
-            ZomeCallTarget::RoleName("service_providers".into()),
-            "service_providers".into(),
-            "get_providers_for_service".into(),
-            ExternIO::encode(push_notifications_service_trait_service_id).unwrap(),
-        )
-        .await
-        .unwrap()
-        .decode()
-        .unwrap();
-
-    assert_eq!(service_providers.len(), 1)
+    assert_eq!(service_providers.len(), 1);
 }

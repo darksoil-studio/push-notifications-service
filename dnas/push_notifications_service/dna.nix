@@ -20,6 +20,7 @@
             self'.packages.push_notifications_service_providers_manager_integrity;
           push_notifications_service_providers_manager =
             self'.packages.push_notifications_service_providers_manager;
+
         };
       };
   };
