@@ -1,11 +1,14 @@
 use anyhow::{anyhow, Result};
 use clap::Parser;
 use env_logger::Builder;
+use holochain::core::AgentPubKeyB64;
 use holochain_runtime::WANNetworkConfig;
 use log::Level;
 use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
+
+use push_notifications_service_provider::fcm_client::RealFcmClient;
 
 const SIGNAL_URL: &'static str = "wss://sbd.holo.host";
 const BOOTSTRAP_URL: &'static str = "https://bootstrap.holo.host";
@@ -18,6 +21,9 @@ struct Args {
     /// Directory to store all holochain data
     #[arg(long)]
     data_dir: PathBuf,
+
+    #[arg(long)]
+    progenitors: Vec<AgentPubKeyB64>,
 }
 
 fn wan_network_config() -> Option<WANNetworkConfig> {
@@ -66,10 +72,11 @@ async fn main() -> Result<()> {
         std::fs::create_dir_all(data_dir.clone())?;
     }
 
-    push_notifications_service_provider::run::<push_notifications_service_provider::RealFcmClient>(
+    push_notifications_service_provider::run::<RealFcmClient>(
         data_dir,
         wan_network_config(),
         args.push_notifications_service_provider_happ,
+        args.progenitors.into_iter().map(|p| p.into()).collect(),
     )
     .await
 }

@@ -1,6 +1,9 @@
+use hdi::prelude::*;
+
 pub mod clone_service_request;
 pub use clone_service_request::*;
-use hdi::prelude::*;
+pub mod service_providers;
+pub use service_providers::*;
 
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -14,6 +17,7 @@ pub enum EntryTypes {
 #[hdk_link_types]
 pub enum LinkTypes {
     AllCloneServiceRequests,
+    ServiceProviders,
 }
 
 // Validation you perform during the genesis process. Nobody else on the network performs it, only you.
@@ -173,6 +177,9 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 target_address,
                 tag,
             ),
+            LinkTypes::ServiceProviders => {
+                validate_create_link_service_providers(action, base_address, target_address, tag)
+            }
         },
         FlatOp::RegisterDeleteLink {
             link_type,
@@ -183,6 +190,13 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             action,
         } => match link_type {
             LinkTypes::AllCloneServiceRequests => validate_delete_link_all_clone_service_requests(
+                action,
+                original_action,
+                base_address,
+                target_address,
+                tag,
+            ),
+            LinkTypes::ServiceProviders => validate_delete_link_service_providers(
                 action,
                 original_action,
                 base_address,
@@ -337,6 +351,12 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                             tag,
                         )
                     }
+                    LinkTypes::ServiceProviders => validate_create_link_service_providers(
+                        action,
+                        base_address,
+                        target_address,
+                        tag,
+                    ),
                 },
                 // Complementary validation to the `RegisterDeleteLink` Op, in which the record itself is validated
                 // If you want to optimize performance, you can remove the validation for an entry type here and keep it in `RegisterDeleteLink`
@@ -375,6 +395,13 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                                 create_link.tag,
                             )
                         }
+                        LinkTypes::ServiceProviders => validate_delete_link_service_providers(
+                            action,
+                            create_link.clone(),
+                            base_address,
+                            create_link.target_address,
+                            create_link.tag,
+                        ),
                     }
                 }
                 OpRecord::CreatePrivateEntry { .. } => Ok(ValidateCallbackResult::Valid),

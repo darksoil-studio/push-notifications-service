@@ -1,11 +1,31 @@
-pub mod all_clone_service_requests;
-pub mod clone_service_request;
 use hdk::prelude::*;
 use push_notifications_service_providers_manager_integrity::*;
+use push_notifications_types::NewCloneServiceRequest;
+use service_providers::get_service_providers;
+
+pub mod all_clone_service_requests;
+pub mod clone_service_request;
+pub mod service_providers;
 
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
+    let mut fns: BTreeSet<GrantedFunction> = BTreeSet::new();
+    fns.insert((zome_info()?.name, FunctionName::from("recv_remote_signal")));
+    let functions = GrantedFunctions::Listed(fns);
+    let cap_grant = ZomeCallCapGrant {
+        tag: String::from("receive_messages"),
+        access: CapAccess::Unrestricted,
+        functions,
+    };
+    create_cap_grant(cap_grant)?;
+
     Ok(InitCallbackResult::Pass)
+}
+
+#[hdk_extern]
+pub fn recv_remote_signal(new_clone_service_request: NewCloneServiceRequest) -> ExternResult<()> {
+    emit_signal(new_clone_service_request)?;
+    Ok(())
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -48,6 +68,20 @@ fn signal_action(action: SignedActionHashed) -> ExternResult<()> {
     match action.hashed.content.clone() {
         Action::Create(_create) => {
             if let Ok(Some(app_entry)) = get_entry_for_action(&action.hashed.hash) {
+                match &app_entry {
+                    EntryTypes::CloneServiceRequest(clone_service_request) => {
+                        let providers = get_service_providers(())?;
+                        info!(
+                            "New CloneServiceRequest created: sending to providers: {providers:?}."
+                        );
+                        send_remote_signal(
+                            NewCloneServiceRequest {
+                                clone_service_request: clone_service_request.clone(),
+                            },
+                            providers,
+                        )?;
+                    }
+                };
                 emit_signal(Signal::EntryCreated { action, app_entry })?;
             }
             Ok(())

@@ -1,0 +1,11 @@
+[package]
+name = "push_notifications_service_trait"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hc_zome_traits = { git = "https://github.com/holochain-open-dev/zome-traits", branch = "main" }
+
+hdk = { workspace = true }
+
+push_notifications_types = { path = "../push_notifications_types" }

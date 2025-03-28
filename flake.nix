@@ -7,7 +7,8 @@
     nixpkgs.follows = "holonix/nixpkgs";
     flake-parts.follows = "holonix/flake-parts";
 
-    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    tnesh-stack.url = "/home/guillem/projects/darksoil/tnesh-stack";
+    # tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
     playground.url = "github:darksoil-studio/holochain-playground/main-0.4";
 
     service-providers.url = "/home/guillem/projects/darksoil/service-providers";

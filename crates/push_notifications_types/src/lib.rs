@@ -53,6 +53,12 @@ pub struct SendPushNotificationSignal {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct ConfigurePushNotificationsInput {
+    pub fcm_project_id: String,
+    pub service_account_key: ServiceAccountKey,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RegisterFcmTokenInput {
     pub fcm_project_id: String,
     pub token: String,
@@ -74,4 +80,9 @@ pub struct PushNotificationsServiceProperties {
 #[hdk_entry_helper]
 pub struct CloneServiceRequest {
     pub dna_modifiers: DnaModifiers,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct NewCloneServiceRequest {
+    pub clone_service_request: CloneServiceRequest,
 }

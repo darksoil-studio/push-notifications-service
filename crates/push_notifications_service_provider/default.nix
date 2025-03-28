@@ -106,6 +106,9 @@
         doCheck = true;
         # sandbox = false;
         __noChroot = true;
+        # RUST_LOG = "info";
+        WASM_LOG = "info";
+        # cargoTestExtraArgs = "--no-run -- --nocapture";
         # For the integration test
         inherit END_USER_HAPP INFRA_PROVIDER_HAPP SERVICE_PROVIDER_HAPP
           HAPP_DEVELOPER_HAPP;

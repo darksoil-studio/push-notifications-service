@@ -1,9 +1,13 @@
 use std::path::PathBuf;
+use std::{io::Write, time::Duration};
 
+use env_logger::Builder;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
 use holochain_client::{AgentPubKey, AppInfo, AppWebsocket};
 use holochain_runtime::{vec_to_locked, HolochainRuntime, HolochainRuntimeConfig};
-use push_notifications_service_provider::read_from_file;
+use log::Level;
+use push_notifications_service_provider::fcm_client::MockFcmClient;
+use push_notifications_service_provider::{read_from_file, run};
 use roles_types::Properties;
 
 pub fn happ_developer_happ_path() -> PathBuf {
@@ -152,23 +156,35 @@ pub async fn launch(
 
 pub struct Scenario {
     pub infra_provider: (AppWebsocket, HolochainRuntime),
-    pub service_provider: (AppWebsocket, HolochainRuntime),
+    // pub service_provider: (AppWebsocket, HolochainRuntime),
     pub happ_developer: (AppWebsocket, HolochainRuntime),
     pub sender: (AppWebsocket, HolochainRuntime),
     pub recipient: (AppWebsocket, HolochainRuntime),
 }
 
 pub async fn setup() -> Scenario {
+    Builder::new()
+        .format(|buf, record| writeln!(buf, "[{}] {}", record.level(), record.args()))
+        .target(env_logger::Target::Stdout)
+        .filter(None, Level::Info.to_level_filter())
+        .filter_module("holochain_sqlite", log::LevelFilter::Off)
+        .filter_module("tracing::span", log::LevelFilter::Off)
+        .init();
+
     let infra_provider = launch_infra_provider().await;
-    let service_provider = launch(
-        infra_provider.0.my_pub_key.clone(),
-        vec![
-            String::from("push_notifications_service_providers_manager"),
-            String::from("service_providers"),
-        ],
-        service_provider_happ_path(),
-    )
-    .await;
+    let infra_provider_pubkey = infra_provider.0.my_pub_key.clone();
+    tokio::spawn(async move {
+        run::<MockFcmClient>(
+            tempdir::TempDir::new("test")
+                .expect("Could not make tempdir")
+                .into_path(),
+            None,
+            service_provider_happ_path(),
+            vec![infra_provider_pubkey],
+        )
+        .await
+        .unwrap();
+    });
     let happ_developer = launch(
         infra_provider.0.my_pub_key.clone(),
         vec![String::from("service_providers")],
@@ -188,9 +204,11 @@ pub async fn setup() -> Scenario {
     )
     .await;
 
+    std::thread::sleep(Duration::from_secs(15));
+
     Scenario {
         infra_provider,
-        service_provider,
+        // service_provider,
         happ_developer,
         sender,
         recipient,
