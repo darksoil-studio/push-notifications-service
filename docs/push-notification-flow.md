@@ -1,4 +1,28 @@
 
+
+## Darksoil Setup for hApp-care
+
+```mermaid
+sequenceDiagram
+
+participant FCM
+
+box grey DarksoilStudio
+    participant DSHC as HappCareCell
+    participant DSPNS as PushNotificationsServiceCell
+end
+
+box grey PushNotificationsServiceProvider
+    participant PNSPSC as HappCareServiceCell
+    participant PNSP as ServiceProvider
+    participant PNSPPNS as PushNotificationsServiceCell
+end
+
+DSHC->>FCM: get service account key
+FCM->>DSHC: (fcm_project_id, service_account_key)
+HDHC->>DSPNS: configure push notifications(fcm_project_id, service_account_key)
+```
+
 ## hApp-care setup
 
 ```mermaid
@@ -12,12 +36,11 @@ end
 box grey DarksoilStudio
     participant DSOC as OrganizationCell
     participant DSHC as HappCareCell
-    participant DSSPMC as ServiceProviderManagerCell
+    participant DSSPNS as PushNotificationsServiceCell
 end
 
 HDOC->>DSOC: create_happ()
 DSOC->>DSOC: clone cell()
-
 
 ```
 
@@ -49,31 +72,6 @@ DSPNS->>PNSPPNS: enable push notifications
 PNSPPNS->>PNSPSC: clone cell
 PNSPSC->>PNSPSC: announce as provider
 
-```
-
-## hApp-care configuring push notifications for a runtime
-
-```mermaid
-sequenceDiagram
-
-participant FCM
-
-box grey HappDeveloper
-    participant HDHC as HappCareCell
-end
-
-box grey PushNotificationsServiceProvider
-    participant PNSPSC as HappCareServiceCell
-    participant PNSP as ServiceProvider
-    participant PNSPPNS as PushNotificationsServiceCell
-end
-
-HDHC->>FCM: get service account key
-FCM->>HDHC: (fcm_project_id, service_account_key)
-HDHC->>PNSPSC: configure push notifications(fcm_project_id, service_account_key)
-PNSPSC->>PNSP: validate(fcm_project_id, service_account_key)
-PNSP->>PNSPPNS: configure push notifications(fcm_project_id, service_account_key)
-PNSPPNS->>PNSPPNS: publish (fcm_project_id, service_account_key)
 ```
 
 ## Device setup

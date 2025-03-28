@@ -69,7 +69,7 @@ pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
 
     let mut roles_settings = RoleSettingsMap::new();
     roles_settings.insert(
-        String::from("push_notifications_service_providers_manager"),
+        String::from("push_notifications_service"),
         RoleSettings::Provisioned {
             membrane_proof: None,
             modifiers: Some(modifiers),

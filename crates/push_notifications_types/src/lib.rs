@@ -53,12 +53,6 @@ pub struct SendPushNotificationSignal {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ConfigurePushNotificationsInput {
-    pub fcm_project_id: String,
-    pub service_account_key: ServiceAccountKey,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct RegisterFcmTokenInput {
     pub fcm_project_id: String,
     pub token: String,
