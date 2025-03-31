@@ -210,6 +210,6 @@ where
             })?,
         )
         .await?;
-    let second_result: ExternIO = result.decode() 
+    let second_result: ExternIO = result.decode()?;
     Ok(second_result.decode()?)
 }
