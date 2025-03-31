@@ -15,3 +15,4 @@ serde = { workspace = true }
 hc_zome_traits = { git = "https://github.com/holochain-open-dev/zome-traits", branch = "main" }
 
 push_notifications_service_trait = { path = "../../../../../crates/push_notifications_service_trait" }
+push_notifications_types = { path = "../../../../../crates/push_notifications_types" }

@@ -7,9 +7,12 @@ fn all_providers_path() -> Path {
 
 #[hdk_extern]
 pub fn announce_as_provider() -> ExternResult<()> {
-    info!("Announcing as a provider.");
-
     let agent_info = agent_info()?;
+
+    info!(
+        "Announcing as a provider with pub key {}.",
+        agent_info.agent_latest_pubkey
+    );
 
     let path = all_providers_path();
 

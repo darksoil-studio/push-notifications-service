@@ -1,5 +1,7 @@
 use hdk::prelude::*;
-use push_notifications_types::{SendPushNotificationSignal, SendPushNotificationToAgentInput};
+use push_notifications_types::{
+    SendPushNotificationSignal, SendPushNotificationToAgentWithProvenanceInput,
+};
 
 use crate::{
     fcm_token::get_fcm_token_for_agent, service_account_key::get_current_service_account_key,
@@ -7,7 +9,7 @@ use crate::{
 
 #[hdk_extern]
 pub fn send_push_notification_to_agent(
-    input: SendPushNotificationToAgentInput,
+    input: SendPushNotificationToAgentWithProvenanceInput,
 ) -> ExternResult<()> {
     let Some(token_tag) = get_fcm_token_for_agent(input.agent)? else {
         return Err(wasm_error!(WasmErrorInner::Guest(String::from(

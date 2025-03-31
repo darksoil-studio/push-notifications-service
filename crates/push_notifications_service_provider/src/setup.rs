@@ -1,21 +1,19 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, time::Duration};
 
 use anyhow::anyhow;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
-use holochain_client::{AgentPubKey, AppWebsocket, ExternIO, ZomeCallTarget};
+use holochain_client::{AgentPubKey, ExternIO, ZomeCallTarget};
 use holochain_runtime::HolochainRuntime;
 use roles_types::Properties;
 
 use crate::read_from_file;
-
-// pub fn app_id() {}
 
 pub async fn setup(
     runtime: &HolochainRuntime,
     app_id: &String,
     push_notifications_service_provider_happ_path: &PathBuf,
     progenitors: Vec<AgentPubKey>,
-) -> anyhow::Result<AppWebsocket> {
+) -> anyhow::Result<()> {
     let admin_ws = runtime.admin_websocket().await?;
     let installed_apps = admin_ws
         .list_apps(None)
@@ -23,11 +21,9 @@ pub async fn setup(
         .map_err(|err| anyhow!("{err:?}"))?;
     let happ_bundle = read_from_file(push_notifications_service_provider_happ_path).await?;
 
-    let app_id = happ_bundle.manifest().app_name().to_string();
-
     if installed_apps
         .iter()
-        .find(|app| app.installed_app_id.eq(&app_id))
+        .find(|app| app.installed_app_id.eq(app_id))
         .is_none()
     {
         let roles_properties = Properties {
@@ -54,12 +50,13 @@ pub async fn setup(
                 modifiers: Some(DnaModifiersOpt {
                     properties: Some(properties_bytes.clone()),
                     network_seed: Some("throwaway".into()),
-                    ..Default::default()
+                    origin_time: None,
+                    quantum_time: Some(Duration::from_secs(10000)),
                 }),
             },
         );
 
-        let _app_info = runtime
+        let app_info = runtime
             .install_app(
                 app_id.clone(),
                 happ_bundle,
@@ -85,13 +82,7 @@ pub async fn setup(
             .await
             .map_err(|err| anyhow!("{:?}", err))?;
 
-        log::info!("Installed app for hApp {}", app_id);
+        log::info!("Installed app {app_info:?}");
     }
-    let app_ws = runtime
-        .app_websocket(
-            app_id.clone(),
-            holochain_types::websocket::AllowedOrigins::Any,
-        )
-        .await?;
-    Ok(app_ws)
+    Ok(())
 }

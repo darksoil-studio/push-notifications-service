@@ -71,6 +71,13 @@ pub struct SendPushNotificationToAgentInput {
     pub notification: PushNotification,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SendPushNotificationToAgentWithProvenanceInput {
+    pub provenance: AgentPubKey,
+    pub agent: AgentPubKey,
+    pub notification: PushNotification,
+}
+
 #[derive(Serialize, Deserialize, Debug, SerializedBytes)]
 pub struct PushNotificationsServiceProperties {
     pub fcm_project_id: String,

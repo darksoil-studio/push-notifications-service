@@ -8,6 +8,7 @@ use setup::setup;
 use std::{path::PathBuf, time::Duration};
 
 mod cloned_services;
+pub use cloned_services::dna_modifiers;
 pub mod fcm_client;
 use fcm_client::FcmClient;
 mod setup;
@@ -22,7 +23,7 @@ pub async fn run<T: FcmClient>(
     let config = HolochainRuntimeConfig::new(data_dir.clone(), wan_config);
 
     let runtime = HolochainRuntime::launch(vec_to_locked(vec![])?, config).await?;
-    let app_ws = setup(
+    setup(
         &runtime,
         &app_id,
         &push_notifications_service_provider_happ_path,
@@ -30,6 +31,12 @@ pub async fn run<T: FcmClient>(
     )
     .await?;
 
+    let app_ws = runtime
+        .app_websocket(
+            app_id.clone(),
+            holochain_types::websocket::AllowedOrigins::Any,
+        )
+        .await?;
     let app_clone = app_ws.clone();
 
     app_ws
@@ -40,7 +47,7 @@ pub async fn run<T: FcmClient>(
 
             let app_clone = app_clone.clone();
 
-            tokio::spawn(async move {
+            holochain_util::tokio_helper::run_on(async move {
                 if let Err(err) = handle_signal::<T>(app_clone, signal).await {
                     log::error!("Failed to handle signal: {err:?}");
                 }

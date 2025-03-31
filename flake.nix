@@ -7,11 +7,10 @@
     nixpkgs.follows = "holonix/nixpkgs";
     flake-parts.follows = "holonix/flake-parts";
 
-    tnesh-stack.url = "/home/guillem/projects/darksoil/tnesh-stack";
-    # tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
     playground.url = "github:darksoil-studio/holochain-playground/main-0.4";
 
-    service-providers.url = "/home/guillem/projects/darksoil/service-providers";
+    service-providers.url = "github:darksoil-studio/service-providers/main-0.4";
   };
 
   nixConfig = {
@@ -23,6 +22,7 @@
       "holochain-ci.cachix.org-1:5IUSkZc0aoRS53rfkvH9Kid40NpyjwCMCzwRTXy+QN8="
       "darksoil-studio.cachix.org-1:UEi+aujy44s41XL/pscLw37KEVpTEIn8N/kn7jO8rkc="
     ];
+    # To support tests with access to networking
     sandbox = "relaxed";
   };
 

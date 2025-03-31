@@ -1,6 +1,7 @@
 use anyhow::anyhow;
 use holochain::prelude::{
-    CloneCellId, CreateCloneCellPayload, DnaModifiers, DnaModifiersOpt, YamlProperties,
+    CloneCellId, CreateCloneCellPayload, DnaModifiers, DnaModifiersOpt, EnableCloneCellPayload,
+    YamlProperties,
 };
 use holochain_client::{AppWebsocket, CellInfo, ExternIO, InstalledAppId, ZomeCallTarget};
 use holochain_runtime::HolochainRuntime;
@@ -37,9 +38,9 @@ pub async fn reconcile_cloned_services(
         .unwrap_or(vec![]);
 
     for clone_service_request in clone_service_requests {
-        let existing_clone = service_providers_cells.iter().find(|cell| {
-            dna_modifiers(cell.clone().clone()).eq(&clone_service_request.dna_modifiers)
-        });
+        let existing_clone = service_providers_cells
+            .iter()
+            .find(|cell| dna_modifiers(cell).eq(&clone_service_request.dna_modifiers));
 
         if let None = existing_clone {
             clone_service(&app_ws, clone_service_request).await?;
@@ -49,11 +50,11 @@ pub async fn reconcile_cloned_services(
     Ok(())
 }
 
-fn dna_modifiers(cell: CellInfo) -> DnaModifiers {
+pub fn dna_modifiers(cell: &CellInfo) -> DnaModifiers {
     match cell {
-        CellInfo::Provisioned(provisioned) => provisioned.dna_modifiers,
-        CellInfo::Cloned(cloned) => cloned.dna_modifiers,
-        CellInfo::Stem(stem) => stem.dna_modifiers,
+        CellInfo::Provisioned(provisioned) => provisioned.dna_modifiers.clone(),
+        CellInfo::Cloned(cloned) => cloned.dna_modifiers.clone(),
+        CellInfo::Stem(stem) => stem.dna_modifiers.clone(),
     }
 }
 
@@ -62,7 +63,13 @@ pub async fn clone_service(
     clone_service_request: CloneServiceRequest,
 ) -> anyhow::Result<()> {
     let properties = YamlProperties::try_from(clone_service_request.dna_modifiers.properties)?;
-    app_ws
+
+    log::info!(
+        "New CloneServiceRequest received. Cloning the {} role.",
+        SERVICE_PROVIDERS_ROLE_NAME
+    );
+
+    let cell = app_ws
         .create_clone_cell(CreateCloneCellPayload {
             role_name: SERVICE_PROVIDERS_ROLE_NAME.into(),
             modifiers: DnaModifiersOpt {
@@ -75,5 +82,20 @@ pub async fn clone_service(
             name: None,
         })
         .await?;
+    app_ws
+        .enable_clone_cell(EnableCloneCellPayload {
+            clone_cell_id: CloneCellId::CloneId(cell.clone_id.clone()),
+        })
+        .await?;
+    app_ws
+        .call_zome(
+            ZomeCallTarget::CellId(cell.cell_id.clone()),
+            "gateway".into(),
+            "init".into(),
+            ExternIO::encode(())?,
+        )
+        .await?;
+    log::info!("New cloned cell: {cell:?}.");
+
     Ok(())
 }
