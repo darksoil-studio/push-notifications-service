@@ -14,7 +14,7 @@ use holochain::{
 use holochain_client::{
     AgentPubKey, AppWebsocket, ExternIO, SerializedBytes, Timestamp, ZomeCallTarget,
 };
-use push_notifications_service_provider::dna_modifiers;
+use push_notifications_service_provider::{dna_modifiers, fcm_client::MockFcmClient};
 use push_notifications_types::{
     CloneServiceRequest, PublishServiceAccountKeyInput, PushNotification, RegisterFcmTokenInput,
     SendPushNotificationToAgentInput, ServiceAccountKey,
@@ -144,6 +144,11 @@ async fn send_push_notification() {
     .await
     .unwrap();
 
+    let ctx = MockFcmClient::send_push_notification_context();
+    ctx.expect().once().returning(
+        |fcm_project_id, service_account_key, token, push_notification| Box::pin(async { Ok(()) }),
+    );
+
     let response: () = make_service_request(
         &recipient.0,
         push_notifications_service_trait_service_id,
@@ -151,13 +156,16 @@ async fn send_push_notification() {
         SendPushNotificationToAgentInput {
             agent: recipient.0.my_pub_key.clone(),
             notification: PushNotification {
-                title: String::from("Hey!"),
-                body: String::from("There"),
+                title: String::from("Hey"),
+                body: String::from("there"),
             },
         },
     )
     .await
     .unwrap();
+
+    // std::thread::sleep(Duration::from_secs(1));
+    ctx.checkpoint();
 }
 
 async fn make_service_request<P, R>(
