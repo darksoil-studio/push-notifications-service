@@ -7,7 +7,6 @@
         workspacePath = inputs.self.outPath;
         crateCargoToml = ./Cargo.toml;
       };
-
   };
 }
 

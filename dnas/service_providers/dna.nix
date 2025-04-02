@@ -6,7 +6,7 @@
 
   perSystem = { inputs', self', lib, system, ... }: {
     packages.service_providers_dna =
-      inputs.service-providers.outputs.builders.${system}.service_providers_dna {
+      inputs.service-providers.outputs.builders.${system}.service_providers_dna_with_gateway {
         gatewayZome = self'.packages.push_notifications_gateway;
       };
   };

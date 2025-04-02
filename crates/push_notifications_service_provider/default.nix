@@ -3,10 +3,6 @@
 {
   perSystem = { inputs', pkgs, self', lib, system, ... }:
     let
-      nonGatewayServiceProvidersDna =
-        inputs.service-providers.outputs.builders.${system}.service_providers_dna {
-          gatewayZome = self'.packages.push_notifications_service;
-        };
       SERVICE_PROVIDER_HAPP =
         self'.packages.push_notifications_service_provider_happ.meta.debug;
       END_USER_HAPP = (inputs.tnesh-stack.outputs.builders.${system}.happ {
@@ -30,7 +26,10 @@
                 clone_limit: 100000
         '';
 
-        dnas = { service_providers = nonGatewayServiceProvidersDna; };
+        dnas = {
+          service_providers =
+            inputs'.service-providers.packages.service_providers_dna;
+        };
       }).meta.debug;
       INFRA_PROVIDER_HAPP =
         (inputs.tnesh-stack.outputs.builders.${system}.happ {
@@ -82,7 +81,10 @@
                   clone_limit: 100000
           '';
 
-          dnas = { service_providers = nonGatewayServiceProvidersDna; };
+          dnas = {
+            service_providers =
+              inputs'.service-providers.packages.service_providers_dna;
+          };
         }).meta.debug;
 
       craneLib = inputs.crane.mkLib pkgs;
