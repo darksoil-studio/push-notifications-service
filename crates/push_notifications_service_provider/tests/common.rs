@@ -90,7 +90,7 @@ pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
         .expect("Failed to install infra provider happ");
 
     let app_ws = infra_provider
-        .app_websocket(app_id, holochain_client::AllowedOrigins::Any)
+        .app_websocket(app_id, "".into())
         .await
         .unwrap();
 
@@ -147,10 +147,7 @@ pub async fn launch(
         .await
         .unwrap();
 
-    let app_ws = runtime
-        .app_websocket(app_id, holochain_client::AllowedOrigins::Any)
-        .await
-        .unwrap();
+    let app_ws = runtime.app_websocket(app_id, "".into()).await.unwrap();
     (app_ws, runtime)
 }
 

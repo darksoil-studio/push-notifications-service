@@ -65,12 +65,7 @@ pub async fn setup(
                 None,
             )
             .await?;
-        let app_ws = runtime
-            .app_websocket(
-                app_id.clone(),
-                holochain_types::websocket::AllowedOrigins::Any,
-            )
-            .await?;
+        let app_ws = runtime.app_websocket(app_id.clone(), "".into()).await?;
 
         app_ws
             .call_zome(
