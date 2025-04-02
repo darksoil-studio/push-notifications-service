@@ -2,21 +2,17 @@ use std::time::Duration;
 
 mod common;
 use anyhow::anyhow;
+use clone_manager_types::CloneRequest;
 use common::*;
-use futures::{
-    future::{select_all, select_ok},
-    FutureExt, TryFutureExt,
-};
+use futures::{future::select_ok, FutureExt, TryFutureExt};
 use holochain::{
     conductor::conductor::hdk::prelude::holochain_serialized_bytes::serde::de::DeserializeOwned,
     prelude::{DnaModifiers, FunctionName, Serialize},
 };
-use holochain_client::{
-    AgentPubKey, AppWebsocket, ExternIO, SerializedBytes, Timestamp, ZomeCallTarget,
-};
+use holochain_client::{AgentPubKey, AppWebsocket, ExternIO, SerializedBytes, ZomeCallTarget};
 use push_notifications_service_provider::{dna_modifiers, fcm_client::MockFcmClient};
 use push_notifications_types::{
-    CloneServiceRequest, PublishServiceAccountKeyInput, PushNotification, RegisterFcmTokenInput,
+    PublishServiceAccountKeyInput, PushNotification, RegisterFcmTokenInput,
     SendPushNotificationToAgentInput, ServiceAccountKey,
 };
 use roles_types::Properties;
@@ -74,8 +70,8 @@ async fn send_push_notification() {
         .0
         .call_zome(
             ZomeCallTarget::RoleName("push_notifications_service".into()),
-            "push_notifications_service_providers_manager".into(),
-            "get_service_providers".into(),
+            "clone_manager".into(),
+            "get_clone_providers".into(),
             ExternIO::encode(()).unwrap(),
         )
         .await
@@ -100,9 +96,9 @@ async fn send_push_notification() {
         .0
         .call_zome(
             ZomeCallTarget::RoleName("push_notifications_service".into()),
-            "push_notifications_service_providers_manager".into(),
-            "create_clone_service_request".into(),
-            ExternIO::encode(CloneServiceRequest {
+            "clone_manager".into(),
+            "create_clone_request".into(),
+            ExternIO::encode(CloneRequest {
                 dna_modifiers: modifiers,
             })
             .unwrap(),

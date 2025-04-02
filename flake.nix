@@ -11,6 +11,7 @@
     playground.url = "github:darksoil-studio/holochain-playground/main-0.4";
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.4";
+    clone-manager.url = "github:darksoil-studio/clone-manager-zome/main-0.4";
   };
 
   nixConfig = {

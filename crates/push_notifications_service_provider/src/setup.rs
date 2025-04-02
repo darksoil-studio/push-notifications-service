@@ -75,7 +75,7 @@ pub async fn setup(
         app_ws
             .call_zome(
                 ZomeCallTarget::RoleName("push_notifications_service".into()),
-                "push_notifications_service_providers_manager".into(),
+                "clone_manager".into(),
                 "announce_as_provider".into(),
                 ExternIO::encode(())?,
             )

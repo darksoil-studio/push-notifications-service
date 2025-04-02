@@ -82,14 +82,3 @@ pub struct SendPushNotificationToAgentWithProvenanceInput {
 pub struct PushNotificationsServiceProperties {
     pub fcm_project_id: String,
 }
-
-#[derive(Clone, PartialEq)]
-#[hdk_entry_helper]
-pub struct CloneServiceRequest {
-    pub dna_modifiers: DnaModifiers,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct NewCloneServiceRequest {
-    pub clone_service_request: CloneServiceRequest,
-}
