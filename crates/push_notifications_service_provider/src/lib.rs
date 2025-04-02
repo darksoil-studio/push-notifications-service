@@ -1,9 +1,10 @@
 use anyhow::Result;
+use clone_manager_types::NewCloneRequest;
 use cloned_services::{clone_service, reconcile_cloned_services};
 use holochain_client::AppWebsocket;
 use holochain_runtime::*;
 use holochain_types::prelude::*;
-use push_notifications_types::{NewCloneServiceRequest, SendPushNotificationSignal};
+use push_notifications_types::SendPushNotificationSignal;
 use setup::setup;
 use std::{path::PathBuf, time::Duration};
 
@@ -58,7 +59,13 @@ pub async fn run<T: FcmClient>(
     log::info!("Starting push notifications service provider.");
 
     loop {
-        if let Err(err) = reconcile_cloned_services(&runtime, &app_id).await {
+        let app_ws = runtime
+            .app_websocket(
+                app_id.clone(),
+                holochain_types::websocket::AllowedOrigins::Any,
+            )
+            .await?;
+        if let Err(err) = reconcile_cloned_services(&app_ws).await {
             log::error!("Failed to reconcile cloned services: {err}");
         }
 
@@ -94,8 +101,8 @@ async fn handle_signal<T: FcmClient>(
         )
         .await?;
     }
-    if let Ok(new_clone_service_request) = signal.into_inner().decode::<NewCloneServiceRequest>() {
-        clone_service(&app_ws, new_clone_service_request.clone_service_request).await?;
+    if let Ok(new_clone_request) = signal.into_inner().decode::<NewCloneRequest>() {
+        clone_service(&app_ws, new_clone_request.clone_request).await?;
     }
     Ok(())
 }

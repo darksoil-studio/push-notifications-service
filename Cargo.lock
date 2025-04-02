@@ -906,6 +906,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
+name = "clone_manager_types"
+version = "0.1.0"
+source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.4#2e29caa99dd8b86e95ae9e7df1ccb8588ccb8cd6"
+dependencies = [
+ "hdi",
+ "serde",
+]
+
+[[package]]
 name = "cloudabi"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5420,6 +5429,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "clap 4.5.34",
+ "clone_manager_types",
  "env_logger",
  "fcm_v1",
  "futures",
@@ -5468,25 +5478,6 @@ dependencies = [
 
 [[package]]
 name = "push_notifications_service_integrity"
-version = "0.0.1"
-dependencies = [
- "hdi",
- "push_notifications_types",
- "serde",
-]
-
-[[package]]
-name = "push_notifications_service_providers_manager"
-version = "0.0.1"
-dependencies = [
- "hdk",
- "push_notifications_service_providers_manager_integrity",
- "push_notifications_types",
- "serde",
-]
-
-[[package]]
-name = "push_notifications_service_providers_manager_integrity"
 version = "0.0.1"
 dependencies = [
  "hdi",
@@ -6761,7 +6752,7 @@ dependencies = [
 [[package]]
 name = "service_providers_types"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main#6ef537660d9c8fd86edb35b805fc30234a3fbcdb"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#f6ec933345dba68826fefd995b77cc8d02a8e18a"
 dependencies = [
  "hdi",
  "serde",
