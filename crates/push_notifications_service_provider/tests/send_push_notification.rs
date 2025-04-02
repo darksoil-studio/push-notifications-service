@@ -3,6 +3,7 @@ use std::time::Duration;
 mod common;
 use anyhow::anyhow;
 use clone_manager_types::CloneRequest;
+use clone_manager_utils::dna_modifiers;
 use common::*;
 use futures::{future::select_ok, FutureExt, TryFutureExt};
 use holochain::{
@@ -10,7 +11,7 @@ use holochain::{
     prelude::{DnaModifiers, FunctionName, Serialize},
 };
 use holochain_client::{AgentPubKey, AppWebsocket, ExternIO, SerializedBytes, ZomeCallTarget};
-use push_notifications_service_provider::{dna_modifiers, fcm_client::MockFcmClient};
+use push_notifications_service_provider::fcm_client::MockFcmClient;
 use push_notifications_types::{
     PublishServiceAccountKeyInput, PushNotification, RegisterFcmTokenInput,
     SendPushNotificationToAgentInput, ServiceAccountKey,
