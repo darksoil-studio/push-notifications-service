@@ -150,7 +150,7 @@ async fn send_push_notification() {
     );
 
     let response: () = make_service_request(
-        &recipient.0,
+        &sender.0,
         push_notifications_service_trait_service_id,
         "send_push_notification".into(),
         SendPushNotificationToAgentInput {
