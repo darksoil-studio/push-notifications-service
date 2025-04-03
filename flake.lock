@@ -374,11 +374,11 @@
         "tnesh-stack": "tnesh-stack_3"
       },
       "locked": {
-        "lastModified": 1743677385,
-        "narHash": "sha256-UYM+WhPXOhRT0/PanUeKunk8+TOo8zy67q5Y+MjBZhU=",
+        "lastModified": 1743681126,
+        "narHash": "sha256-mDHYqDi5NcYiXlEd7mhLOUR1DHmRZY01O/yzne/L4js=",
         "owner": "darksoil-studio",
         "repo": "clone-manager-zome",
-        "rev": "94417518adca78df099f13dff6567263665b8b63",
+        "rev": "9f76e2b25d068aea7e1f158438c9eaffed827e4a",
         "type": "github"
       },
       "original": {

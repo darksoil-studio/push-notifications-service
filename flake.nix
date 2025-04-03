@@ -32,6 +32,7 @@
       imports = [
         ./workdir/happ.nix
         ./crates/push_notifications_service_provider/default.nix
+        inputs.tnesh-stack.outputs.flakeModules.builders
       ];
 
       systems = builtins.attrNames inputs.holonix.devShells;
