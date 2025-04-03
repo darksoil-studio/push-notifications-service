@@ -908,7 +908,7 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 [[package]]
 name = "clone_manager_types"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.4#f3f16ac4b9f9c76c504de1cd1d744317b7968540"
+source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.4#94417518adca78df099f13dff6567263665b8b63"
 dependencies = [
  "hdi",
  "serde",
@@ -917,7 +917,7 @@ dependencies = [
 [[package]]
 name = "clone_manager_utils"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.4#f3f16ac4b9f9c76c504de1cd1d744317b7968540"
+source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.4#94417518adca78df099f13dff6567263665b8b63"
 dependencies = [
  "anyhow",
  "clone_manager_types",
@@ -6769,7 +6769,7 @@ dependencies = [
 [[package]]
 name = "service_providers_types"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#00e0fa06ec576c67a318bbd7fd4ed6bb6d4963f5"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#4965930e6566089527c46f4f282a99adca504a3a"
 dependencies = [
  "hdi",
  "serde",
@@ -6778,7 +6778,7 @@ dependencies = [
 [[package]]
 name = "service_providers_utils"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#00e0fa06ec576c67a318bbd7fd4ed6bb6d4963f5"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#4965930e6566089527c46f4f282a99adca504a3a"
 dependencies = [
  "anyhow",
  "futures",
