@@ -12,7 +12,9 @@
 
         dnas = {
           push_notifications_service =
-            self'.packages.push_notifications_service_dna;
+            self'.builders.push_notifications_service_dna {
+              clone_manager_provider = true;
+            };
           service_providers = self'.packages.service_providers_dna;
         };
       };

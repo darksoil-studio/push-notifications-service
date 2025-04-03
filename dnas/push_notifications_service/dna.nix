@@ -7,7 +7,7 @@
       (builtins.attrNames (builtins.readDir ./zomes/integrity)));
 
   perSystem = { inputs', self', lib, system, ... }: {
-    packages.push_notifications_service_dna =
+    builders.push_notifications_service_dna = { clone_manager_provider }:
       inputs.tnesh-stack.outputs.builders.${system}.dna {
         dnaManifest = ./workdir/dna.yaml;
         zomes = {
@@ -18,7 +18,9 @@
             self'.packages.push_notifications_service;
           clone_manager_integrity =
             inputs'.clone-manager.packages.clone_manager_integrity;
-          clone_manager = inputs'.clone-manager.packages.clone_manager;
+          clone_manager = inputs'.clone-manager.builders.clone_manager {
+            provider = clone_manager_provider;
+          };
         };
       };
   };
