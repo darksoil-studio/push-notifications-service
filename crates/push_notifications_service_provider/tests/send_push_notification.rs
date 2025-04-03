@@ -1,23 +1,18 @@
 use std::time::Duration;
 
 mod common;
-use anyhow::anyhow;
 use clone_manager_types::CloneRequest;
 use clone_manager_utils::dna_modifiers;
 use common::*;
-use futures::{future::select_ok, FutureExt, TryFutureExt};
-use holochain::{
-    conductor::conductor::hdk::prelude::holochain_serialized_bytes::serde::de::DeserializeOwned,
-    prelude::{DnaModifiers, FunctionName, Serialize},
-};
-use holochain_client::{AgentPubKey, AppWebsocket, ExternIO, SerializedBytes, ZomeCallTarget};
+use holochain::prelude::DnaModifiers;
+use holochain_client::{AgentPubKey, ExternIO, SerializedBytes, ZomeCallTarget};
 use push_notifications_service_provider::fcm_client::MockFcmClient;
 use push_notifications_types::{
     PublishServiceAccountKeyInput, PushNotification, RegisterFcmTokenInput,
     SendPushNotificationToAgentInput, ServiceAccountKey,
 };
 use roles_types::Properties;
-use service_providers_types::{MakeServiceRequestInput, ServiceId};
+use service_providers_utils::make_service_request;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn send_push_notification() {
@@ -163,58 +158,4 @@ async fn send_push_notification() {
 
     std::thread::sleep(Duration::from_secs(1));
     ctx.checkpoint();
-}
-
-async fn make_service_request<P, R>(
-    app_ws: &AppWebsocket,
-    service_id: ServiceId,
-    fn_name: FunctionName,
-    payload: P,
-) -> anyhow::Result<R>
-where
-    R: Serialize + DeserializeOwned + std::fmt::Debug,
-    P: Serialize + DeserializeOwned + std::fmt::Debug,
-{
-    let providers: Vec<AgentPubKey> = app_ws
-        .call_zome(
-            ZomeCallTarget::RoleName("service_providers".into()),
-            "service_providers".into(),
-            "get_providers_for_service".into(),
-            ExternIO::encode(service_id.clone()).unwrap(),
-        )
-        .await?
-        .decode()?;
-
-    if providers.is_empty() {
-        return Err(anyhow!("No providers found."));
-    }
-
-    let (service_provider, _) = select_ok(providers.into_iter().map(|provider| {
-        app_ws
-            .call_zome(
-                ZomeCallTarget::RoleName("service_providers".into()),
-                "service_providers".into(),
-                "check_provider_is_available".into(),
-                ExternIO::encode(provider.clone()).unwrap(),
-            )
-            .map_ok(|_r| provider)
-            .boxed()
-    }))
-    .await?;
-
-    let result: ExternIO = app_ws
-        .call_zome(
-            ZomeCallTarget::RoleName("service_providers".into()),
-            "service_providers".into(),
-            "make_service_request".into(),
-            ExternIO::encode(MakeServiceRequestInput {
-                service_provider,
-                service_id,
-                fn_name,
-                payload: ExternIO::encode(payload).unwrap(),
-            })?,
-        )
-        .await?;
-    let second_result: ExternIO = result.decode()?;
-    Ok(second_result.decode()?)
 }

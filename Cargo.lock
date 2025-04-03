@@ -5449,7 +5449,6 @@ dependencies = [
  "clone_manager_utils",
  "env_logger",
  "fcm_v1",
- "futures",
  "holochain",
  "holochain_client",
  "holochain_conductor_api",
@@ -5465,6 +5464,7 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "service_providers_types",
+ "service_providers_utils",
  "sha256",
  "tempdir",
  "tokio",
@@ -6769,10 +6769,23 @@ dependencies = [
 [[package]]
 name = "service_providers_types"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#f6ec933345dba68826fefd995b77cc8d02a8e18a"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#00e0fa06ec576c67a318bbd7fd4ed6bb6d4963f5"
 dependencies = [
  "hdi",
  "serde",
+]
+
+[[package]]
+name = "service_providers_utils"
+version = "0.1.0"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.4#00e0fa06ec576c67a318bbd7fd4ed6bb6d4963f5"
+dependencies = [
+ "anyhow",
+ "futures",
+ "holochain_client",
+ "holochain_types",
+ "serde",
+ "service_providers_types",
 ]
 
 [[package]]
