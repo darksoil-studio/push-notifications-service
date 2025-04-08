@@ -16723,11 +16723,11 @@
         "tnesh-stack": "tnesh-stack_36"
       },
       "locked": {
-        "lastModified": 1743682123,
-        "narHash": "sha256-IWERKff0UuLcxJijXj4tmHjlq3qHfDQ+wajrOTlDs+k=",
+        "lastModified": 1743768087,
+        "narHash": "sha256-yZcsLmfLN9MUxuyR9ROL3zFrQzVCPYziuiAnE++5SPI=",
         "owner": "darksoil-studio",
         "repo": "service-providers",
-        "rev": "1a7c3305563a4952d4fed9ae0e175e846479ef7f",
+        "rev": "4b1b9471559227d8ea25b876359ef11c5f075c09",
         "type": "github"
       },
       "original": {

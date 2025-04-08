@@ -112,11 +112,9 @@
       check = craneLib.buildPackage (commonArgs // {
         inherit cargoArtifacts;
         doCheck = true;
-        # sandbox = false;
         __noChroot = true;
         # RUST_LOG = "info";
         WASM_LOG = "info";
-        # cargoTestExtraArgs = "--no-run -- --nocapture";
         # For the integration test
         inherit END_USER_HAPP INFRA_PROVIDER_HAPP SERVICE_PROVIDER_HAPP
           HAPP_DEVELOPER_HAPP;
@@ -124,9 +122,20 @@
     in {
 
       packages.push-notifications-service-provider = let
+        binaryWithDebugHapp =
+          pkgs.runCommandLocal "push-notifications-service-provider" {
+            buildInputs = [ pkgs.makeWrapper ];
+          } ''
+            mkdir $out
+            mkdir $out/bin
+            DNA_HASHES=test
+            makeWrapper ${binary}/bin/push-notifications-service-provider $out/bin/push-notifications-service-provider \
+              --add-flags "${self'.packages.push_notifications_service_provider_happ.meta.debug} --app-id $DNA_HASHES"
+          '';
         binaryWithHapp =
           pkgs.runCommandLocal "push-notifications-service-provider" {
             buildInputs = [ pkgs.makeWrapper ];
+            meta.debug = binaryWithDebugHapp;
           } ''
             mkdir $out
             mkdir $out/bin
