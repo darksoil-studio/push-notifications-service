@@ -1,7 +1,7 @@
 import { AppClient } from '@holochain/client';
 import { consume, provide } from '@lit/context';
 import { localized, msg } from '@lit/localize';
-import { mdiInformationOutline } from '@mdi/js';
+import { mdiInformationOutline, mdiPlus } from '@mdi/js';
 import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
 import {
@@ -50,8 +50,13 @@ export class ManagePushNotifications extends SignalWatcher(LitElement) {
 		return html` <div class="column" style="gap: 16px; flex: 1">
 			<div class="row">
 				<span style="flex: 1"> </span>
-				<sl-button @click=${() => (this.addingProject = true)}
-					>${msg('Add FCM project')}
+				<sl-button
+					variant="primary"
+					@click=${() => (this.addingProject = true)}
+				>
+					<sl-icon slot="prefix" .src=${wrapPathInSvg(mdiPlus)}></sl-icon>
+
+					${msg('Add FCM project')}
 				</sl-button>
 			</div>
 			<sl-card>
