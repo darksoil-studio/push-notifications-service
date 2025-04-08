@@ -17,7 +17,8 @@ pub fn send_push_notification_to_agent(
         ))));
     };
 
-    let Some(service_account_key) = get_current_service_account_key(&token_tag.fcm_project_id)?
+    let Some(service_account_key) =
+        get_current_service_account_key(token_tag.fcm_project_id.clone())?
     else {
         return Err(wasm_error!(WasmErrorInner::Guest(String::from(
             "FCM authority hasn't registered a service account key yet"

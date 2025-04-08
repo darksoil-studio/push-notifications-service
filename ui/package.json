@@ -1,5 +1,5 @@
 {
-	"name": "@darksoil-studio/push-notifications-service-provider-zome",
+	"name": "@darksoil-studio/push-notifications-service",
 	"version": "0.400.0",
 	"scripts": {
 		"start": "vite --clearScreen false --port $UI_PORT",

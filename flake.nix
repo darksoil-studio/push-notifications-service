@@ -8,6 +8,7 @@
     flake-parts.follows = "holonix/flake-parts";
 
     tnesh-stack.url = "github:darksoil-studio/tnesh-stack/main-0.4";
+    p2p-shipyard.url = "github:darksoil-studio/p2p-shipyard/main-0.4";
     playground.url = "github:darksoil-studio/holochain-playground/main-0.4";
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.4";
@@ -47,6 +48,7 @@
           packages = [
             inputs'.tnesh-stack.packages.holochain
             inputs'.tnesh-stack.packages.hc-scaffold-zome
+            inputs'.p2p-shipyard.packages.hc-pilot
             inputs'.playground.packages.hc-playground
           ];
         };
