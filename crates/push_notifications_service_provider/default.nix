@@ -123,6 +123,9 @@
 
       builders.push-notifications-service-provider = { progenitors }:
         let
+          progenitorsArg = builtins.toString
+            (builtins.map (p: " --progenitors ${p}") self.outputs.progenitors);
+
           binaryWithDebugHapp =
             pkgs.runCommandLocal "push-notifications-service-provider" {
               buildInputs = [ pkgs.makeWrapper ];
@@ -131,9 +134,7 @@
               mkdir $out/bin
               DNA_HASHES=test
               makeWrapper ${binary}/bin/push-notifications-service-provider $out/bin/push-notifications-service-provider \
-                --add-flags "${self'.packages.push_notifications_service_provider_happ.meta.debug} --app-id $DNA_HASHES --progenitors ${
-                  builtins.toString progenitors
-                }"
+                --add-flags "${self'.packages.push_notifications_service_provider_happ.meta.debug} --app-id $DNA_HASHES ${progenitorsArg}"
             '';
           binaryWithHapp =
             pkgs.runCommandLocal "push-notifications-service-provider" {
@@ -144,9 +145,7 @@
               mkdir $out/bin
               DNA_HASHES=$(cat ${self'.packages.push_notifications_service_provider_happ.dna_hashes})
               makeWrapper ${binary}/bin/push-notifications-service-provider $out/bin/push-notifications-service-provider \
-                --add-flags "${self'.packages.push_notifications_service_provider_happ} --app-id $DNA_HASHES --progenitors ${
-                  builtins.toString progenitors
-                }"
+                --add-flags "${self'.packages.push_notifications_service_provider_happ} --app-id $DNA_HASHES ${progenitorsArg}"
             '';
         in binaryWithHapp;
 

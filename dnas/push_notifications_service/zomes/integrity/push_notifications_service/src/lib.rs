@@ -1,9 +1,11 @@
-pub mod fcm_token;
-pub use fcm_token::*;
-pub mod service_account_key;
 use hdi::prelude::*;
 
 pub use service_account_key::*;
+pub mod service_account_key;
+pub use fcm_project_path::*;
+pub mod fcm_project_path;
+pub mod fcm_token;
+pub use fcm_token::*;
 
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -17,6 +19,7 @@ pub enum EntryTypes {
 #[hdk_link_types]
 pub enum LinkTypes {
     FcmToken,
+    FcmProjectPath,
     ServiceAccountKeys,
 }
 
@@ -174,6 +177,9 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             LinkTypes::FcmToken => {
                 validate_create_link_fcm_token(action, base_address, target_address, tag)
             }
+            LinkTypes::FcmProjectPath => {
+                validate_create_link_fcm_project_path(action, base_address, target_address, tag)
+            }
             LinkTypes::ServiceAccountKeys => {
                 validate_create_link_service_account_keys(action, base_address, target_address, tag)
             }
@@ -187,6 +193,13 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             action,
         } => match link_type {
             LinkTypes::FcmToken => validate_delete_link_fcm_token(
+                action,
+                original_action,
+                base_address,
+                target_address,
+                tag,
+            ),
+            LinkTypes::FcmProjectPath => validate_delete_link_fcm_project_path(
                 action,
                 original_action,
                 base_address,
@@ -343,6 +356,12 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     LinkTypes::FcmToken => {
                         validate_create_link_fcm_token(action, base_address, target_address, tag)
                     }
+                    LinkTypes::FcmProjectPath => validate_create_link_fcm_project_path(
+                        action,
+                        base_address,
+                        target_address,
+                        tag,
+                    ),
                     LinkTypes::ServiceAccountKeys => validate_create_link_service_account_keys(
                         action,
                         base_address,
@@ -379,6 +398,13 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     };
                     match link_type {
                         LinkTypes::FcmToken => validate_delete_link_fcm_token(
+                            action,
+                            create_link.clone(),
+                            base_address,
+                            create_link.target_address,
+                            create_link.tag,
+                        ),
+                        LinkTypes::FcmProjectPath => validate_delete_link_fcm_project_path(
                             action,
                             create_link.clone(),
                             base_address,
