@@ -102,7 +102,7 @@ async fn send_push_notification() {
         .await
         .unwrap();
 
-    std::thread::sleep(Duration::from_secs(15));
+    std::thread::sleep(Duration::from_secs(5));
 
     let push_notifications_service_trait_service_id =
         push_notifications_service_trait::PUSH_NOTIFICATIONS_SERVICE_HASH.to_vec();
