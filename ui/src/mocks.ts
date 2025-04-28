@@ -11,7 +11,7 @@ import {
   HoloHashMap,
   HashType,
   hash
-} from "@tnesh-stack/utils";
+} from "@darksoil-studio/holochain-utils";
 import {
   decodeHashFromBase64,
   NewEntryAction,

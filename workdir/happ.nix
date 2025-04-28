@@ -7,7 +7,7 @@
 
   perSystem = { inputs', lib, self', system, ... }: {
     packages.push_notifications_service_provider_happ =
-      inputs.tnesh-stack.outputs.builders.${system}.happ {
+      inputs.holochain-nix-builders.outputs.builders.${system}.happ {
         happManifest = ./happ.yaml;
 
         dnas = {

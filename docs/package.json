@@ -15,9 +15,9 @@
 	"devDependencies": {
 		"@api-viewer/demo": "1.0.0-pre.10",
 		"@api-viewer/docs": "1.0.0-pre.10",
-		"@holochain/client": "^0.18.0",
-		"@darksoil-studio/profiles-zome": "0.400.0-rev.59e48e4ed9d131a381e11d19f647c171ebcbae51",
-		"@darksoil-studio/push-notifications-service-provider-zome": "workspace:*",
+		"@holochain/client": "^0.19.0",
+		"@darksoil-studio/profiles-zome": "^0.500.0-rev",
+		"@darksoil-studio/push-notifications-service": "workspace:*",
 		"@shoelace-style/shoelace": "^2.11.0",
 		"api-viewer-element": "^1.0.0-pre.10",
 		"lit": "^3.0.0",

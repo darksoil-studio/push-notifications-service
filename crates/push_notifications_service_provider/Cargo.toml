@@ -12,15 +12,16 @@ name = "push-notifications-service-provider"
 path = "src/main.rs"
 
 [dependencies]
-holochain_runtime = { git = "https://github.com/darksoil-studio/p2p-shipyard", branch = "main-0.4" }
-holochain = "0.4"
-holochain_util = "0.4"
-holochain_client = "0.6.0"
-holochain_conductor_api = "0.4.1"
+holochain_runtime = { git = "https://github.com/darksoil-studio/p2p-shipyard", branch = "main-0.5" }
+holochain = "0.5"
+holochain_util = "0.5"
+holochain_client = "0.7.0"
+holochain_conductor_api = "0.5"
+holochain_types = "0.5"
+
 anyhow = "1"
 clap = {version = "4.5.4", features = [ "derive" ] }
 tokio = { version = "1", features = [ "full" ] } 
-holochain_types = "0.4.1"
 mr_bundle = "0.4.1"
 sha256 = "1"
 url2 = "0.0.6"
@@ -34,14 +35,14 @@ serde_yaml = "0.9"
 serde_json = "1"
 mockall = "0.13"
 
-clone_manager_types = { git = "https://github.com/darksoil-studio/clone-manager-zome", branch = "main-0.4"}
-clone_manager_utils = { git = "https://github.com/darksoil-studio/clone-manager-zome", branch = "main-0.4"}
+clone_manager_types = { git = "https://github.com/darksoil-studio/clone-manager-zome", branch = "main-0.5"}
+clone_manager_utils = { git = "https://github.com/darksoil-studio/clone-manager-zome", branch = "main-0.5"}
 
-service_providers_types = { git = "https://github.com/darksoil-studio/service-providers", branch = "main-0.4"}
-service_providers_utils = { git = "https://github.com/darksoil-studio/service-providers", branch = "main-0.4"}
+service_providers_types = { git = "https://github.com/darksoil-studio/service-providers", branch = "main-0.5"}
+service_providers_utils = { git = "https://github.com/darksoil-studio/service-providers", branch = "main-0.5"}
 push_notifications_types = { path = "../push_notifications_types" }
 push_notifications_service_trait = { path = "../push_notifications_service_trait" }
-roles_types = { git = "https://github.com/darksoil-studio/roles-zome", branch = "main-0.4"}
+roles_types = { git = "https://github.com/darksoil-studio/roles-zome", branch = "main-0.5"}
 
 [dev-dependencies]
 tempdir = "0.3.7"

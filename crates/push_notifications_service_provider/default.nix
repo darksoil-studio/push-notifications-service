@@ -5,34 +5,35 @@
     let
       SERVICE_PROVIDER_HAPP =
         self'.packages.push_notifications_service_provider_happ.meta.debug;
-      END_USER_HAPP = (inputs.tnesh-stack.outputs.builders.${system}.happ {
-        happManifest = builtins.toFile "happ.yaml" ''
-          ---
-          manifest_version: "1"
-          name: test_happ
-          description: ~
-          roles:   
-            - name: service_providers
-              provisioning:
-                strategy: create
-                deferred: false
-              dna:
-                bundled: ""
-                modifiers:
-                  network_seed: ~
-                  properties: ~
-                  origin_time: ~
-                version: ~
-                clone_limit: 100000
-        '';
+      END_USER_HAPP =
+        (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
+          happManifest = builtins.toFile "happ.yaml" ''
+            ---
+            manifest_version: "1"
+            name: test_happ
+            description: ~
+            roles:   
+              - name: service_providers
+                provisioning:
+                  strategy: create
+                  deferred: false
+                dna:
+                  bundled: ""
+                  modifiers:
+                    network_seed: ~
+                    properties: ~
+                    origin_time: ~
+                  version: ~
+                  clone_limit: 100000
+          '';
 
-        dnas = {
-          service_providers =
-            inputs'.service-providers.packages.service_providers_dna;
-        };
-      }).meta.debug;
+          dnas = {
+            service_providers =
+              inputs'.service-providers.packages.service_providers_dna;
+          };
+        }).meta.debug;
       INFRA_PROVIDER_HAPP =
-        (inputs.tnesh-stack.outputs.builders.${system}.happ {
+        (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
           happManifest = builtins.toFile "happ.yaml" ''
             ---
             manifest_version: "1"
@@ -62,7 +63,7 @@
         }).meta.debug;
 
       HAPP_DEVELOPER_HAPP =
-        (inputs.tnesh-stack.outputs.builders.${system}.happ {
+        (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
           happManifest = builtins.toFile "happ.yaml" ''
             ---
             manifest_version: "1"
@@ -104,7 +105,7 @@
         inherit src version pname;
         doCheck = false;
         buildInputs =
-          inputs.tnesh-stack.outputs.dependencies.${system}.holochain.buildInputs;
+          inputs.holochain-nix-builders.outputs.dependencies.${system}.holochain.buildInputs;
       };
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       binary =

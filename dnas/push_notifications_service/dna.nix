@@ -8,7 +8,7 @@
 
   perSystem = { inputs', self', lib, system, ... }: {
     builders.push_notifications_service_dna = { clone_manager_provider }:
-      inputs.tnesh-stack.outputs.builders.${system}.dna {
+      inputs.holochain-nix-builders.outputs.builders.${system}.dna {
         dnaManifest = ./workdir/dna.yaml;
         zomes = {
           # This overrides all the "bundled" properties for the DNA manifest

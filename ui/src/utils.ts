@@ -5,8 +5,8 @@ import {
 	JoinAsyncOptions,
 	Signal,
 	joinAsync,
-} from '@tnesh-stack/signals';
-import { GetonlyMap } from '@tnesh-stack/utils';
+} from '@darksoil-studio/holochain-signals';
+import { GetonlyMap } from '@darksoil-studio/holochain-utils';
 
 export function lazyLoadAndPollOrEvent<T>(
 	task: () => Promise<T>,

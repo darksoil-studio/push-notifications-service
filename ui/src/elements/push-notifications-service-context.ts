@@ -1,6 +1,6 @@
 import { AppClient } from '@holochain/client';
 import { consume, provide } from '@lit/context';
-import { appClientContext } from '@tnesh-stack/elements';
+import { appClientContext } from '@darksoil-studio/holochain-elements';
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 

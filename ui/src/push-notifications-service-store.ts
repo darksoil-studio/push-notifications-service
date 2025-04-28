@@ -1,5 +1,5 @@
-import { AsyncComputed, joinAsyncMap } from '@tnesh-stack/signals';
-import { MemoMap, mapValues, retype, slice } from '@tnesh-stack/utils';
+import { AsyncComputed, joinAsyncMap } from '@darksoil-studio/holochain-signals';
+import { MemoMap, mapValues, retype, slice } from '@darksoil-studio/holochain-utils';
 
 import { PushNotificationsServiceClient } from './push-notifications-service-client.js';
 import {
