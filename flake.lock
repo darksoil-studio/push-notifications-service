@@ -34882,11 +34882,11 @@
         "scaffolding": "scaffolding_38"
       },
       "locked": {
-        "lastModified": 1745846950,
-        "narHash": "sha256-SaR/Ff/GZnDVuWYCYLlh68RlQ+VWp+5PuW0SarGMOeo=",
+        "lastModified": 1745848902,
+        "narHash": "sha256-8mLvn1xfd4GEuDrKYCMn1ND4jDevCotdCUPUQTaYCEo=",
         "owner": "darksoil-studio",
         "repo": "service-providers",
-        "rev": "08a1b3fb7cb9c22182ae52379f8a0120c65367fb",
+        "rev": "133b4673cdd9ee35968cf558aa360339fd94803f",
         "type": "github"
       },
       "original": {
