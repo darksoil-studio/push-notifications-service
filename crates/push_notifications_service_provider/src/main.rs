@@ -11,9 +11,6 @@ use std::str::FromStr;
 
 use push_notifications_service_provider::fcm_client::RealFcmClient;
 
-const SIGNAL_URL: &'static str = "wss://sbd.holo.host";
-const BOOTSTRAP_URL: &'static str = "https://bootstrap.holo.host";
-
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {

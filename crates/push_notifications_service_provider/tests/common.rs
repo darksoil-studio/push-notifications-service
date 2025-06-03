@@ -3,12 +3,13 @@ use std::{io::Write, time::Duration};
 
 use env_logger::Builder;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
-use holochain_client::{AgentPubKey, AppInfo, AppWebsocket};
+use holochain_client::{AgentPubKey, AppWebsocket};
 use holochain_runtime::{vec_to_locked, HolochainRuntime, HolochainRuntimeConfig, NetworkConfig};
 use log::Level;
 use push_notifications_service_provider::fcm_client::MockFcmClient;
 use push_notifications_service_provider::{read_from_file, run};
 use roles_types::Properties;
+use url2::url2;
 
 pub fn happ_developer_happ_path() -> PathBuf {
     std::option_env!("HAPP_DEVELOPER_HAPP")
@@ -41,7 +42,7 @@ pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
             tempdir::TempDir::new("test")
                 .expect("Could not make tempdir")
                 .into_path(),
-            NetworkConfig::default(),
+            network_config(),
         ),
     )
     .await
@@ -97,6 +98,13 @@ pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
     (app_ws, infra_provider)
 }
 
+fn network_config() -> NetworkConfig {
+    let mut network_config = NetworkConfig::default();
+    network_config.bootstrap_url = url2!("http://bad");
+    network_config.signal_url = url2!("ws://bad");
+    network_config
+}
+
 pub async fn launch(
     infra_provider_pub_key: AgentPubKey,
     roles: Vec<String>,
@@ -108,7 +116,7 @@ pub async fn launch(
             tempdir::TempDir::new("test")
                 .expect("Could not make tempdir")
                 .into_path(),
-            NetworkConfig::default(),
+            network_config(),
         ),
     )
     .await
@@ -178,7 +186,7 @@ pub async fn setup() -> Scenario {
             tempdir::TempDir::new("test")
                 .expect("Could not make tempdir")
                 .into_path(),
-            NetworkConfig::default(),
+            network_config(),
             String::from("test-app"),
             service_provider_happ_path(),
             vec![infra_provider_pubkey],
