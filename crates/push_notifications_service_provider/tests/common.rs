@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::{io::Write, time::Duration};
 
@@ -190,6 +191,8 @@ pub async fn setup() -> Scenario {
             String::from("test-app"),
             service_provider_happ_path(),
             vec![infra_provider_pubkey],
+            BTreeMap::new(),
+            vec![],
         )
         .await
         .unwrap();
