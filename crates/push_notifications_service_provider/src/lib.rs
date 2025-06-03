@@ -6,7 +6,7 @@ use holochain_runtime::*;
 use holochain_types::prelude::*;
 use push_notifications_types::SendPushNotificationSignal;
 use setup::setup;
-use std::{path::PathBuf, time::Duration};
+use std::{fs, path::PathBuf, time::Duration};
 
 pub mod fcm_client;
 use fcm_client::FcmClient;
@@ -16,14 +16,14 @@ pub const SERVICE_PROVIDERS_ROLE_NAME: &'static str = "service_providers";
 
 pub async fn run<T: FcmClient>(
     data_dir: PathBuf,
-    wan_config: Option<WANNetworkConfig>,
+    network_config: NetworkConfig,
     app_id: String,
     push_notifications_service_provider_happ_path: PathBuf,
     progenitors: Vec<AgentPubKey>,
 ) -> anyhow::Result<()> {
-    let config = HolochainRuntimeConfig::new(data_dir.clone(), wan_config);
+    let config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
 
-    let runtime = HolochainRuntime::launch(vec_to_locked(vec![])?, config).await?;
+    let runtime = HolochainRuntime::launch(vec_to_locked(vec![]), config).await?;
     setup(
         &runtime,
         &app_id,
@@ -32,7 +32,9 @@ pub async fn run<T: FcmClient>(
     )
     .await?;
 
-    let app_ws = runtime.app_websocket(app_id.clone(), "".into()).await?;
+    let app_ws = runtime
+        .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
+        .await?;
     let app_clone = app_ws.clone();
     let admin_ws = runtime.admin_websocket().await?;
 
@@ -56,7 +58,9 @@ pub async fn run<T: FcmClient>(
     log::info!("Starting push notifications service provider.");
 
     loop {
-        let app_ws = runtime.app_websocket(app_id.clone(), "".into()).await?;
+        let app_ws = runtime
+            .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
+            .await?;
         let admin_ws = runtime.admin_websocket().await?;
         if let Err(err) = reconcile_cloned_cells(
             &admin_ws,
@@ -115,14 +119,12 @@ async fn handle_signal<T: FcmClient>(
 }
 
 pub async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
-    mr_bundle::Bundle::read_from_file(happ_bundle_path)
-        .await
-        .map(Into::into)
-        .map_err(Into::into)
+    let bytes = fs::read(happ_bundle_path)?;
+    Ok(AppBundle::decode(bytes.as_slice())?)
 }
 
-fn into(key: push_notifications_types::ServiceAccountKey) -> yup_oauth2::ServiceAccountKey {
-    yup_oauth2::ServiceAccountKey {
+fn into(key: push_notifications_types::ServiceAccountKey) -> fcm_v1::auth::ServiceAccountKey {
+    fcm_v1::auth::ServiceAccountKey {
         key_type: key.key_type,
         project_id: key.project_id,
         private_key_id: key.private_key_id,

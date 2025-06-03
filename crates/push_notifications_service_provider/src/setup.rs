@@ -1,4 +1,4 @@
-use std::{path::PathBuf, time::Duration};
+use std::path::PathBuf;
 
 use anyhow::anyhow;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
@@ -50,8 +50,6 @@ pub async fn setup(
                 modifiers: Some(DnaModifiersOpt {
                     properties: Some(properties_bytes.clone()),
                     network_seed: Some("throwaway".into()),
-                    origin_time: None,
-                    quantum_time: Some(Duration::from_secs(10000)),
                 }),
             },
         );
@@ -65,7 +63,9 @@ pub async fn setup(
                 None,
             )
             .await?;
-        let app_ws = runtime.app_websocket(app_id.clone(), "".into()).await?;
+        let app_ws = runtime
+            .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
+            .await?;
 
         app_ws
             .call_zome(

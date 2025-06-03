@@ -4,7 +4,7 @@ use std::{io::Write, time::Duration};
 use env_logger::Builder;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
 use holochain_client::{AgentPubKey, AppInfo, AppWebsocket};
-use holochain_runtime::{vec_to_locked, HolochainRuntime, HolochainRuntimeConfig};
+use holochain_runtime::{vec_to_locked, HolochainRuntime, HolochainRuntimeConfig, NetworkConfig};
 use log::Level;
 use push_notifications_service_provider::fcm_client::MockFcmClient;
 use push_notifications_service_provider::{read_from_file, run};
@@ -36,12 +36,12 @@ pub fn end_user_happ_path() -> PathBuf {
 
 pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
     let infra_provider = HolochainRuntime::launch(
-        vec_to_locked(vec![]).expect("Could not build passphrase"),
+        vec_to_locked(vec![]),
         HolochainRuntimeConfig::new(
             tempdir::TempDir::new("test")
                 .expect("Could not make tempdir")
                 .into_path(),
-            None,
+            NetworkConfig::default(),
         ),
     )
     .await
@@ -90,7 +90,7 @@ pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
         .expect("Failed to install infra provider happ");
 
     let app_ws = infra_provider
-        .app_websocket(app_id, "".into())
+        .app_websocket(app_id, holochain_client::AllowedOrigins::Any)
         .await
         .unwrap();
 
@@ -103,12 +103,12 @@ pub async fn launch(
     happ_path: PathBuf,
 ) -> (AppWebsocket, HolochainRuntime) {
     let runtime = HolochainRuntime::launch(
-        vec_to_locked(vec![]).expect("Could not build passphrase"),
+        vec_to_locked(vec![]),
         HolochainRuntimeConfig::new(
             tempdir::TempDir::new("test")
                 .expect("Could not make tempdir")
                 .into_path(),
-            None,
+            NetworkConfig::default(),
         ),
     )
     .await
@@ -147,7 +147,10 @@ pub async fn launch(
         .await
         .unwrap();
 
-    let app_ws = runtime.app_websocket(app_id, "".into()).await.unwrap();
+    let app_ws = runtime
+        .app_websocket(app_id, holochain_client::AllowedOrigins::Any)
+        .await
+        .unwrap();
     (app_ws, runtime)
 }
 
@@ -175,7 +178,7 @@ pub async fn setup() -> Scenario {
             tempdir::TempDir::new("test")
                 .expect("Could not make tempdir")
                 .into_path(),
-            None,
+            NetworkConfig::default(),
             String::from("test-app"),
             service_provider_happ_path(),
             vec![infra_provider_pubkey],

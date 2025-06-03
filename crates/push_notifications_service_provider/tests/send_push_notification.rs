@@ -2,7 +2,6 @@ use std::time::Duration;
 
 mod common;
 use clone_manager_types::CloneRequest;
-use clone_manager_utils::dna_modifiers;
 use common::*;
 use holochain::prelude::DnaModifiers;
 use holochain_client::{AgentPubKey, ExternIO, SerializedBytes, ZomeCallTarget};
@@ -24,14 +23,13 @@ async fn send_push_notification() {
         recipient,
     } = setup().await;
 
-    let app_info = happ_developer.0.app_info().await.unwrap().unwrap();
-    let cell = app_info
-        .cell_info
-        .get("service_providers")
-        .unwrap()
-        .first()
-        .unwrap();
-    let origin_time = dna_modifiers(cell).origin_time;
+    // let app_info = happ_developer.0.app_info().await.unwrap().unwrap();
+    // let cell = app_info
+    //     .cell_info
+    //     .get("service_providers")
+    //     .unwrap()
+    //     .first()
+    //     .unwrap();
 
     let roles_properties = Properties {
         progenitors: vec![infra_provider.0.my_pub_key.clone().into()],
@@ -40,8 +38,6 @@ async fn send_push_notification() {
     let modifiers = DnaModifiers {
         properties: properties_bytes,
         network_seed: String::from(""),
-        origin_time,
-        quantum_time: Duration::from_secs(60 * 5),
     };
 
     let fcm_project_id = String::from("FCM_PROJECT_1");

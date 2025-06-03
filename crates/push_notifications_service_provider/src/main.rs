@@ -3,7 +3,7 @@ use clap::Parser;
 use env_logger::Builder;
 use holochain::core::AgentPubKeyB64;
 use holochain_client::InstalledAppId;
-use holochain_runtime::WANNetworkConfig;
+use holochain_runtime::NetworkConfig;
 use log::Level;
 use std::io::Write;
 use std::path::PathBuf;
@@ -28,14 +28,26 @@ struct Args {
 
     #[arg(long)]
     progenitors: Vec<AgentPubKeyB64>,
+
+    #[arg(long)]
+    bootstrap_url: String,
+
+    #[arg(long)]
+    signal_url: String,
 }
 
-fn wan_network_config() -> Option<WANNetworkConfig> {
-    Some(WANNetworkConfig {
-        signal_url: url2::url2!("{}", SIGNAL_URL),
-        bootstrap_url: url2::url2!("{}", BOOTSTRAP_URL),
-        ice_servers_urls: vec![],
-    })
+fn network_config(bootstrap_url: String, signal_url: String) -> NetworkConfig {
+    let mut network_config = NetworkConfig::default();
+
+    network_config.bootstrap_url = url2::Url2::parse(bootstrap_url);
+    network_config.signal_url = url2::Url2::parse(signal_url);
+    network_config.webrtc_config = Some(serde_json::json!({
+        "ice_servers": {
+            "urls": ["stun://stun.l.google.com:19302"]
+        },
+    }));
+
+    network_config
 }
 
 fn log_level() -> Level {
@@ -78,7 +90,7 @@ async fn main() -> Result<()> {
 
     push_notifications_service_provider::run::<RealFcmClient>(
         data_dir,
-        wan_network_config(),
+        network_config(args.bootstrap_url, args.signal_url),
         args.app_id,
         args.push_notifications_service_provider_happ,
         args.progenitors.into_iter().map(|p| p.into()).collect(),

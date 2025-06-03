@@ -22,7 +22,6 @@
                   modifiers:
                     network_seed: ~
                     properties: ~
-                    origin_time: ~
                   version: ~
                   clone_limit: 100000
           '';
@@ -49,7 +48,6 @@
                   modifiers:
                     network_seed: ~
                     properties: ~
-                    origin_time: ~
                   version: ~
                   clone_limit: 0
           '';
@@ -79,7 +77,6 @@
                   modifiers:
                     network_seed: ~
                     properties: ~
-                    origin_time: ~
                   version: ~
                   clone_limit: 100000
           '';
@@ -106,6 +103,7 @@
         doCheck = false;
         buildInputs =
           inputs.holochain-nix-builders.outputs.dependencies.${system}.holochain.buildInputs;
+        LIBCLANG_PATH = "${pkgs.llvmPackages_18.libclang.lib}/lib";
       };
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       binary =
@@ -125,7 +123,7 @@
       builders.push-notifications-service-provider = { progenitors }:
         let
           progenitorsArg = builtins.toString
-            (builtins.map (p: " --progenitors ${p}") self.outputs.progenitors);
+            (builtins.map (p: " --progenitors ${p}") progenitors);
 
           binaryWithDebugHapp =
             pkgs.runCommandLocal "push-notifications-service-provider" {

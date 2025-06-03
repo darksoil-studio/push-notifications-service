@@ -1,3 +1,4 @@
+use fcm_v1::auth::ServiceAccountKey;
 use push_notifications_types::PushNotification;
 use serde_json::{Map, Value};
 use std::{collections::HashMap, time::Duration};
@@ -14,12 +15,12 @@ use mockall::*;
 pub trait FcmClient {
     fn validate_fcm_project(
         fcm_project_id: String,
-        service_account_key: yup_oauth2::ServiceAccountKey,
+        service_account_key: ServiceAccountKey,
     ) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
 
     fn send_push_notification(
         fcm_project_id: String,
-        service_account_key: yup_oauth2::ServiceAccountKey,
+        service_account_key: ServiceAccountKey,
         token: String,
         push_notification: PushNotification,
     ) -> impl std::future::Future<Output = anyhow::Result<()>> + Send;
@@ -30,7 +31,7 @@ pub struct RealFcmClient;
 impl FcmClient for RealFcmClient {
     async fn validate_fcm_project(
         fcm_project_id: String,
-        service_account_key: yup_oauth2::ServiceAccountKey,
+        service_account_key: ServiceAccountKey,
     ) -> anyhow::Result<()> {
         let auth = Authenticator::service_account::<String>(service_account_key).await?;
 
@@ -82,7 +83,7 @@ impl FcmClient for RealFcmClient {
 
     async fn send_push_notification(
         fcm_project_id: String,
-        service_account_key: yup_oauth2::ServiceAccountKey,
+        service_account_key: fcm_v1::auth::ServiceAccountKey,
         token: String,
         push_notification: PushNotification,
     ) -> anyhow::Result<()> {

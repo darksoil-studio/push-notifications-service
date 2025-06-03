@@ -12,7 +12,6 @@ roles:
       modifiers:
         network_seed: ~
         properties: ~
-        origin_time: ~
       version: ~
       clone_limit: 0
   - name: service_providers
@@ -24,6 +23,5 @@ roles:
       modifiers:
         network_seed: ~
         properties: ~
-        origin_time: ~
       version: ~
       clone_limit: 100000

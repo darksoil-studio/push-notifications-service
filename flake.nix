@@ -10,7 +10,8 @@
     scaffolding.url = "github:darksoil-studio/scaffolding/main-0.5";
     holochain-nix-builders.url =
       "github:darksoil-studio/holochain-nix-builders/main-0.5";
-    p2p-shipyard.url = "github:darksoil-studio/p2p-shipyard/main-0.5";
+    tauri-plugin-holochain.url =
+      "github:darksoil-studio/tauri-plugin-holochain/main-0.5";
     playground.url = "github:darksoil-studio/holochain-playground/main-0.5";
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.5";
@@ -50,7 +51,7 @@
           packages = [
             inputs'.holochain-nix-builders.packages.holochain
             inputs'.scaffolding.packages.hc-scaffold-zome
-            inputs'.p2p-shipyard.packages.hc-pilot
+            inputs'.tauri-plugin-holochain.packages.hc-pilot
             inputs'.playground.packages.hc-playground
           ];
         };
@@ -58,7 +59,7 @@
 
         packages.scaffold = pkgs.symlinkJoin {
           name = "scaffold-remote-zome";
-          paths = [ inputs'.scaffold.packages.scaffold-remote-zome ];
+          paths = [ inputs'.scaffolding.packages.scaffold-remote-zome ];
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/scaffold-remote-zome \
