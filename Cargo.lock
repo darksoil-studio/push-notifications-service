@@ -2240,7 +2240,7 @@ dependencies = [
  "rmpv",
  "serde",
  "serde_bytes",
- "sodoken 0.1.0",
+ "sodoken",
  "tokio",
 ]
 
@@ -2455,7 +2455,7 @@ dependencies = [
  "lair_keystore",
  "lair_keystore_api",
  "mockall 0.11.4",
- "mr_bundle 0.5.2",
+ "mr_bundle",
  "must_future",
  "nanoid",
  "once_cell",
@@ -2477,7 +2477,7 @@ dependencies = [
  "serde_yaml",
  "sha3",
  "shrinkwraprs",
- "sodoken 0.1.0",
+ "sodoken",
  "structopt",
  "strum",
  "subtle-encoding",
@@ -2618,7 +2618,7 @@ dependencies = [
  "nanoid",
  "serde",
  "serde_yaml",
- "sodoken 0.1.0",
+ "sodoken",
  "url2",
 ]
 
@@ -2694,7 +2694,7 @@ dependencies = [
  "serde",
  "serde_bytes",
  "shrinkwraprs",
- "sodoken 0.1.0",
+ "sodoken",
  "thiserror 1.0.69",
  "tokio",
  "tracing",
@@ -2787,7 +2787,7 @@ dependencies = [
  "lair_keystore_api",
  "local-ip-address",
  "log",
- "mr_bundle 0.5.2",
+ "mr_bundle",
  "one_err",
  "portpicker",
  "rustls 0.23.27",
@@ -2875,7 +2875,7 @@ dependencies = [
  "serde",
  "serde_json",
  "shrinkwraprs",
- "sodoken 0.1.0",
+ "sodoken",
  "sqlformat",
  "tempfile",
  "thiserror 1.0.69",
@@ -2985,7 +2985,7 @@ dependencies = [
  "indexmap 2.9.0",
  "itertools 0.12.1",
  "kitsune2_api",
- "mr_bundle 0.5.2",
+ "mr_bundle",
  "must_future",
  "nanoid",
  "one_err",
@@ -3020,9 +3020,6 @@ dependencies = [
  "dunce",
  "futures",
  "once_cell",
- "rpassword",
- "sodoken 0.0.11",
- "tokio",
 ]
 
 [[package]]
@@ -3039,7 +3036,7 @@ dependencies = [
  "once_cell",
  "rpassword",
  "schemars",
- "sodoken 0.1.0",
+ "sodoken",
  "tokio",
 ]
 
@@ -4430,23 +4427,6 @@ checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 
 [[package]]
 name = "mr_bundle"
-version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2989543f08bdd2758481f9e1e28e2d13c22746de9eb650d1824092fada279820"
-dependencies = [
- "derive_more 0.99.20",
- "flate2",
- "futures",
- "holochain_util 0.4.3",
- "reqwest 0.12.19",
- "rmp-serde",
- "serde",
- "serde_bytes",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "mr_bundle"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c00e8d8de159c44524b1fcfd37abb5d2865e2b788137efb3ab359d4c4c5ce974"
@@ -5263,7 +5243,7 @@ dependencies = [
  "holochain_util 0.5.2",
  "log",
  "mockall 0.13.1",
- "mr_bundle 0.4.3",
+ "mr_bundle",
  "push_notifications_service_trait",
  "push_notifications_types",
  "roles_types",
@@ -6256,7 +6236,7 @@ checksum = "2999cae35e0c66bf71fd57490f4bd807a33cbb9b351a440c0833755e33fd9308"
 dependencies = [
  "bytes",
  "sbd-client",
- "sodoken 0.1.0",
+ "sodoken",
  "tokio",
  "tracing",
 ]
@@ -6714,21 +6694,6 @@ checksum = "e22376abed350d73dd1cd119b57ffccad95b4e585a7cda43e286245ce23c0678"
 dependencies = [
  "libc",
  "windows-sys 0.52.0",
-]
-
-[[package]]
-name = "sodoken"
-version = "0.0.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "907e0ea9699b846c2586ea5685e9abf5963fca64a5179a406e6ac02b94564e30"
-dependencies = [
- "libc",
- "libsodium-sys-stable",
- "num_cpus",
- "once_cell",
- "one_err",
- "parking_lot",
- "tokio",
 ]
 
 [[package]]
