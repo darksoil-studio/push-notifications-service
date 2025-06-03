@@ -7,7 +7,7 @@ use hdi::prelude::*;
 /// You can use `helpers::read_service_account_key()` as a quick way to read a JSON client
 /// secret into a ServiceAccountKey.
 #[hdk_entry_helper]
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct ServiceAccountKey {
     #[serde(rename = "type")]
     /// key_type
