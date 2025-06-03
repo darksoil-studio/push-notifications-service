@@ -1,10 +1,13 @@
 use anyhow::{anyhow, Result};
 use clap::Parser;
 use env_logger::Builder;
+use fcm_v1::auth::ServiceAccountKey;
 use holochain::core::AgentPubKeyB64;
+use holochain::prelude::NetworkSeed;
 use holochain_client::InstalledAppId;
 use holochain_runtime::NetworkConfig;
 use log::Level;
+use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -31,6 +34,15 @@ struct Args {
 
     #[arg(long)]
     signal_url: String,
+
+    #[arg(long)]
+    static_network_seeds: Vec<NetworkSeed>,
+
+    #[arg(long)]
+    static_fcm_project_id: Option<String>,
+
+    #[arg(long)]
+    static_service_account_key_path: Option<PathBuf>,
 }
 
 fn network_config(bootstrap_url: String, signal_url: String) -> NetworkConfig {
@@ -85,12 +97,35 @@ async fn main() -> Result<()> {
         std::fs::create_dir_all(data_dir.clone())?;
     }
 
+    let mut static_service_account_key: BTreeMap<String, ServiceAccountKey> = BTreeMap::new();
+
+    match (
+        args.static_fcm_project_id,
+        args.static_service_account_key_path,
+    ) {
+        (Some(fcm_project_id), Some(service_account_key_path)) => {
+            let service_account_str = std::fs::read_to_string(service_account_key_path)?;
+            let service_account_key: ServiceAccountKey =
+                serde_json::from_str(&service_account_str.as_str())?;
+            static_service_account_key.insert(fcm_project_id, service_account_key);
+        }
+        (None, None) => {}
+        (Some(_), None) => Err(anyhow!(
+            "--static-service-account-key-path must be defined if --static-fcm-project is given."
+        ))?,
+        (None, Some(_)) => Err(anyhow!(
+            "--static-fcm-project must be defined if --static-service-account-key-path is given."
+        ))?,
+    }
+
     push_notifications_service_provider::run::<RealFcmClient>(
         data_dir,
         network_config(args.bootstrap_url, args.signal_url),
         args.app_id,
         args.push_notifications_service_provider_happ,
         args.progenitors.into_iter().map(|p| p.into()).collect(),
+        static_service_account_key,
+        args.static_network_seeds,
     )
     .await
 }
