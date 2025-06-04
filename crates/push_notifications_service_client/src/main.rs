@@ -7,6 +7,7 @@ use holochain::prelude::NetworkSeed;
 use holochain_runtime::NetworkConfig;
 use holochain_util::ffs::read_to_string;
 use log::Level;
+use push_notifications_service_client::PushNotificationsServiceClient;
 use std::env::temp_dir;
 use std::io::Write;
 use std::path::PathBuf;
@@ -100,6 +101,15 @@ async fn main() -> Result<()> {
         std::fs::create_dir_all(data_dir.clone())?;
     }
 
+    let client = PushNotificationsServiceClient::create(
+        data_dir.clone(),
+        network_config(args.bootstrap_url, args.signal_url),
+        String::from("temporary-client-app"),
+        args.push_notifications_service_provider_happ,
+        args.progenitors.into_iter().map(|p| p.into()).collect(),
+    )
+    .await?;
+
     match args.command {
         Commands::PublishServiceAccountKey {
             fcm_project_id,
@@ -109,27 +119,12 @@ async fn main() -> Result<()> {
             let service_account_key: ServiceAccountKey =
                 serde_json::from_str(&service_account_str)?;
 
-            push_notifications_service_client::publish_service_account_key(
-                data_dir.clone(),
-                network_config(args.bootstrap_url, args.signal_url),
-                String::from("temporary-client-app"),
-                args.push_notifications_service_provider_happ,
-                args.progenitors.into_iter().map(|p| p.into()).collect(),
-                fcm_project_id,
-                service_account_key,
-            )
-            .await?;
+            client
+                .publish_service_account_key(fcm_project_id, service_account_key)
+                .await?;
         }
         Commands::CreateCloneRequest { network_seed } => {
-            push_notifications_service_client::create_clone_request(
-                data_dir.clone(),
-                network_config(args.bootstrap_url, args.signal_url),
-                String::from("temporary-client-app"),
-                args.push_notifications_service_provider_happ,
-                args.progenitors.into_iter().map(|p| p.into()).collect(),
-                network_seed,
-            )
-            .await?;
+            client.create_clone_request(network_seed).await?;
         }
     }
 

@@ -23,9 +23,9 @@ pub fn service_provider_happ_path() -> PathBuf {
         .into()
 }
 
-pub fn infra_provider_happ_path() -> PathBuf {
-    std::option_env!("INFRA_PROVIDER_HAPP")
-        .expect("Failed to find INFRA_PROVIDER_HAPP")
+pub fn client_happ_path() -> PathBuf {
+    std::option_env!("CLIENT_HAPP")
+        .expect("Failed to find CLIENT_HAPP")
         .into()
 }
 
@@ -80,7 +80,7 @@ pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
     let app_info = infra_provider
         .install_app(
             app_id.clone(),
-            read_from_file(&infra_provider_happ_path())
+            read_from_file(&client_happ_path())
                 .await
                 .expect("Failed to read infra provider happ"),
             Some(roles_settings),
@@ -184,6 +184,21 @@ pub async fn setup() -> Scenario {
     tokio::spawn(async move {
         run::<MockFcmClient>(
             tempdir::TempDir::new("test")
+                .expect("Could not make tempdir")
+                .into_path(),
+            network_config(),
+            String::from("test-app"),
+            service_provider_happ_path(),
+            vec![infra_provider_pubkey],
+        )
+        .await
+        .unwrap();
+    });
+
+    let infra_provider_pubkey = infra_provider.0.my_pub_key.clone();
+    tokio::spawn(async move {
+        run::<MockFcmClient>(
+            tempdir::TempDir::new("test2")
                 .expect("Could not make tempdir")
                 .into_path(),
             network_config(),

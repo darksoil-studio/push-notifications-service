@@ -2,9 +2,8 @@ use std::{env::temp_dir, time::Duration};
 
 mod common;
 use common::*;
-use holochain::prelude::DnaModifiers;
-use holochain_client::{AgentPubKey, ExternIO, SerializedBytes, ZomeCallTarget};
-use push_notifications_service_client::into;
+use holochain_client::{AgentPubKey, ExternIO, ZomeCallTarget};
+use push_notifications_service_client::{into, PushNotificationsServiceClient};
 use push_notifications_service_provider::fcm_client::MockFcmClient;
 use push_notifications_types::{
     PushNotification, RegisterFcmTokenInput, SendPushNotificationToAgentInput, ServiceAccountKey,
@@ -21,14 +20,6 @@ async fn setup_send_push_notification_from_client() {
         recipient,
     } = setup().await;
 
-    // let app_info = happ_developer.0.app_info().await.unwrap().unwrap();
-    // let cell = app_info
-    //     .cell_info
-    //     .get("service_providers")
-    //     .unwrap()
-    //     .first()
-    //     .unwrap();
-
     let fcm_project_id = String::from("FCM_PROJECT_1");
 
     let service_account_key = ServiceAccountKey {
@@ -44,28 +35,22 @@ async fn setup_send_push_notification_from_client() {
         token_uri: String::from("random://token.uri"),
     };
 
-    push_notifications_service_client::publish_service_account_key(
+    let client = PushNotificationsServiceClient::create(
         temp_dir(),
         network_config(),
-        "".into(),
+        "client-happ".into(),
         client_happ_path(),
         vec![progenitor.clone()],
-        fcm_project_id.clone(),
-        into(service_account_key),
     )
     .await
     .unwrap();
 
-    push_notifications_service_client::create_clone_request(
-        temp_dir(),
-        network_config(),
-        "".into(),
-        client_happ_path(),
-        vec![progenitor],
-        network_seed,
-    )
-    .await
-    .unwrap();
+    client
+        .publish_service_account_key(fcm_project_id.clone(), into(service_account_key))
+        .await
+        .unwrap();
+
+    client.create_clone_request(network_seed).await.unwrap();
 
     std::thread::sleep(Duration::from_secs(5));
 
@@ -85,7 +70,7 @@ async fn setup_send_push_notification_from_client() {
         .decode()
         .unwrap();
 
-    assert_eq!(service_providers.len(), 1);
+    assert_eq!(service_providers.len(), 2);
 
     let token = String::from("myfcmtoken");
 

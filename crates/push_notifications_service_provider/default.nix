@@ -5,6 +5,9 @@
     let
       SERVICE_PROVIDER_HAPP =
         self'.packages.push_notifications_service_provider_happ.meta.debug;
+      CLIENT_HAPP =
+        self'.packages.push_notifications_service_client_happ.meta.debug;
+
       END_USER_HAPP =
         (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
           happManifest = builtins.toFile "happ.yaml" ''
@@ -29,34 +32,6 @@
           dnas = {
             service_providers =
               inputs'.service-providers.packages.service_providers_dna;
-          };
-        }).meta.debug;
-      INFRA_PROVIDER_HAPP =
-        (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
-          happManifest = builtins.toFile "happ.yaml" ''
-            ---
-            manifest_version: "1"
-            name: infra_provider_test_happ
-            description: ~
-            roles:   
-              - name: push_notifications_service
-                provisioning:
-                  strategy: create
-                  deferred: false
-                dna:
-                  bundled: ""
-                  modifiers:
-                    network_seed: ~
-                    properties: ~
-                  version: ~
-                  clone_limit: 0
-          '';
-
-          dnas = {
-            push_notifications_service =
-              self'.builders.push_notifications_service_dna {
-                clone_manager_provider = false;
-              };
           };
         }).meta.debug;
 
@@ -115,7 +90,7 @@
         # RUST_LOG = "info";
         WASM_LOG = "info";
         # For the integration test
-        inherit END_USER_HAPP INFRA_PROVIDER_HAPP SERVICE_PROVIDER_HAPP
+        inherit END_USER_HAPP CLIENT_HAPP SERVICE_PROVIDER_HAPP
           HAPP_DEVELOPER_HAPP;
       });
     in rec {
@@ -154,6 +129,6 @@
             [ "uhCAk13OZ84d5HFum5PZYcl61kHHMfL2EJ4yNbHwSp4vn6QeOdFii" ];
         };
 
-      # checks.send-push-notification-test = check;
+      checks.send-push-notification-test = check;
     };
 }

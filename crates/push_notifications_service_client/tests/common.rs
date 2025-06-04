@@ -122,9 +122,25 @@ pub async fn setup() -> Scenario {
 
     let infra_provider_pubkey = fixt::fixt!(AgentPubKey);
     let pubkey = infra_provider_pubkey.clone();
+
+    // We spawn two nodes to make gossip work between them
     tokio::spawn(async move {
         push_notifications_service_provider::run::<MockFcmClient>(
             tempdir::TempDir::new("test")
+                .expect("Could not make tempdir")
+                .into_path(),
+            network_config(),
+            String::from("test-app"),
+            service_provider_happ_path(),
+            vec![pubkey.clone()],
+        )
+        .await
+        .unwrap();
+    });
+    let pubkey = infra_provider_pubkey.clone();
+    tokio::spawn(async move {
+        push_notifications_service_provider::run::<MockFcmClient>(
+            tempdir::TempDir::new("test2")
                 .expect("Could not make tempdir")
                 .into_path(),
             network_config(),

@@ -23,14 +23,6 @@ async fn send_push_notification() {
         recipient,
     } = setup().await;
 
-    // let app_info = happ_developer.0.app_info().await.unwrap().unwrap();
-    // let cell = app_info
-    //     .cell_info
-    //     .get("service_providers")
-    //     .unwrap()
-    //     .first()
-    //     .unwrap();
-
     let roles_properties = Properties {
         progenitors: vec![infra_provider.0.my_pub_key.clone().into()],
     };
@@ -58,7 +50,7 @@ async fn send_push_notification() {
         },
     };
 
-    let service_providers: Vec<AgentPubKey> = infra_provider
+    let clone_providers: Vec<AgentPubKey> = infra_provider
         .0
         .call_zome(
             ZomeCallTarget::RoleName("push_notifications_service".into()),
@@ -71,7 +63,7 @@ async fn send_push_notification() {
         .decode()
         .unwrap();
 
-    assert_eq!(service_providers.len(), 1);
+    assert_eq!(clone_providers.len(), 2);
 
     infra_provider
         .0
@@ -98,7 +90,7 @@ async fn send_push_notification() {
         .await
         .unwrap();
 
-    std::thread::sleep(Duration::from_secs(5));
+    std::thread::sleep(Duration::from_secs(15));
 
     let push_notifications_service_trait_service_id =
         push_notifications_service_trait::PUSH_NOTIFICATIONS_SERVICE_HASH.to_vec();
@@ -116,7 +108,7 @@ async fn send_push_notification() {
         .decode()
         .unwrap();
 
-    assert_eq!(service_providers.len(), 1);
+    assert_eq!(service_providers.len(), 2);
 
     let token = String::from("myfcmtoken");
 
@@ -131,6 +123,8 @@ async fn send_push_notification() {
     )
     .await
     .unwrap();
+
+    std::thread::sleep(Duration::from_secs(2));
 
     let ctx = MockFcmClient::send_push_notification_context();
     ctx.expect().once().returning(
