@@ -12,9 +12,18 @@
 
         dnas = {
           push_notifications_service =
-            self'.builders.push_notifications_service_dna {
-              clone_manager_provider = true;
-            };
+            self'.packages.push_notifications_service_dna;
+          service_providers = self'.packages.service_providers_dna;
+        };
+      };
+
+    packages.push_notifications_service_client_happ =
+      inputs.holochain-nix-builders.outputs.builders.${system}.happ {
+        happManifest = ./happ.yaml;
+
+        dnas = {
+          push_notifications_service =
+            self'.packages.push_notifications_service_client_dna;
           service_providers = self'.packages.service_providers_dna;
         };
       };

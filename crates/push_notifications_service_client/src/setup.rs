@@ -1,7 +1,8 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, time::Duration};
 
+use anyhow::anyhow;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
-use holochain_client::{AgentPubKey, ExternIO, ZomeCallTarget};
+use holochain_client::{AgentPubKey, AppWebsocket, ExternIO, ZomeCallTarget};
 use holochain_runtime::HolochainRuntime;
 use roles_types::Properties;
 
@@ -62,17 +63,31 @@ pub async fn setup(
             .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
             .await?;
 
-        app_ws
-            .call_zome(
-                ZomeCallTarget::RoleName("push_notifications_service".into()),
-                "clone_manager".into(),
-                "init".into(),
-                ExternIO::encode(())?,
-            )
-            .await?;
-
         log::info!("Installed app {app_info:?}");
     }
+    let app_ws = runtime
+        .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
+        .await?;
+
+    // Wait for network to be ready
+    wait_until_connected_to_peers(app_ws).await?;
 
     Ok(())
+}
+
+async fn wait_until_connected_to_peers(app_ws: AppWebsocket) -> crate::Result<()> {
+    let mut retry_count = 0;
+    loop {
+        let network_stats = app_ws.dump_network_stats().await?;
+        if network_stats.connections.len() > 0 {
+            return Ok(());
+        }
+        log::warn!("Not connected to peers yet: retrying in 200ms");
+        std::thread::sleep(Duration::from_millis(200));
+
+        retry_count += 1;
+        if retry_count == 200 {
+            return Err(anyhow!("Can't connect to any peers".to_string(),));
+        }
+    }
 }

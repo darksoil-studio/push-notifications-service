@@ -5225,6 +5225,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "push-notifications-service-client"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "clap 4.5.39",
+ "clone_manager_types",
+ "clone_manager_utils",
+ "env_logger",
+ "fcm_v1",
+ "fixt",
+ "holo_hash 0.5.2",
+ "holochain",
+ "holochain_client",
+ "holochain_conductor_api",
+ "holochain_runtime",
+ "holochain_types",
+ "holochain_util 0.5.2",
+ "log",
+ "mockall 0.13.1",
+ "mr_bundle",
+ "push-notifications-service-provider",
+ "push_notifications_service_trait",
+ "push_notifications_types",
+ "roles_types",
+ "serde_json",
+ "serde_yaml",
+ "service_providers_types",
+ "service_providers_utils",
+ "sha256",
+ "tempdir",
+ "tokio",
+ "url2",
+ "yup-oauth2 12.1.0",
+]
+
+[[package]]
 name = "push-notifications-service-provider"
 version = "0.1.0"
 dependencies = [
