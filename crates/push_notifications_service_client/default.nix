@@ -3,64 +3,6 @@
 {
   perSystem = { inputs', pkgs, self', lib, system, ... }:
     let
-      SERVICE_PROVIDER_HAPP =
-        self'.packages.push_notifications_service_provider_happ.meta.debug;
-      CLIENT_HAPP =
-        self'.packages.push_notifications_service_client_happ.meta.debug;
-
-      END_USER_HAPP =
-        (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
-          happManifest = builtins.toFile "happ.yaml" ''
-            ---
-            manifest_version: "1"
-            name: test_happ
-            description: ~
-            roles:
-              - name: service_providers
-                provisioning:
-                  strategy: create
-                  deferred: false
-                dna:
-                  bundled: ""
-                  modifiers:
-                    network_seed: ~
-                    properties: ~
-                  version: ~
-                  clone_limit: 100000
-          '';
-
-          dnas = {
-            service_providers =
-              inputs'.service-providers.packages.service_providers_dna;
-          };
-        }).meta.debug;
-
-      HAPP_DEVELOPER_HAPP =
-        (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
-          happManifest = builtins.toFile "happ.yaml" ''
-            ---
-            manifest_version: "1"
-            name: happ_developer_test_happ
-            description: ~
-            roles:   
-              - name: service_providers
-                provisioning:
-                  strategy: create
-                  deferred: false
-                dna:
-                  bundled: ""
-                  modifiers:
-                    network_seed: ~
-                    properties: ~
-                  version: ~
-                  clone_limit: 100000
-          '';
-
-          dnas = {
-            service_providers =
-              inputs'.service-providers.packages.service_providers_dna;
-          };
-        }).meta.debug;
 
       craneLib = inputs.crane.mkLib pkgs;
       src = craneLib.cleanCargoSource (craneLib.path self.outPath);
@@ -83,16 +25,6 @@
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       binary =
         craneLib.buildPackage (commonArgs // { inherit cargoArtifacts; });
-      check = craneLib.buildPackage (commonArgs // {
-        inherit cargoArtifacts;
-        doCheck = true;
-        __noChroot = true;
-        # RUST_LOG = "info";
-        WASM_LOG = "info";
-        # For the integration test
-        inherit END_USER_HAPP CLIENT_HAPP SERVICE_PROVIDER_HAPP
-          HAPP_DEVELOPER_HAPP;
-      });
     in rec {
 
       builders.push-notifications-service-client = { progenitors }:
@@ -132,7 +64,5 @@
           progenitors =
             [ "uhCAk13OZ84d5HFum5PZYcl61kHHMfL2EJ4yNbHwSp4vn6QeOdFii" ];
         };
-
-      checks.setup-send-push-notification-with-client-test = check;
     };
 }

@@ -1311,11 +1311,11 @@
         "tauri-plugin-holochain": "tauri-plugin-holochain_2"
       },
       "locked": {
-        "lastModified": 1748877884,
-        "narHash": "sha256-crLEt2O7aOyrd7FzLoKbTvdISrwUcwUhB5ODX0HN+lw=",
+        "lastModified": 1749040132,
+        "narHash": "sha256-/yhoJava3fnHuO314PGB4QpbZWlfx1Y/cRyS+/rr3Ro=",
         "owner": "darksoil-studio",
         "repo": "clone-manager-zome",
-        "rev": "db649d6d38e853d1ac1f12c6afa7e11cdf4feecb",
+        "rev": "f6ebb706bcc3456cdcd393da904307f57c541af4",
         "type": "github"
       },
       "original": {
@@ -52789,11 +52789,11 @@
         "scaffolding": "scaffolding_75"
       },
       "locked": {
-        "lastModified": 1748944521,
-        "narHash": "sha256-H0r4pDPiVtpn3yi3j2pHjw3oTkl8iZ30w9k1wjWwEBk=",
+        "lastModified": 1749039230,
+        "narHash": "sha256-TLVMRPwwAgH+SoybNQKYclmsFz6qeGKJRm7SjXzloI4=",
         "owner": "darksoil-studio",
         "repo": "service-providers",
-        "rev": "f39aa8d4b72b3910594da45f1ec88126d07db80a",
+        "rev": "ee4524f77c0455c25d7d70e8374c3b35de425318",
         "type": "github"
       },
       "original": {

@@ -13,130 +13,153 @@ mod setup;
 
 pub const SERVICE_PROVIDERS_ROLE_NAME: &'static str = "service_providers";
 
-pub async fn publish_service_account_key(
-    data_dir: PathBuf,
-    network_config: NetworkConfig,
+pub struct PushNotificationsServiceClient {
+    runtime: HolochainRuntime,
     app_id: String,
-    push_notifications_service_provider_happ_path: PathBuf,
     progenitors: Vec<AgentPubKey>,
-    fcm_project_id: String,
-    service_account_key: ServiceAccountKey,
-) -> anyhow::Result<()> {
-    let config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
-
-    let runtime = HolochainRuntime::launch(vec_to_locked(vec![]), config).await?;
-    setup(
-        &runtime,
-        &app_id,
-        &push_notifications_service_provider_happ_path,
-        progenitors,
-    )
-    .await?;
-
-    let app_ws = runtime
-        .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
-        .await?;
-
-    app_ws
-        .call_zome(
-            ZomeCallTarget::RoleName("push_notifications_service".into()),
-            ZomeName::from("push_notifications_service"),
-            "publish_service_account_key".into(),
-            ExternIO::encode(PublishServiceAccountKeyInput {
-                fcm_project_id: fcm_project_id.clone(),
-                service_account_key: from(service_account_key.clone()),
-            })?,
-        )
-        .await?;
-
-    let result = app_ws
-        .call_zome(
-            ZomeCallTarget::RoleName("push_notifications_service".into()),
-            ZomeName::from("push_notifications_service"),
-            "get_current_service_account_key".into(),
-            ExternIO::encode(fcm_project_id)?,
-        )
-        .await?;
-
-    let maybe_key: Option<push_notifications_types::ServiceAccountKey> = result.decode()?;
-
-    let Some(key) = maybe_key else {
-        return Err(anyhow!("Failed to publish service account key"));
-    };
-
-    if key.ne(&from(service_account_key)) {
-        return Err(anyhow!("Failed to publish service account key"));
-    }
-
-    println!("Successfully uploaded service account key");
-
-    Ok(())
 }
 
-pub async fn create_clone_request(
-    data_dir: PathBuf,
-    network_config: NetworkConfig,
-    app_id: String,
-    push_notifications_service_provider_happ_path: PathBuf,
-    progenitors: Vec<AgentPubKey>,
-    network_seed: String,
-) -> anyhow::Result<()> {
-    let config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
+impl PushNotificationsServiceClient {
+    pub async fn create(
+        data_dir: PathBuf,
+        mut network_config: NetworkConfig,
+        app_id: String,
+        push_notifications_service_provider_happ_path: PathBuf,
+        progenitors: Vec<AgentPubKey>,
+    ) -> Result<Self> {
+        network_config.target_arc_factor = 0;
+        let config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
 
-    let runtime = HolochainRuntime::launch(vec_to_locked(vec![]), config).await?;
-    setup(
-        &runtime,
-        &app_id,
-        &push_notifications_service_provider_happ_path,
-        progenitors.clone(),
-    )
-    .await?;
-
-    let app_ws = runtime
-        .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
-        .await?;
-    let roles_properties = Properties {
-        progenitors: progenitors.into_iter().map(|p| p.into()).collect(),
-    };
-    let properties = SerializedBytes::try_from(roles_properties)?;
-
-    let clone_request = CloneRequest {
-        dna_modifiers: DnaModifiers {
-            network_seed,
-            properties,
-        },
-    };
-
-    app_ws
-        .call_zome(
-            ZomeCallTarget::RoleName("push_notifications_service".into()),
-            ZomeName::from("clone_manager"),
-            "create_clone_request".into(),
-            ExternIO::encode(clone_request.clone())?,
+        let runtime = HolochainRuntime::launch(vec_to_locked(vec![]), config).await?;
+        setup(
+            &runtime,
+            &app_id,
+            &push_notifications_service_provider_happ_path,
+            progenitors.clone(),
         )
         .await?;
-
-    let result = app_ws
-        .call_zome(
-            ZomeCallTarget::RoleName("push_notifications_service".into()),
-            ZomeName::from("create_clone_request"),
-            "get_all_clone_requests".into(),
-            ExternIO::encode(())?,
-        )
-        .await?;
-
-    let all_clone_requests: BTreeMap<EntryHashB64, CloneRequest> = result.decode()?;
-
-    if !all_clone_requests
-        .into_values()
-        .any(|created_clone_request| created_clone_request.eq(&clone_request))
-    {
-        return Err(anyhow!("Failed to create clone request."));
+        Ok(Self {
+            app_id,
+            runtime,
+            progenitors,
+        })
     }
 
-    println!("Successfully created clone request");
+    pub async fn publish_service_account_key(
+        &self,
+        fcm_project_id: String,
+        service_account_key: ServiceAccountKey,
+    ) -> anyhow::Result<()> {
+        let app_ws = self
+            .runtime
+            .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
+            .await?;
 
-    Ok(())
+        app_ws
+            .call_zome(
+                ZomeCallTarget::RoleName("push_notifications_service".into()),
+                ZomeName::from("push_notifications_service"),
+                "publish_service_account_key".into(),
+                ExternIO::encode(PublishServiceAccountKeyInput {
+                    fcm_project_id: fcm_project_id.clone(),
+                    service_account_key: from(service_account_key.clone()),
+                })?,
+            )
+            .await?;
+
+        std::thread::sleep(std::time::Duration::from_secs(5));
+
+        let result = app_ws
+            .call_zome(
+                ZomeCallTarget::RoleName("push_notifications_service".into()),
+                ZomeName::from("push_notifications_service"),
+                "get_current_service_account_key".into(),
+                ExternIO::encode(fcm_project_id)?,
+            )
+            .await?;
+
+        let maybe_key: Option<push_notifications_types::ServiceAccountKey> = result.decode()?;
+
+        let Some(key) = maybe_key else {
+            return Err(anyhow!("Failed to publish service account key"));
+        };
+
+        if key.ne(&from(service_account_key)) {
+            return Err(anyhow!("Failed to publish service account key"));
+        }
+
+        println!("Successfully uploaded service account key");
+
+        Ok(())
+    }
+    pub async fn create_clone_request(&self, network_seed: String) -> anyhow::Result<()> {
+        let app_ws = self
+            .runtime
+            .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
+            .await?;
+        let roles_properties = Properties {
+            progenitors: self
+                .progenitors
+                .clone()
+                .into_iter()
+                .map(|p| p.into())
+                .collect(),
+        };
+        let properties = SerializedBytes::try_from(roles_properties)?;
+
+        let clone_request = CloneRequest {
+            dna_modifiers: DnaModifiers {
+                network_seed,
+                properties,
+            },
+        };
+        std::thread::sleep(std::time::Duration::from_secs(10));
+
+        let clone_providers: Vec<AgentPubKey> = app_ws
+            .call_zome(
+                ZomeCallTarget::RoleName("push_notifications_service".into()),
+                "clone_manager".into(),
+                "get_clone_providers".into(),
+                ExternIO::encode(()).unwrap(),
+            )
+            .await
+            .unwrap()
+            .decode()
+            .unwrap();
+
+        app_ws
+            .call_zome(
+                ZomeCallTarget::RoleName("push_notifications_service".into()),
+                ZomeName::from("clone_manager"),
+                "create_clone_request".into(),
+                ExternIO::encode(clone_request.clone())?,
+            )
+            .await?;
+
+        std::thread::sleep(std::time::Duration::from_secs(30));
+
+        let result = app_ws
+            .call_zome(
+                ZomeCallTarget::RoleName("push_notifications_service".into()),
+                ZomeName::from("clone_manager"),
+                "get_all_clone_requests".into(),
+                ExternIO::encode(())?,
+            )
+            .await?;
+
+        let all_clone_requests: BTreeMap<EntryHashB64, CloneRequest> = result.decode()?;
+
+        if !all_clone_requests
+            .into_values()
+            .any(|created_clone_request| created_clone_request.eq(&clone_request))
+        {
+            return Err(anyhow!("Failed to create clone request."));
+        }
+
+        println!("Successfully created clone request");
+
+        Ok(())
+    }
 }
 
 pub async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
