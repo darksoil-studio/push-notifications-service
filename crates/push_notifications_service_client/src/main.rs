@@ -18,7 +18,7 @@ use std::str::FromStr;
 struct Args {
     push_notifications_service_provider_happ: PathBuf,
 
-    #[arg(long)]
+    #[arg(long, required = true, num_args = 1)]
     progenitors: Vec<AgentPubKeyB64>,
 
     #[arg(long)]

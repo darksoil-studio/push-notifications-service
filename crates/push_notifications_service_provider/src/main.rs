@@ -23,7 +23,7 @@ struct Args {
     #[arg(long)]
     data_dir: PathBuf,
 
-    #[arg(long)]
+    #[arg(long, required = true, num_args = 1)]
     progenitors: Vec<AgentPubKeyB64>,
 
     #[arg(long)]
