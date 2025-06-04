@@ -6,9 +6,7 @@ use holochain_runtime::*;
 use holochain_types::prelude::*;
 use push_notifications_types::SendPushNotificationSignal;
 use setup::setup;
-use std::{collections::BTreeMap, path::PathBuf, time::Duration};
-
-use std::fs;
+use std::{fs, path::PathBuf, time::Duration};
 
 pub mod fcm_client;
 use fcm_client::FcmClient;
@@ -22,8 +20,6 @@ pub async fn run<T: FcmClient>(
     app_id: String,
     push_notifications_service_provider_happ_path: PathBuf,
     progenitors: Vec<AgentPubKey>,
-    static_service_account_keys: BTreeMap<String, fcm_v1::auth::ServiceAccountKey>,
-    static_network_seeds: Vec<NetworkSeed>,
 ) -> anyhow::Result<()> {
     let config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
 
@@ -33,8 +29,6 @@ pub async fn run<T: FcmClient>(
         &app_id,
         &push_notifications_service_provider_happ_path,
         progenitors,
-        static_service_account_keys,
-        static_network_seeds,
     )
     .await?;
 

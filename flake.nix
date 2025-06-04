@@ -36,6 +36,7 @@
       imports = [
         ./workdir/happ.nix
         ./crates/push_notifications_service_provider/default.nix
+        ./crates/push_notifications_service_client/default.nix
         inputs.holochain-nix-builders.outputs.flakeModules.builders
       ];
 
