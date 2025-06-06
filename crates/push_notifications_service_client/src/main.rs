@@ -18,7 +18,7 @@ use std::str::FromStr;
 struct Args {
     push_notifications_service_provider_happ: PathBuf,
 
-    #[arg(long)]
+    #[arg(long, required = true, num_args = 1)]
     progenitors: Vec<AgentPubKeyB64>,
 
     #[arg(long)]
@@ -35,9 +35,6 @@ struct Args {
 enum Commands {
     /// Publishes a service account key
     PublishServiceAccountKey {
-        #[arg(long)]
-        fcm_project_id: String,
-
         #[arg(long)]
         service_account_key_path: PathBuf,
     },
@@ -112,7 +109,6 @@ async fn main() -> Result<()> {
 
     match args.command {
         Commands::PublishServiceAccountKey {
-            fcm_project_id,
             service_account_key_path,
         } => {
             let service_account_str = read_to_string(service_account_key_path).await?;
@@ -120,7 +116,7 @@ async fn main() -> Result<()> {
                 serde_json::from_str(&service_account_str)?;
 
             client
-                .publish_service_account_key(fcm_project_id, service_account_key)
+                .publish_service_account_key(service_account_key)
                 .await?;
         }
         Commands::CreateCloneRequest { network_seed } => {

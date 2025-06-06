@@ -7,8 +7,7 @@ use holochain::prelude::DnaModifiers;
 use holochain_client::{AgentPubKey, ExternIO, SerializedBytes, ZomeCallTarget};
 use push_notifications_service_provider::fcm_client::MockFcmClient;
 use push_notifications_types::{
-    PublishServiceAccountKeyInput, PushNotification, RegisterFcmTokenInput,
-    SendPushNotificationToAgentInput, ServiceAccountKey,
+    PushNotification, RegisterFcmTokenInput, SendPushNotificationToAgentInput, ServiceAccountKey,
 };
 use roles_types::Properties;
 use service_providers_utils::make_service_request;
@@ -34,20 +33,17 @@ async fn send_push_notification() {
 
     let fcm_project_id = String::from("FCM_PROJECT_1");
 
-    let input = PublishServiceAccountKeyInput {
-        fcm_project_id: fcm_project_id.clone(),
-        service_account_key: ServiceAccountKey {
-            key_type: None,
-            project_id: Some(String::from("GOOGLE_CLOUD_PROJECT_1")),
-            private_key_id: None,
-            client_id: None,
-            auth_uri: None,
-            auth_provider_x509_cert_url: None,
-            client_x509_cert_url: None,
-            private_key: String::from("private_key_1"),
-            client_email: String::from("random@email.com"),
-            token_uri: String::from("random://token.uri"),
-        },
+    let service_account_key = ServiceAccountKey {
+        key_type: None,
+        project_id: Some(fcm_project_id.clone()),
+        private_key_id: None,
+        client_id: None,
+        auth_uri: None,
+        auth_provider_x509_cert_url: None,
+        client_x509_cert_url: None,
+        private_key: String::from("private_key_1"),
+        client_email: String::from("random@email.com"),
+        token_uri: String::from("random://token.uri"),
     };
 
     let clone_providers: Vec<AgentPubKey> = infra_provider
@@ -71,7 +67,7 @@ async fn send_push_notification() {
             ZomeCallTarget::RoleName("push_notifications_service".into()),
             "push_notifications_service".into(),
             "publish_service_account_key".into(),
-            ExternIO::encode(input).unwrap(),
+            ExternIO::encode(service_account_key).unwrap(),
         )
         .await
         .unwrap();
@@ -90,7 +86,7 @@ async fn send_push_notification() {
         .await
         .unwrap();
 
-    std::thread::sleep(Duration::from_secs(15));
+    std::thread::sleep(Duration::from_secs(25));
 
     let push_notifications_service_trait_service_id =
         push_notifications_service_trait::PUSH_NOTIFICATIONS_SERVICE_HASH.to_vec();
@@ -112,7 +108,7 @@ async fn send_push_notification() {
 
     let token = String::from("myfcmtoken");
 
-    let response: () = make_service_request(
+    let _response: () = make_service_request(
         &recipient.0,
         push_notifications_service_trait_service_id.clone(),
         "register_fcm_token".into(),
@@ -128,10 +124,12 @@ async fn send_push_notification() {
 
     let ctx = MockFcmClient::send_push_notification_context();
     ctx.expect().once().returning(
-        |fcm_project_id, service_account_key, token, push_notification| Box::pin(async { Ok(()) }),
+        |_fcm_project_id, _service_account_key, _token, _push_notification| {
+            Box::pin(async { Ok(()) })
+        },
     );
 
-    let response: () = make_service_request(
+    let _response: () = make_service_request(
         &sender.0,
         push_notifications_service_trait_service_id,
         "send_push_notification".into(),

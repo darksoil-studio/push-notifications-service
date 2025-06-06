@@ -1,6 +1,5 @@
 use hdk::prelude::*;
 use push_notifications_service_integrity::*;
-use push_notifications_types::PublishServiceAccountKeyInput;
 
 fn fcm_project_path(fcm_project_id: &String) -> ExternResult<TypedPath> {
     Path::from(format!("fcm_projects.{}", fcm_project_id)).typed(LinkTypes::FcmProjectPath)
@@ -11,9 +10,14 @@ fn fcm_projects_path() -> ExternResult<TypedPath> {
 }
 
 #[hdk_extern]
-pub fn publish_service_account_key(input: PublishServiceAccountKeyInput) -> ExternResult<()> {
-    delete_all_service_account_keys(&input.fcm_project_id)?;
-    let path = fcm_project_path(&input.fcm_project_id)?;
+pub fn publish_service_account_key(service_account_key: ServiceAccountKey) -> ExternResult<()> {
+    let Some(project_id) = service_account_key.project_id.clone() else {
+        return Err(wasm_error!(
+            "Invalid ServiceAccountKey: project_id is null."
+        ));
+    };
+    delete_all_service_account_keys(&project_id)?;
+    let path = fcm_project_path(&project_id)?;
     path.ensure()?;
 
     let links = get_links(
@@ -25,7 +29,7 @@ pub fn publish_service_account_key(input: PublishServiceAccountKeyInput) -> Exte
         delete_link(link.create_link_hash)?;
     }
 
-    let action_hash = create_entry(EntryTypes::ServiceAccountKey(input.service_account_key))?;
+    let action_hash = create_entry(EntryTypes::ServiceAccountKey(service_account_key))?;
 
     create_link(
         path.path_entry_hash()?,
@@ -33,6 +37,8 @@ pub fn publish_service_account_key(input: PublishServiceAccountKeyInput) -> Exte
         LinkTypes::ServiceAccountKeys,
         (),
     )?;
+
+    info!("Created new service account key for project {project_id}");
 
     Ok(())
 }

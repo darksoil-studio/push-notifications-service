@@ -25,6 +25,26 @@
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       binary =
         craneLib.buildPackage (commonArgs // { inherit cargoArtifacts; });
+
+      binaryWithDebugHapp =
+        pkgs.runCommandLocal "push-notifications-service-client" {
+          buildInputs = [ pkgs.makeWrapper ];
+        } ''
+          mkdir $out
+          mkdir $out/bin
+          makeWrapper ${binary}/bin/push-notifications-service-client $out/bin/push-notifications-service-client \
+            --add-flags "${self'.packages.push_notifications_service_client_happ.meta.debug}"
+        '';
+      binaryWithHapp =
+        pkgs.runCommandLocal "push-notifications-service-client" {
+          buildInputs = [ pkgs.makeWrapper ];
+          meta.debug = binaryWithDebugHapp;
+        } ''
+          mkdir $out
+          mkdir $out/bin
+          makeWrapper ${binary}/bin/push-notifications-service-client $out/bin/push-notifications-service-client \
+            --add-flags "${self'.packages.push_notifications_service_client_happ}"
+        '';
     in rec {
 
       builders.push-notifications-service-client = { progenitors }:
@@ -32,32 +52,28 @@
           progenitorsArg = builtins.toString
             (builtins.map (p: " --progenitors ${p}") progenitors);
 
-          binaryWithDebugHapp =
+          debugBinaryWithProgenitors =
             pkgs.runCommandLocal "push-notifications-service-client" {
               buildInputs = [ pkgs.makeWrapper ];
             } ''
               mkdir $out
               mkdir $out/bin
-              makeWrapper ${binary}/bin/push-notifications-service-client $out/bin/push-notifications-service-client \
-                --add-flags "${self'.packages.push_notifications_service_client_happ.meta.debug} ${progenitorsArg}"
+              makeWrapper ${binaryWithDebugHapp}/bin/push-notifications-service-client $out/bin/push-notifications-service-client \
+                --add-flags "${progenitorsArg}"
             '';
-          binaryWithHapp =
+          binaryWithProgenitors =
             pkgs.runCommandLocal "push-notifications-service-client" {
               buildInputs = [ pkgs.makeWrapper ];
-              meta.debug = binaryWithDebugHapp;
+              meta.debug = debugBinaryWithProgenitors;
             } ''
               mkdir $out
               mkdir $out/bin
-              makeWrapper ${binary}/bin/push-notifications-service-client $out/bin/push-notifications-service-client \
-                --add-flags "${self'.packages.push_notifications_service_client_happ} ${progenitorsArg}"
+              makeWrapper ${binaryWithHapp}/bin/push-notifications-service-client $out/bin/push-notifications-service-client \
+                --add-flags "${progenitorsArg}"
             '';
-        in binaryWithHapp;
+        in binaryWithProgenitors;
 
-      packages.test-push-notifications-service-client =
-        builders.push-notifications-service-client {
-          progenitors =
-            [ "uhCAk13OZ84d5HFum5PZYcl61kHHMfL2EJ4yNbHwSp4vn6QeOdFii" ];
-        };
+      packages.push-notifications-service-client = binaryWithHapp;
 
       packages.darksoil-push-notifications-service-client =
         builders.push-notifications-service-client {

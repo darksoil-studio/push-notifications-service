@@ -4,7 +4,6 @@ use fcm_v1::auth::ServiceAccountKey;
 use holochain_client::ZomeCallTarget;
 use holochain_runtime::*;
 use holochain_types::prelude::*;
-use push_notifications_types::PublishServiceAccountKeyInput;
 use roles_types::Properties;
 use setup::setup;
 use std::{collections::BTreeMap, fs, path::PathBuf};
@@ -47,9 +46,11 @@ impl PushNotificationsServiceClient {
 
     pub async fn publish_service_account_key(
         &self,
-        fcm_project_id: String,
         service_account_key: ServiceAccountKey,
     ) -> anyhow::Result<()> {
+        let Some(project_id) = service_account_key.project_id.clone() else {
+            return Err(anyhow!("Invalid ServiceAccountKey: project_id is null."));
+        };
         let app_ws = self
             .runtime
             .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
@@ -60,10 +61,7 @@ impl PushNotificationsServiceClient {
                 ZomeCallTarget::RoleName("push_notifications_service".into()),
                 ZomeName::from("push_notifications_service"),
                 "publish_service_account_key".into(),
-                ExternIO::encode(PublishServiceAccountKeyInput {
-                    fcm_project_id: fcm_project_id.clone(),
-                    service_account_key: from(service_account_key.clone()),
-                })?,
+                ExternIO::encode(from(service_account_key.clone()))?,
             )
             .await?;
 
@@ -74,7 +72,7 @@ impl PushNotificationsServiceClient {
                 ZomeCallTarget::RoleName("push_notifications_service".into()),
                 ZomeName::from("push_notifications_service"),
                 "get_current_service_account_key".into(),
-                ExternIO::encode(fcm_project_id)?,
+                ExternIO::encode(project_id)?,
             )
             .await?;
 
@@ -92,6 +90,7 @@ impl PushNotificationsServiceClient {
 
         Ok(())
     }
+
     pub async fn create_clone_request(&self, network_seed: String) -> anyhow::Result<()> {
         let app_ws = self
             .runtime
@@ -114,18 +113,6 @@ impl PushNotificationsServiceClient {
             },
         };
         std::thread::sleep(std::time::Duration::from_secs(10));
-
-        let clone_providers: Vec<AgentPubKey> = app_ws
-            .call_zome(
-                ZomeCallTarget::RoleName("push_notifications_service".into()),
-                "clone_manager".into(),
-                "get_clone_providers".into(),
-                ExternIO::encode(()).unwrap(),
-            )
-            .await
-            .unwrap()
-            .decode()
-            .unwrap();
 
         app_ws
             .call_zome(
