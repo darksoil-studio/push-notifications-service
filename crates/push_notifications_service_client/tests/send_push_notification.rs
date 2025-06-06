@@ -24,7 +24,7 @@ async fn setup_send_push_notification_from_client() {
 
     let service_account_key = ServiceAccountKey {
         key_type: None,
-        project_id: Some(String::from("GOOGLE_CLOUD_PROJECT_1")),
+        project_id: Some(fcm_project_id.clone()),
         private_key_id: None,
         client_id: None,
         auth_uri: None,
@@ -46,7 +46,7 @@ async fn setup_send_push_notification_from_client() {
     .unwrap();
 
     client
-        .publish_service_account_key(fcm_project_id.clone(), into(service_account_key))
+        .publish_service_account_key(into(service_account_key))
         .await
         .unwrap();
 
@@ -74,7 +74,7 @@ async fn setup_send_push_notification_from_client() {
 
     let token = String::from("myfcmtoken");
 
-    let response: () = make_service_request(
+    let _response: () = make_service_request(
         &recipient.0,
         push_notifications_service_trait_service_id.clone(),
         "register_fcm_token".into(),
@@ -88,10 +88,12 @@ async fn setup_send_push_notification_from_client() {
 
     let ctx = MockFcmClient::send_push_notification_context();
     ctx.expect().once().returning(
-        |fcm_project_id, service_account_key, token, push_notification| Box::pin(async { Ok(()) }),
+        |_fcm_project_id, _service_account_key, _token, _push_notification| {
+            Box::pin(async { Ok(()) })
+        },
     );
 
-    let response: () = make_service_request(
+    let _response: () = make_service_request(
         &sender.0,
         push_notifications_service_trait_service_id,
         "send_push_notification".into(),

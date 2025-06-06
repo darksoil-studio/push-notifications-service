@@ -77,7 +77,7 @@ pub async fn launch_infra_provider() -> (AppWebsocket, HolochainRuntime) {
         },
     );
     let app_id = String::from("infra-provider");
-    let app_info = infra_provider
+    let _app_info = infra_provider
         .install_app(
             app_id.clone(),
             read_from_file(&client_happ_path())
@@ -144,7 +144,7 @@ pub async fn launch(
 
     let app_id = String::from("push-notifications-test");
 
-    let app_info = runtime
+    let _app_info = runtime
         .install_app(
             app_id.clone(),
             read_from_file(&happ_path).await.unwrap(),

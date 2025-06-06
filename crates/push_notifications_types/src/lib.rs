@@ -33,12 +33,6 @@ pub struct ServiceAccountKey {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PublishServiceAccountKeyInput {
-    pub fcm_project_id: String,
-    pub service_account_key: ServiceAccountKey,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct PushNotification {
     pub title: String,
     pub body: String,

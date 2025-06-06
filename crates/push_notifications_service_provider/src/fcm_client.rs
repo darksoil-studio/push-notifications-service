@@ -35,7 +35,7 @@ impl FcmClient for RealFcmClient {
     ) -> anyhow::Result<()> {
         let auth = Authenticator::service_account::<String>(service_account_key).await?;
 
-        let client = Client::new(auth, fcm_project_id, false, Duration::from_secs(2));
+        let client = Client::new(auth, fcm_project_id, true, Duration::from_secs(2));
 
         let mut message = Message::default();
 

@@ -36,9 +36,6 @@ enum Commands {
     /// Publishes a service account key
     PublishServiceAccountKey {
         #[arg(long)]
-        fcm_project_id: String,
-
-        #[arg(long)]
         service_account_key_path: PathBuf,
     },
     /// Create a clone request for the service providers DNA
@@ -112,7 +109,6 @@ async fn main() -> Result<()> {
 
     match args.command {
         Commands::PublishServiceAccountKey {
-            fcm_project_id,
             service_account_key_path,
         } => {
             let service_account_str = read_to_string(service_account_key_path).await?;
@@ -120,7 +116,7 @@ async fn main() -> Result<()> {
                 serde_json::from_str(&service_account_str)?;
 
             client
-                .publish_service_account_key(fcm_project_id, service_account_key)
+                .publish_service_account_key(service_account_key)
                 .await?;
         }
         Commands::CreateCloneRequest { network_seed } => {
