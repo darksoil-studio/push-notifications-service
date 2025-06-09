@@ -27,9 +27,9 @@ holochain_conductor_api = { git = "https://github.com/guillemcordoba/holochain",
 holo_hash = { git = "https://github.com/guillemcordoba/holochain", branch = "develop-0.5" }
 fixt = { git = "https://github.com/guillemcordoba/holochain", branch = "develop-0.5" }
 
-# kitsune2 = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
-# kitsune2_api = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
-# kitsune2_core = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
-# kitsune2_dht = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
-# kitsune2_gossip = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
-# kitsune2_bootstrap_client = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
+kitsune2 = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
+kitsune2_api = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
+kitsune2_core = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
+kitsune2_dht = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
+kitsune2_gossip = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
+kitsune2_bootstrap_client = { git = "https://github.com/guillemcordoba/kitsune2", branch = "iroh-transport" }
