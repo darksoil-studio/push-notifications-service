@@ -115,7 +115,7 @@
           makeWrapper ${binary}/bin/push-notifications-service-provider $out/bin/push-notifications-service-provider \
             --add-flags "${self'.packages.push_notifications_service_provider_happ} --app-id $DNA_HASHES"
         '';
-    in {
+    in rec {
 
       builders.push-notifications-service-provider = { progenitors }:
         let
@@ -145,7 +145,10 @@
             '';
         in binaryWithProgenitors;
 
-      packages.push-notifications-service-provider = binaryWithHapp;
+      packages.push-notifications-service-provider =
+        builders.push-notifications-service-provider {
+          progenitors = inputs.service-providers.outputs.progenitors;
+        };
 
       checks.send-push-notification-test = check;
     };

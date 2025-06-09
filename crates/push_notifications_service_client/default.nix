@@ -73,12 +73,9 @@
             '';
         in binaryWithProgenitors;
 
-      packages.push-notifications-service-client = binaryWithHapp;
-
-      packages.darksoil-push-notifications-service-client =
+      packages.push-notifications-service-client =
         builders.push-notifications-service-client {
-          progenitors =
-            [ "uhCAk13OZ84d5HFum5PZYcl61kHHMfL2EJ4yNbHwSp4vn6QeOdFii" ];
+          progenitors = inputs.service-providers.outputs.progenitors;
         };
     };
 }
