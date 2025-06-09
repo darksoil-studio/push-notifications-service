@@ -112,7 +112,7 @@ impl PushNotificationsServiceClient {
                 properties,
             },
         };
-        std::thread::sleep(std::time::Duration::from_secs(10));
+        std::thread::sleep(std::time::Duration::from_secs(5));
 
         app_ws
             .call_zome(
@@ -123,7 +123,7 @@ impl PushNotificationsServiceClient {
             )
             .await?;
 
-        std::thread::sleep(std::time::Duration::from_secs(30));
+        std::thread::sleep(std::time::Duration::from_secs(5));
 
         let result = app_ws
             .call_zome(
