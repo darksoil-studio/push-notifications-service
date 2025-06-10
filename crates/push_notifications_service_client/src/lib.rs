@@ -124,7 +124,7 @@ impl PushNotificationsServiceClient {
             std::thread::sleep(Duration::from_secs(1));
 
             retry_count += 1;
-            if retry_count == 200 {
+            if retry_count == 20 {
                 return Err(anyhow!("No clone providers found.".to_string(),));
             }
         }
