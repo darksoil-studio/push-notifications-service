@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use clap::{Parser, Subcommand};
 use env_logger::Builder;
 use fcm_v1::auth::ServiceAccountKey;
@@ -8,10 +8,10 @@ use holochain_runtime::NetworkConfig;
 use holochain_util::ffs::read_to_string;
 use log::Level;
 use push_notifications_service_client::PushNotificationsServiceClient;
-use std::env::temp_dir;
 use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
+use tempdir::TempDir;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -86,17 +86,13 @@ async fn main() -> Result<()> {
         .filter(None, log_level().to_level_filter())
         .filter_module("holochain_sqlite", log::LevelFilter::Off)
         .filter_module("tracing::span", log::LevelFilter::Off)
+        .filter_module("iroh", log::LevelFilter::Warn)
+        .filter_module("kitsune2", log::LevelFilter::Warn)
         .init();
     set_wasm_level();
 
-    let data_dir = temp_dir();
-    if data_dir.exists() {
-        if !std::fs::read_dir(&data_dir).is_ok() {
-            return Err(anyhow!("The given data dir is not a directory."));
-        };
-    } else {
-        std::fs::create_dir_all(data_dir.clone())?;
-    }
+    let tempdir = TempDir::new("push-notifications-service-client")?;
+    let data_dir = tempdir.path().to_path_buf();
 
     let client = PushNotificationsServiceClient::create(
         data_dir.clone(),
@@ -123,8 +119,6 @@ async fn main() -> Result<()> {
             client.create_clone_request(network_seed).await?;
         }
     }
-
-    std::fs::remove_dir_all(data_dir)?;
 
     Ok(())
 }

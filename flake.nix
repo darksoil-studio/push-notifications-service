@@ -41,7 +41,7 @@
       ];
 
       systems = builtins.attrNames inputs.holonix.devShells;
-      perSystem = { inputs', config, pkgs, system, ... }: {
+      perSystem = { inputs', config, pkgs, system, self', ... }: {
         devShells.default = pkgs.mkShell {
           inputsFrom = [
             inputs'.scaffolding.devShells.synchronized-pnpm
@@ -57,6 +57,27 @@
           ];
         };
         devShells.npm-ci = inputs'.scaffolding.devShells.synchronized-pnpm;
+
+        packages.test-push-notifications-service = pkgs.writeShellApplication {
+          name = "test-push-notifications-service";
+          runtimeInputs = [
+            pkgs.concurrently
+            self'.packages.push-notifications-service-provider
+            self'.packages.push-notifications-service-client
+          ];
+          text = ''
+            trap 'killall push-notifications-service-provider' 2 ERR
+
+            rm -rf /tmp/pnsp
+            rm -rf /tmp/pnsp2
+            RUST_LOG=warn push-notifications-service-provider --data-dir /tmp/pnsp --bootstrap-url http://bad --signal-url ws://bad &
+            RUST_LOG=warn push-notifications-service-provider --data-dir /tmp/pnsp2 --bootstrap-url http://bad --signal-url ws://bad &
+            push-notifications-service-client --bootstrap-url http://bad --signal-url ws://bad publish-service-account-key --service-account-key-path "$1"
+            push-notifications-service-client --bootstrap-url http://bad --signal-url ws://bad create-clone-request --network-seed "$2"
+            wait
+            killall push-notifications-service-provider
+          '';
+        };
 
         packages.scaffold = pkgs.symlinkJoin {
           name = "scaffold-remote-zome";

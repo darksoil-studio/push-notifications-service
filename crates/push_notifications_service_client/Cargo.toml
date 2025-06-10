@@ -44,6 +44,9 @@ push_notifications_types = { path = "../push_notifications_types" }
 push_notifications_service_trait = { path = "../push_notifications_service_trait" }
 roles_types = { git = "https://github.com/darksoil-studio/roles-zome", branch = "main-0.5"}
 
+tempdir = "0.3"
+colored = "2"
+
 [dev-dependencies]
 tempdir = "0.3.7"
 serde_yaml = "0.9"

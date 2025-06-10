@@ -1,12 +1,13 @@
 use anyhow::{anyhow, Result};
 use clone_manager_types::CloneRequest;
+use colored::Colorize;
 use fcm_v1::auth::ServiceAccountKey;
 use holochain_client::ZomeCallTarget;
 use holochain_runtime::*;
 use holochain_types::prelude::*;
 use roles_types::Properties;
 use setup::setup;
-use std::{collections::BTreeMap, fs, path::PathBuf};
+use std::{collections::BTreeMap, fs, path::PathBuf, time::Duration};
 
 mod setup;
 
@@ -56,6 +57,8 @@ impl PushNotificationsServiceClient {
             .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
             .await?;
 
+        log::info!("Publishing service account key...");
+
         app_ws
             .call_zome(
                 ZomeCallTarget::RoleName("push_notifications_service".into()),
@@ -64,8 +67,6 @@ impl PushNotificationsServiceClient {
                 ExternIO::encode(from(service_account_key.clone()))?,
             )
             .await?;
-
-        std::thread::sleep(std::time::Duration::from_secs(5));
 
         let result = app_ws
             .call_zome(
@@ -79,14 +80,21 @@ impl PushNotificationsServiceClient {
         let maybe_key: Option<push_notifications_types::ServiceAccountKey> = result.decode()?;
 
         let Some(key) = maybe_key else {
-            return Err(anyhow!("Failed to publish service account key"));
+            return Err(anyhow!("Failed to publish service account key."));
         };
 
         if key.ne(&from(service_account_key)) {
-            return Err(anyhow!("Failed to publish service account key"));
+            return Err(anyhow!("Failed to publish service account key."));
         }
 
-        println!("Successfully uploaded service account key");
+        println!("");
+
+        println!(
+            "{}",
+            "Successfully uploaded service account key.".bold().green()
+        );
+
+        println!("");
 
         Ok(())
     }
@@ -96,6 +104,33 @@ impl PushNotificationsServiceClient {
             .runtime
             .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
             .await?;
+
+        let mut retry_count = 0;
+        loop {
+            let clone_providers: Vec<AgentPubKey> = app_ws
+                .call_zome(
+                    ZomeCallTarget::RoleName("push_notifications_service".into()),
+                    ZomeName::from("clone_manager"),
+                    "get_clone_providers".into(),
+                    ExternIO::encode(())?,
+                )
+                .await?
+                .decode()?;
+
+            if clone_providers.len() > 0 {
+                break;
+            }
+            log::warn!("No clone providers found yet: retrying in 1s.");
+            std::thread::sleep(Duration::from_secs(1));
+
+            retry_count += 1;
+            if retry_count == 200 {
+                return Err(anyhow!("No clone providers found.".to_string(),));
+            }
+        }
+
+        log::info!("Found clone providers: creating clone request...");
+
         let roles_properties = Properties {
             progenitors: self
                 .progenitors
@@ -112,7 +147,8 @@ impl PushNotificationsServiceClient {
                 properties,
             },
         };
-        std::thread::sleep(std::time::Duration::from_secs(5));
+
+        log::info!("Creating clone request...");
 
         app_ws
             .call_zome(
@@ -123,7 +159,7 @@ impl PushNotificationsServiceClient {
             )
             .await?;
 
-        std::thread::sleep(std::time::Duration::from_secs(5));
+        std::thread::sleep(Duration::from_secs(1));
 
         let result = app_ws
             .call_zome(
@@ -143,7 +179,11 @@ impl PushNotificationsServiceClient {
             return Err(anyhow!("Failed to create clone request."));
         }
 
-        println!("Successfully created clone request");
+        println!("");
+
+        println!("{}", "Successfully created clone request.".bold().green());
+
+        println!("");
 
         Ok(())
     }

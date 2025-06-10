@@ -2,7 +2,7 @@ use std::{path::PathBuf, time::Duration};
 
 use anyhow::anyhow;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
-use holochain_client::{AgentPubKey, AppWebsocket, ExternIO, ZomeCallTarget};
+use holochain_client::{AgentPubKey, AppWebsocket};
 use holochain_runtime::HolochainRuntime;
 use roles_types::Properties;
 
@@ -59,9 +59,6 @@ pub async fn setup(
                 None,
             )
             .await?;
-        let app_ws = runtime
-            .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
-            .await?;
 
         log::info!("Installed app {app_info:?}");
     }
@@ -80,14 +77,15 @@ async fn wait_until_connected_to_peers(app_ws: AppWebsocket) -> crate::Result<()
     loop {
         let network_stats = app_ws.dump_network_stats().await?;
         if network_stats.connections.len() > 0 {
+            log::info!("Found connected peers: {:?}.", network_stats.connections);
             return Ok(());
         }
-        log::warn!("Not connected to peers yet: retrying in 200ms");
-        std::thread::sleep(Duration::from_millis(200));
+        log::warn!("Not connected to peers yet: retrying in 1s.");
+        std::thread::sleep(Duration::from_secs(1));
 
         retry_count += 1;
         if retry_count == 200 {
-            return Err(anyhow!("Can't connect to any peers".to_string(),));
+            return Err(anyhow!("Can't connect to any peers.".to_string(),));
         }
     }
 }
