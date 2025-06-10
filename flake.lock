@@ -52789,11 +52789,11 @@
         "scaffolding": "scaffolding_75"
       },
       "locked": {
-        "lastModified": 1749484013,
-        "narHash": "sha256-AISItynCnlgK+bfIiTesdqszyWWWaBI6pKLTGgGMamg=",
+        "lastModified": 1749553972,
+        "narHash": "sha256-F8ntDAf8tdeyumXncdrnUAyzf+rju3Fbu7IV4OLyys8=",
         "owner": "darksoil-studio",
         "repo": "service-providers",
-        "rev": "75d4d077bbc9a06d37a74d5d0b2a1b415f3c5779",
+        "rev": "f85669e432b28109480108bc71f11bf8ee30a5fb",
         "type": "github"
       },
       "original": {

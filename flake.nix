@@ -76,6 +76,9 @@
             push-notifications-service-provider --data-dir /tmp/pnsp2 --bootstrap-url http://bad --signal-url ws://bad &
             push-notifications-service-client --bootstrap-url http://bad --signal-url ws://bad publish-service-account-key --service-account-key-path "$1"
             push-notifications-service-client --bootstrap-url http://bad --signal-url ws://bad create-clone-request --network-seed "$2"
+
+            echo "The test push notifications service is now ready to be used."
+
             wait
             killall push-notifications-service-provider
           '';
