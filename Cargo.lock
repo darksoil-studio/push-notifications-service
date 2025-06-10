@@ -7724,7 +7724,7 @@ dependencies = [
 [[package]]
 name = "service_providers_types"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#75d4d077bbc9a06d37a74d5d0b2a1b415f3c5779"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#f85669e432b28109480108bc71f11bf8ee30a5fb"
 dependencies = [
  "hdi 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
@@ -7733,7 +7733,7 @@ dependencies = [
 [[package]]
 name = "service_providers_utils"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#75d4d077bbc9a06d37a74d5d0b2a1b415f3c5779"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#f85669e432b28109480108bc71f11bf8ee30a5fb"
 dependencies = [
  "anyhow",
  "futures",
