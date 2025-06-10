@@ -61,7 +61,6 @@
         packages.test-push-notifications-service = pkgs.writeShellApplication {
           name = "test-push-notifications-service";
           runtimeInputs = [
-            pkgs.concurrently
             self'.packages.push-notifications-service-provider.meta.debug
             self'.packages.push-notifications-service-client.meta.debug
           ];
@@ -78,6 +77,8 @@
             push-notifications-service-client --bootstrap-url http://bad --signal-url ws://bad create-clone-request --network-seed "$2"
 
             echo "The test push notifications service is now ready to be used."
+
+            echo ""
 
             wait
             killall push-notifications-service-provider
