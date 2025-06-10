@@ -62,8 +62,8 @@
           name = "test-push-notifications-service";
           runtimeInputs = [
             pkgs.concurrently
-            self'.packages.push-notifications-service-provider
-            self'.packages.push-notifications-service-client
+            self'.packages.push-notifications-service-provider.meta.debug
+            self'.packages.push-notifications-service-client.meta.debug
           ];
           text = ''
             trap 'killall push-notifications-service-provider' 2 ERR
