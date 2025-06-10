@@ -1311,11 +1311,11 @@
         "tauri-plugin-holochain": "tauri-plugin-holochain_2"
       },
       "locked": {
-        "lastModified": 1749040132,
-        "narHash": "sha256-/yhoJava3fnHuO314PGB4QpbZWlfx1Y/cRyS+/rr3Ro=",
+        "lastModified": 1749550740,
+        "narHash": "sha256-HTT6ZxenVWJBNi3hNfPL0ZXRa9mP/kxD6QIzfx8hJsc=",
         "owner": "darksoil-studio",
         "repo": "clone-manager-zome",
-        "rev": "f6ebb706bcc3456cdcd393da904307f57c541af4",
+        "rev": "27b01bee340d50c59134869775a129a4d279992b",
         "type": "github"
       },
       "original": {

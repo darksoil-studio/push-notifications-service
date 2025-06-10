@@ -68,10 +68,12 @@
           text = ''
             trap 'killall push-notifications-service-provider' 2 ERR
 
+            export RUST_LOG=error
+
             rm -rf /tmp/pnsp
             rm -rf /tmp/pnsp2
-            RUST_LOG=warn push-notifications-service-provider --data-dir /tmp/pnsp --bootstrap-url http://bad --signal-url ws://bad &
-            RUST_LOG=warn push-notifications-service-provider --data-dir /tmp/pnsp2 --bootstrap-url http://bad --signal-url ws://bad &
+            push-notifications-service-provider --data-dir /tmp/pnsp --bootstrap-url http://bad --signal-url ws://bad &
+            push-notifications-service-provider --data-dir /tmp/pnsp2 --bootstrap-url http://bad --signal-url ws://bad &
             push-notifications-service-client --bootstrap-url http://bad --signal-url ws://bad publish-service-account-key --service-account-key-path "$1"
             push-notifications-service-client --bootstrap-url http://bad --signal-url ws://bad create-clone-request --network-seed "$2"
             wait

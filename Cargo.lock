@@ -933,7 +933,7 @@ checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
 [[package]]
 name = "clone_manager_types"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.5#f6ebb706bcc3456cdcd393da904307f57c541af4"
+source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.5#27b01bee340d50c59134869775a129a4d279992b"
 dependencies = [
  "hdi 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
@@ -942,7 +942,7 @@ dependencies = [
 [[package]]
 name = "clone_manager_utils"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.5#f6ebb706bcc3456cdcd393da904307f57c541af4"
+source = "git+https://github.com/darksoil-studio/clone-manager-zome?branch=main-0.5#27b01bee340d50c59134869775a129a4d279992b"
 dependencies = [
  "anyhow",
  "clone_manager_types",
