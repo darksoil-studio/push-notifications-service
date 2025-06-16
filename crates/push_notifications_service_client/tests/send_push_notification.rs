@@ -52,12 +52,12 @@ async fn setup_send_push_notification_from_client() {
 
     client.create_clone_request(network_seed).await.unwrap();
 
-    std::thread::sleep(Duration::from_secs(5));
+    std::thread::sleep(Duration::from_secs(25));
 
     let push_notifications_service_trait_service_id =
         push_notifications_service_trait::PUSH_NOTIFICATIONS_SERVICE_HASH.to_vec();
 
-    let service_providers: Vec<AgentPubKey> = happ_developer
+    let service_providers: Vec<AgentPubKey> = sender
         .0
         .call_zome(
             ZomeCallTarget::RoleName("service_providers".into()),

@@ -1,10 +1,12 @@
+use std::collections::BTreeSet;
 use std::path::PathBuf;
 use std::{io::Write, time::Duration};
 
 use env_logger::Builder;
 use holo_hash::fixt::AgentPubKeyFixturator;
+use holo_hash::DnaHash;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
-use holochain_client::{AgentPubKey, AppWebsocket};
+use holochain_client::{AdminWebsocket, AgentPubKey, AppWebsocket};
 use holochain_runtime::{vec_to_locked, HolochainRuntime, HolochainRuntimeConfig, NetworkConfig};
 use log::Level;
 use push_notifications_service_provider::fcm_client::MockFcmClient;
@@ -116,6 +118,8 @@ pub async fn setup() -> Scenario {
         .filter(None, Level::Info.to_level_filter())
         .filter_module("holochain_sqlite", log::LevelFilter::Off)
         .filter_module("tracing::span", log::LevelFilter::Off)
+        .filter_module("kitsune2", log::LevelFilter::Warn)
+        .filter_module("iroh", log::LevelFilter::Error)
         .init();
 
     let network_seed = String::from("test");
@@ -182,4 +186,69 @@ pub async fn setup() -> Scenario {
         progenitor: infra_provider_pubkey.clone(),
         network_seed,
     }
+}
+
+pub async fn consistency(admins_wss: Vec<AdminWebsocket>) -> anyhow::Result<()> {
+    let mut retry_count = 0;
+    loop {
+        let dna_hashes: BTreeSet<DnaHash> =
+            futures::future::try_join_all(admins_wss.iter().map(|admin| admin.list_dnas()))
+                .await
+                .unwrap()
+                .into_iter()
+                .flatten()
+                .collect();
+
+        let consistencied = futures::future::try_join_all(
+            dna_hashes
+                .into_iter()
+                .map(|dna| are_conductors_consistencied(&admins_wss, dna)),
+        )
+        .await?
+        .iter()
+        .all(|c| c.clone());
+
+        if consistencied {
+            return Ok(());
+        }
+
+        retry_count += 1;
+
+        if retry_count > 200 {
+            return Err(anyhow::anyhow!("Timeout"));
+        }
+
+        std::thread::sleep(Duration::from_millis(500));
+    }
+}
+
+async fn are_conductors_consistencied(
+    admins_wss: &Vec<AdminWebsocket>,
+    dna_hash: DnaHash,
+) -> anyhow::Result<bool> {
+    let states = futures::future::try_join_all(admins_wss.iter().map(|admin_ws| async {
+        let cells = admin_ws.list_cell_ids().await?;
+        let Some(cell_id) = cells.into_iter().find(|cell| cell.dna_hash().eq(&dna_hash)) else {
+            return Err(anyhow::anyhow!("Cell not found for dna: {dna_hash}."));
+        };
+        let dump = admin_ws.dump_full_state(cell_id, None).await?;
+        Ok(dump)
+    }))
+    .await?;
+
+    if states.iter().any(|s| {
+        s.integration_dump.validation_limbo.len() > 0
+            || s.integration_dump.integration_limbo.len() > 0
+    }) {
+        return Ok(false);
+    }
+
+    if !states
+        .windows(2)
+        .all(|w| w[0].integration_dump.integrated.len() == w[1].integration_dump.integrated.len())
+    {
+        return Ok(false);
+    }
+
+    Ok(true)
 }

@@ -177,6 +177,8 @@ pub async fn setup() -> Scenario {
         .filter(None, Level::Info.to_level_filter())
         .filter_module("holochain_sqlite", log::LevelFilter::Off)
         .filter_module("tracing::span", log::LevelFilter::Off)
+        .filter_module("kitsune2", log::LevelFilter::Warn)
+        .filter_module("iroh", log::LevelFilter::Error)
         .init();
 
     let infra_provider = launch_infra_provider().await;
