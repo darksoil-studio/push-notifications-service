@@ -1,4 +1,4 @@
-use std::{env::temp_dir, time::Duration};
+use std::time::Duration;
 
 mod common;
 use common::*;
@@ -9,6 +9,7 @@ use push_notifications_types::{
     PushNotification, RegisterFcmTokenInput, SendPushNotificationToAgentInput, ServiceAccountKey,
 };
 use service_providers_utils::make_service_request;
+use tempdir::TempDir;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn setup_send_push_notification_from_client() {
@@ -35,8 +36,10 @@ async fn setup_send_push_notification_from_client() {
         token_uri: String::from("random://token.uri"),
     };
 
+    let tmp = TempDir::new("pns").unwrap();
+
     let client = PushNotificationsServiceClient::create(
-        temp_dir(),
+        tmp.path().to_path_buf(),
         network_config(),
         "client-happ".into(),
         client_happ_path(),
