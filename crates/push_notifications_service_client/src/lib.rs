@@ -14,7 +14,7 @@ mod setup;
 pub const SERVICE_PROVIDERS_ROLE_NAME: &'static str = "service_providers";
 
 pub struct PushNotificationsServiceClient {
-    runtime: HolochainRuntime,
+    pub runtime: HolochainRuntime,
     app_id: String,
     progenitors: Vec<AgentPubKey>,
 }

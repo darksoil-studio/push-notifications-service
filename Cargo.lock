@@ -6280,6 +6280,7 @@ dependencies = [
  "env_logger",
  "fcm_v1",
  "fixt",
+ "futures",
  "holo_hash 0.5.2",
  "holochain",
  "holochain_client",
