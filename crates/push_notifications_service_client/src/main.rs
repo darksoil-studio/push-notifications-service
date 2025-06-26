@@ -50,11 +50,11 @@ fn network_config(bootstrap_url: String, signal_url: String) -> NetworkConfig {
 
     network_config.bootstrap_url = url2::Url2::parse(bootstrap_url);
     network_config.signal_url = url2::Url2::parse(signal_url);
-    network_config.webrtc_config = Some(serde_json::json!({
-        "ice_servers": {
-            "urls": ["stun://stun.l.google.com:19302"]
-        },
-    }));
+    // network_config.webrtc_config = Some(serde_json::json!({
+    //     "ice_servers": {
+    //         "urls": ["stun://stun.l.google.com:19302"]
+    //     },
+    // }));
     network_config.target_arc_factor = 0;
 
     network_config

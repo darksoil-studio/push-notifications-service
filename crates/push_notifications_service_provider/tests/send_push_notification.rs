@@ -1,35 +1,24 @@
 use std::time::Duration;
 
 mod common;
-use clone_manager_types::CloneRequest;
 use common::*;
-use holochain::prelude::DnaModifiers;
-use holochain_client::{AgentPubKey, ExternIO, SerializedBytes, ZomeCallTarget};
+use holochain_client::{AgentPubKey, ExternIO, ZomeCallTarget};
+use push_notifications_service_client::{into, PushNotificationsServiceClient};
 use push_notifications_service_provider::fcm_client::MockFcmClient;
 use push_notifications_types::{
     PushNotification, RegisterFcmTokenInput, SendPushNotificationToAgentInput, ServiceAccountKey,
 };
-use roles_types::Properties;
 use service_providers_utils::make_service_request;
+use tempdir::TempDir;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn send_push_notification() {
     let Scenario {
-        infra_provider,
-        // service_provider,
-        happ_developer,
+        network_seed,
+        progenitors,
         sender,
         recipient,
     } = setup().await;
-
-    let roles_properties = Properties {
-        progenitors: vec![infra_provider.0.my_pub_key.clone().into()],
-    };
-    let properties_bytes = SerializedBytes::try_from(roles_properties).unwrap();
-    let modifiers = DnaModifiers {
-        properties: properties_bytes,
-        network_seed: String::from(""),
-    };
 
     let fcm_project_id = String::from("FCM_PROJECT_1");
 
@@ -46,52 +35,31 @@ async fn send_push_notification() {
         token_uri: String::from("random://token.uri"),
     };
 
-    let clone_providers: Vec<AgentPubKey> = infra_provider
-        .0
-        .call_zome(
-            ZomeCallTarget::RoleName("push_notifications_service".into()),
-            "clone_manager".into(),
-            "get_clone_providers".into(),
-            ExternIO::encode(()).unwrap(),
-        )
-        .await
-        .unwrap()
-        .decode()
-        .unwrap();
+    let tmp = TempDir::new("pns").unwrap();
 
-    assert_eq!(clone_providers.len(), 2);
+    let client = PushNotificationsServiceClient::create(
+        tmp.path().to_path_buf(),
+        network_config(),
+        "client-happ".into(),
+        client_happ_path(),
+        progenitors,
+    )
+    .await
+    .unwrap();
 
-    infra_provider
-        .0
-        .call_zome(
-            ZomeCallTarget::RoleName("push_notifications_service".into()),
-            "push_notifications_service".into(),
-            "publish_service_account_key".into(),
-            ExternIO::encode(service_account_key).unwrap(),
-        )
+    client
+        .publish_service_account_key(into(service_account_key))
         .await
         .unwrap();
 
-    infra_provider
-        .0
-        .call_zome(
-            ZomeCallTarget::RoleName("push_notifications_service".into()),
-            "clone_manager".into(),
-            "create_clone_request".into(),
-            ExternIO::encode(CloneRequest {
-                dna_modifiers: modifiers,
-            })
-            .unwrap(),
-        )
-        .await
-        .unwrap();
+    client.create_clone_request(network_seed).await.unwrap();
 
     std::thread::sleep(Duration::from_secs(25));
 
     let push_notifications_service_trait_service_id =
         push_notifications_service_trait::PUSH_NOTIFICATIONS_SERVICE_HASH.to_vec();
 
-    let service_providers: Vec<AgentPubKey> = happ_developer
+    let service_providers: Vec<AgentPubKey> = recipient
         .0
         .call_zome(
             ZomeCallTarget::RoleName("service_providers".into()),
