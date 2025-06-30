@@ -67,7 +67,7 @@
           text = ''
             trap 'killall push-notifications-service-provider' 2 ERR
 
-            export RUST_LOG=error
+            export RUST_LOG=''${RUST_LOG:=error}
 
             rm -rf /tmp/pnsp
             rm -rf /tmp/pnsp2
@@ -85,22 +85,22 @@
           '';
         };
 
-        packages.scaffold = pkgs.symlinkJoin {
-          name = "scaffold-remote-zome";
-          paths = [ inputs'.scaffolding.packages.scaffold-remote-zome ];
-          buildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            wrapProgram $out/bin/scaffold-remote-zome \
-              --add-flags "push-notifications-service-provider-zome \
-                --integrity-zome-name push_notifications_service_provider_integrity \
-                --coordinator-zome-name push_notifications_service_provider \
-                --remote-zome-git-url github:darksoil-studio/push-notifications-service-provider-zome \
-                --remote-npm-package-name @darksoil-studio/push-notifications-service-provider-zome \
-                --remote-zome-git-branch main-0.5 \
-                --context-element push-notifications-service-provider-context \
-                --context-element-import @darksoil-studio/push-notifications-service-provider-zome/dist/elements/push-notifications-service-provider-context.js" 
-          '';
-        };
+        # packages.scaffold = pkgs.symlinkJoin {
+        #   name = "scaffold-remote-zome";
+        #   paths = [ inputs'.scaffolding.packages.scaffold-remote-zome ];
+        #   buildInputs = [ pkgs.makeWrapper ];
+        #   postBuild = ''
+        #     wrapProgram $out/bin/scaffold-remote-zome \
+        #       --add-flags "push-notifications-service-provider-zome \
+        #         --integrity-zome-name push_notifications_service_provider_integrity \
+        #         --coordinator-zome-name push_notifications_service_provider \
+        #         --remote-zome-git-url github:darksoil-studio/push-notifications-service-provider-zome \
+        #         --remote-npm-package-name @darksoil-studio/push-notifications-service-provider-zome \
+        #         --remote-zome-git-branch main-0.5 \
+        #         --context-element push-notifications-service-provider-context \
+        #         --context-element-import @darksoil-studio/push-notifications-service-provider-zome/dist/elements/push-notifications-service-provider-context.js" 
+        #   '';
+        # };
       };
     };
 }
