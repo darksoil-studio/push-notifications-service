@@ -103,6 +103,8 @@ async fn main() -> Result<()> {
 
     client.wait_for_clone_providers().await?;
 
+    log::info!("Successfully joined peers: executing request...");
+
     match args.command {
         Commands::PublishServiceAccountKey {
             service_account_key_path,
