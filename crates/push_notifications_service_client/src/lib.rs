@@ -99,7 +99,7 @@ impl PushNotificationsServiceClient {
         Ok(())
     }
 
-    pub async fn create_clone_request(&self, network_seed: String) -> anyhow::Result<()> {
+    pub async fn wait_for_clone_providers(&self) -> anyhow::Result<()> {
         let app_ws = self
             .runtime
             .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
@@ -118,7 +118,7 @@ impl PushNotificationsServiceClient {
                 .decode()?;
 
             if clone_providers.len() > 0 {
-                break;
+                return Ok(());
             }
             log::warn!("No clone providers found yet: retrying in 1s.");
             std::thread::sleep(Duration::from_secs(1));
@@ -128,8 +128,13 @@ impl PushNotificationsServiceClient {
                 return Err(anyhow!("No clone providers found.".to_string(),));
             }
         }
+    }
 
-        log::info!("Found clone providers: creating clone request...");
+    pub async fn create_clone_request(&self, network_seed: String) -> anyhow::Result<()> {
+        let app_ws = self
+            .runtime
+            .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
+            .await?;
 
         let roles_properties = Properties {
             progenitors: self
