@@ -100,14 +100,14 @@ async fn send_push_notification() {
     let _response: () = make_service_request(
         &sender.0,
         push_notifications_service_trait_service_id,
-        "send_push_notification".into(),
-        SendPushNotificationToAgentInput {
+        "send_push_notifications".into(),
+        vec![SendPushNotificationToAgentInput {
             agent: recipient.0.my_pub_key.clone(),
             notification: PushNotification {
                 title: String::from("Hey"),
                 body: String::from("there"),
             },
-        },
+        }],
     )
     .await
     .unwrap();

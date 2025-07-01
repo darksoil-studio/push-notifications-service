@@ -33,22 +33,26 @@ impl PushNotificationsService for PushNotificationsGateway {
         Ok(())
     }
 
-    fn send_push_notification(input: SendPushNotificationToAgentInput) -> ExternResult<()> {
-        let agent = call_info()?.provenance;
-        let response = call(
-            CallTargetCell::OtherRole(RoleName::from("push_notifications_service")),
-            ZomeName::from("push_notifications_service"),
-            FunctionName::from("send_push_notification_to_agent"),
-            None,
-            SendPushNotificationToAgentWithProvenanceInput {
-                provenance: agent,
-                agent: input.agent,
-                notification: input.notification,
-            },
-        )?;
-        let ZomeCallResponse::Ok(_) = response else {
-            return Err(wasm_error!("Failed to register fcm token: {response:?}"));
-        };
+    fn send_push_notifications(inputs: Vec<SendPushNotificationToAgentInput>) -> ExternResult<()> {
+        for input in inputs {
+            let agent = call_info()?.provenance;
+            let response = call(
+                CallTargetCell::OtherRole(RoleName::from("push_notifications_service")),
+                ZomeName::from("push_notifications_service"),
+                FunctionName::from("send_push_notification_to_agent"),
+                None,
+                SendPushNotificationToAgentWithProvenanceInput {
+                    provenance: agent,
+                    agent: input.agent,
+                    notification: input.notification,
+                },
+            )?;
+            let ZomeCallResponse::Ok(_) = response else {
+                return Err(wasm_error!(
+                    "Failed to send push notification: {response:?}"
+                ));
+            };
+        }
         Ok(())
     }
 }
