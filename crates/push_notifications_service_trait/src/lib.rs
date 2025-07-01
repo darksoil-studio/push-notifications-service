@@ -6,5 +6,5 @@ pub use push_notifications_types::{RegisterFcmTokenInput, SendPushNotificationTo
 pub trait PushNotificationsService {
     fn register_fcm_token(input: RegisterFcmTokenInput) -> ExternResult<()>;
 
-    fn send_push_notification(input: SendPushNotificationToAgentInput) -> ExternResult<()>;
+    fn send_push_notifications(input: Vec<SendPushNotificationToAgentInput>) -> ExternResult<()>;
 }
