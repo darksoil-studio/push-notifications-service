@@ -73,7 +73,7 @@ pub async fn run<T: FcmClient>(
             log::error!("Failed to reconcile cloned services: {err}");
         }
 
-        std::thread::sleep(Duration::from_secs(30));
+        std::thread::sleep(Duration::from_secs(60));
     }
 
     // // wait for a unix signal or ctrl-c instruction to
