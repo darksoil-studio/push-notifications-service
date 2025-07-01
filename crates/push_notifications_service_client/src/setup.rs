@@ -1,8 +1,7 @@
-use std::{path::PathBuf, time::Duration};
+use std::path::PathBuf;
 
-use anyhow::anyhow;
 use holochain::prelude::{DnaModifiersOpt, RoleSettings, RoleSettingsMap, YamlProperties};
-use holochain_client::{AgentPubKey, AppWebsocket};
+use holochain_client::AgentPubKey;
 use holochain_runtime::HolochainRuntime;
 use roles_types::Properties;
 

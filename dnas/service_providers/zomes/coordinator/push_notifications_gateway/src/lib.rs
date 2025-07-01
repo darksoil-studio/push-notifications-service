@@ -47,6 +47,6 @@ pub fn post_commit(committed_actions: Vec<SignedActionHashed>) {
         }
     }
 }
-fn signal_action(action: SignedActionHashed) -> ExternResult<()> {
+fn signal_action(_action: SignedActionHashed) -> ExternResult<()> {
     Ok(())
 }
