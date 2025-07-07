@@ -71,10 +71,10 @@
 
             rm -rf /tmp/pnsp
             rm -rf /tmp/pnsp2
-            push-notifications-service-provider --data-dir /tmp/pnsp &
-            push-notifications-service-provider --data-dir /tmp/pnsp2 &
-            push-notifications-service-client publish-service-account-key --service-account-key-path "$1"
-            push-notifications-service-client create-clone-request --network-seed "$2"
+            push-notifications-service-provider --bootstrap-url http://bad.bad --data-dir /tmp/pnsp &
+            push-notifications-service-provider --bootstrap-url http://bad.bad --data-dir /tmp/pnsp2 &
+            push-notifications-service-client --bootstrap-url http://bad.bad publish-service-account-key --service-account-key-path "$1"
+            push-notifications-service-client --bootstrap-url http://bad.bad create-clone-request --network-seed "$2"
 
             echo "The test push notifications service is now ready to be used."
 
@@ -84,23 +84,6 @@
             killall push-notifications-service-provider
           '';
         };
-
-        # packages.scaffold = pkgs.symlinkJoin {
-        #   name = "scaffold-remote-zome";
-        #   paths = [ inputs'.scaffolding.packages.scaffold-remote-zome ];
-        #   buildInputs = [ pkgs.makeWrapper ];
-        #   postBuild = ''
-        #     wrapProgram $out/bin/scaffold-remote-zome \
-        #       --add-flags "push-notifications-service-provider-zome \
-        #         --integrity-zome-name push_notifications_service_provider_integrity \
-        #         --coordinator-zome-name push_notifications_service_provider \
-        #         --remote-zome-git-url github:darksoil-studio/push-notifications-service-provider-zome \
-        #         --remote-npm-package-name @darksoil-studio/push-notifications-service-provider-zome \
-        #         --remote-zome-git-branch main-0.5 \
-        #         --context-element push-notifications-service-provider-context \
-        #         --context-element-import @darksoil-studio/push-notifications-service-provider-zome/dist/elements/push-notifications-service-provider-context.js" 
-        #   '';
-        # };
       };
     };
 }
