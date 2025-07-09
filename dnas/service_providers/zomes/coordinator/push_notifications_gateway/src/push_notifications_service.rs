@@ -48,9 +48,8 @@ impl PushNotificationsService for PushNotificationsGateway {
                 },
             )?;
             let ZomeCallResponse::Ok(_) = response else {
-                return Err(wasm_error!(
-                    "Failed to send push notification: {response:?}"
-                ));
+                error!("Failed to send push notification: {response:?}");
+                continue;
             };
         }
         Ok(())
