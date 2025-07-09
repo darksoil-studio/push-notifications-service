@@ -130,6 +130,8 @@ impl FcmClient for RealFcmClient {
         message.android = Some(android_config);
         message.token = Some(token);
 
+        log::info!("Sending push notification.");
+
         client.send(&message).await?;
 
         Ok(())
