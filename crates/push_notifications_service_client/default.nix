@@ -21,7 +21,6 @@
         buildInputs =
           inputs.holochain-nix-builders.outputs.dependencies.${system}.holochain.buildInputs;
         LIBCLANG_PATH = "${pkgs.llvmPackages_18.libclang.lib}/lib";
-        cargoExtraArgs = " -j 1 ";
       };
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       binary =
@@ -65,7 +64,10 @@
           binaryWithProgenitors =
             pkgs.runCommandLocal "push-notifications-service-client" {
               buildInputs = [ pkgs.makeWrapper ];
-              meta.debug = debugBinaryWithProgenitors;
+              meta = {
+                debug = debugBinaryWithProgenitors;
+                inherit cargoArtifacts;
+              };
             } ''
               mkdir $out
               mkdir $out/bin
