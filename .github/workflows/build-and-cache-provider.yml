@@ -32,6 +32,7 @@ jobs:
         env:
           CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#push-notifications-service-provider.meta.cargoArtifacts
           cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#push-notifications-service-provider
           cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#push-notifications-service-provider | jq -r 'keys[0]')
 
@@ -50,6 +51,7 @@ jobs:
         env:
           CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#push-notifications-service-client.meta.cargoArtifacts
           cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#push-notifications-service-client
           cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#push-notifications-service-client | jq -r 'keys[0]')
 
