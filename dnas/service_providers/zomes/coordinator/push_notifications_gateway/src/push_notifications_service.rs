@@ -46,8 +46,8 @@ impl PushNotificationsService for PushNotificationsGateway {
                     agent: input.agent,
                     notification: input.notification,
                 },
-            )?;
-            let ZomeCallResponse::Ok(_) = response else {
+            );
+            let Ok(ZomeCallResponse::Ok(_)) = response else {
                 error!("Failed to send push notification: {response:?}");
                 continue;
             };
