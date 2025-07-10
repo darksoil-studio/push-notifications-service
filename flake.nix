@@ -65,20 +65,26 @@
             self'.packages.push-notifications-service-client.meta.debug
           ];
           text = ''
-            trap 'killall push-notifications-service-provider' 2 ERR
-
             export RUST_LOG=''${RUST_LOG:=error}
 
-            rm -rf /tmp/pnsp
-            rm -rf /tmp/pnsp2
-            push-notifications-service-provider --bootstrap-url http://bad.bad --data-dir /tmp/pnsp &
-            push-notifications-service-provider --bootstrap-url http://bad.bad --data-dir /tmp/pnsp2 &
+            DIR1="$(mktemp -d)"
+            DIR2="$(mktemp -d)"
+            push-notifications-service-provider --bootstrap-url http://bad.bad --data-dir "$DIR1" &
+            push-notifications-service-provider --bootstrap-url http://bad.bad --data-dir "$DIR2" &
             push-notifications-service-client --bootstrap-url http://bad.bad publish-service-account-key --service-account-key-path "$1"
             push-notifications-service-client --bootstrap-url http://bad.bad create-clone-request --network-seed "$2"
 
             echo "The test push notifications service is now ready to be used."
 
             echo ""
+
+            function cleanup {
+              killall push-notifications-service-provider
+              rm -rf "$DIR1"
+              rm -rf "$DIR2"
+            }
+
+            trap cleanup 2 ERR
 
             wait
             killall push-notifications-service-provider
