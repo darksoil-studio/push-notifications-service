@@ -9,7 +9,7 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
     fns.insert((zome_info()?.name, FunctionName::from("register_fcm_token")));
     fns.insert((
         zome_info()?.name,
-        FunctionName::from("send_push_notification"),
+        FunctionName::from("send_push_notifications"),
     ));
     let functions = GrantedFunctions::Listed(fns);
     let cap_grant = ZomeCallCapGrant {
