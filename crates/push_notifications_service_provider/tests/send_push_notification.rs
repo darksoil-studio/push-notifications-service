@@ -47,6 +47,8 @@ async fn send_push_notification() {
     .await
     .unwrap();
 
+    std::thread::sleep(Duration::from_secs(10));
+
     client
         .publish_service_account_key(into(service_account_key))
         .await
