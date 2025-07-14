@@ -16,7 +16,7 @@
             name: test_happ
             description: ~
             roles:   
-              - name: service_providers
+              - name: services
                 provisioning:
                   strategy: create
                   deferred: false
@@ -30,8 +30,7 @@
           '';
 
           dnas = {
-            service_providers =
-              inputs'.service-providers.packages.service_providers_dna;
+            services = inputs'.service-providers.packages.services_dna;
           };
         }).meta.debug;
 

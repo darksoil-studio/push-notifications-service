@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::{io::Write, time::Duration};
 
+use anyhow::anyhow;
 use env_logger::Builder;
 use fixt::fixt;
 use holo_hash::fixt::AgentPubKeyFixturator;
@@ -147,14 +148,14 @@ pub async fn setup() -> Scenario {
     });
     let sender = launch(
         progenitors.clone(),
-        vec![String::from("service_providers")],
+        vec![String::from("services")],
         end_user_happ_path(),
         network_seed.clone(),
     )
     .await;
     let recipient = launch(
         progenitors.clone(),
-        vec![String::from("service_providers")],
+        vec![String::from("services")],
         end_user_happ_path(),
         network_seed.clone(),
     )
@@ -167,5 +168,30 @@ pub async fn setup() -> Scenario {
         progenitors,
         sender,
         recipient,
+    }
+}
+
+pub async fn with_retries<T>(
+    condition: impl AsyncFn() -> anyhow::Result<T>,
+    retries: usize,
+) -> anyhow::Result<T> {
+    let mut retry_count = 0;
+    loop {
+        let response = condition().await;
+
+        match response {
+            Ok(r) => {
+                return Ok(r);
+            }
+            Err(err) => {
+                log::warn!("Condition not met yet: {err:?} Retrying in 1s.");
+                std::thread::sleep(Duration::from_secs(1));
+
+                retry_count += 1;
+                if retry_count == retries {
+                    return Err(anyhow!("Timeout. Last error: {err:?}"));
+                }
+            }
+        }
     }
 }

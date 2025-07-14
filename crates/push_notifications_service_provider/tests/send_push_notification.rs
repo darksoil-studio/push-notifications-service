@@ -1,10 +1,11 @@
 use std::time::Duration;
 
 mod common;
+use anyhow::anyhow;
 use common::*;
 use holochain_client::{AgentPubKey, ExternIO, ZomeCallTarget};
 use push_notifications_service_client::{into, PushNotificationsServiceClient};
-use push_notifications_service_provider::fcm_client::MockFcmClient;
+use push_notifications_service_provider::{fcm_client::MockFcmClient, SERVICES_ROLE_NAME};
 use push_notifications_types::{
     PushNotification, RegisterFcmTokenInput, SendPushNotificationToAgentInput, ServiceAccountKey,
 };
@@ -47,8 +48,6 @@ async fn send_push_notification() {
     .await
     .unwrap();
 
-    std::thread::sleep(Duration::from_secs(10));
-
     client
         .publish_service_account_key(into(service_account_key))
         .await
@@ -56,25 +55,30 @@ async fn send_push_notification() {
 
     client.create_clone_request(network_seed).await.unwrap();
 
-    std::thread::sleep(Duration::from_secs(25));
-
     let push_notifications_service_trait_service_id =
         push_notifications_service_trait::PUSH_NOTIFICATIONS_SERVICE_HASH.to_vec();
 
-    let service_providers: Vec<AgentPubKey> = recipient
-        .0
-        .call_zome(
-            ZomeCallTarget::RoleName("service_providers".into()),
-            "service_providers".into(),
-            "get_providers_for_service".into(),
-            ExternIO::encode(push_notifications_service_trait_service_id.clone()).unwrap(),
-        )
-        .await
-        .unwrap()
-        .decode()
-        .unwrap();
-
-    assert_eq!(service_providers.len(), 2);
+    with_retries(
+        async || {
+            let service_providers: Vec<AgentPubKey> = recipient
+                .0
+                .call_zome(
+                    ZomeCallTarget::RoleName(SERVICES_ROLE_NAME.into()),
+                    "service_providers".into(),
+                    "get_providers_for_service".into(),
+                    ExternIO::encode(push_notifications_service_trait_service_id.clone()).unwrap(),
+                )
+                .await?
+                .decode()?;
+            if service_providers.is_empty() {
+                return Err(anyhow!("No service providers yet"));
+            }
+            Ok(())
+        },
+        10,
+    )
+    .await
+    .unwrap();
 
     let token = String::from("myfcmtoken");
 

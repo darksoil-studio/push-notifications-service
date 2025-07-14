@@ -39,7 +39,7 @@ pub async fn setup(
             },
         );
         roles_settings.insert(
-            String::from("service_providers"),
+            String::from("services"),
             RoleSettings::Provisioned {
                 membrane_proof: None,
                 modifiers: Some(DnaModifiersOpt {

@@ -14,7 +14,7 @@ roles:
         properties: ~
       version: ~
       clone_limit: 0
-  - name: service_providers
+  - name: services
     provisioning:
       strategy: create
       deferred: false

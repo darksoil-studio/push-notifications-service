@@ -13,7 +13,7 @@
         dnas = {
           push_notifications_service =
             self'.packages.push_notifications_service_dna;
-          service_providers = self'.packages.service_providers_dna;
+          services = self'.packages.services_dna;
         };
       };
 
@@ -24,7 +24,7 @@
         dnas = {
           push_notifications_service =
             self'.packages.push_notifications_service_client_dna;
-          service_providers = self'.packages.service_providers_dna;
+          services = self'.packages.services_dna;
         };
       };
 

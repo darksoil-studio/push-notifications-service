@@ -11,7 +11,6 @@ use push_notifications_service_client::PushNotificationsServiceClient;
 use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
-use std::time::Duration;
 use tempdir::TempDir;
 
 #[derive(Parser, Debug)]
@@ -106,10 +105,6 @@ async fn main() -> Result<()> {
     )
     .await?;
 
-    client.wait_for_clone_providers().await?;
-
-    log::info!("Successfully joined peers: executing request...");
-
     match args.command {
         Commands::PublishServiceAccountKey {
             service_account_key_path,
@@ -126,7 +121,6 @@ async fn main() -> Result<()> {
             client.create_clone_request(network_seed).await?;
         }
     }
-    std::thread::sleep(Duration::from_secs(4));
 
     Ok(())
 }
