@@ -9734,6 +9734,26 @@
         "type": "indirect"
       }
     },
+    "garnix-lib": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1746387091,
+        "narHash": "sha256-YivN7BL4XkZIJpUTdDJRQpYX/JORVdbZTQbSnULgRnY=",
+        "owner": "garnix-io",
+        "repo": "garnix-lib",
+        "rev": "4cc103317aef34dd99617ed9ff12c44d659d86d0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "garnix-io",
+        "repo": "garnix-lib",
+        "type": "github"
+      }
+    },
     "gonixpkgs": {
       "locked": {
         "lastModified": 1735563628,
@@ -47559,6 +47579,7 @@
           "holonix",
           "flake-parts"
         ],
+        "garnix-lib": "garnix-lib",
         "holochain-nix-builders": "holochain-nix-builders_8",
         "holonix": "holonix_18",
         "nixpkgs": [
@@ -55330,11 +55351,11 @@
         "scaffolding": "scaffolding_72"
       },
       "locked": {
-        "lastModified": 1752485640,
-        "narHash": "sha256-Op7aoqCgK/uiqIBm9l/x89bxre2i2w9qt/4zJSCAtPU=",
+        "lastModified": 1752488791,
+        "narHash": "sha256-kELdlm/3oea2CTy3S9Rchei/YU9yfuPSkWpVv6QtDhk=",
         "owner": "darksoil-studio",
         "repo": "service-providers",
-        "rev": "31e96217af709141c6a2808aefc11970419b825b",
+        "rev": "1e9471409e436fe181a45829c0992f7023d24e18",
         "type": "github"
       },
       "original": {

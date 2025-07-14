@@ -1,4 +1,4 @@
-{
+rec {
   description = "Template for Holochain app development";
 
   inputs = {
@@ -16,6 +16,11 @@
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.5";
     clone-manager.url = "github:darksoil-studio/clone-manager-zome/main-0.5";
+
+    garnix-lib = {
+      url = "github:garnix-io/garnix-lib";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
@@ -33,6 +38,44 @@
 
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+
+      flake = {
+        nixosConfigurations = let
+          push_notifications_service_provider = (outputs
+            inputs).outputs.packages."x86_64-linux".push-notifications-service-provider;
+          push_notifications_service_provider_module = {
+            systemd.services.push_notifications_service_provider = {
+              enable = true;
+              path = [ push_notifications_service_provider ];
+              wantedBy = [ "multi-user.target" ];
+              serviceConfig = {
+                ExecStart =
+                  "${push_notifications_service_provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider";
+                RuntimeMaxSec = "3600"; # Restart every hour
+
+                Restart = "always";
+                RestartSec = 10;
+              };
+            };
+          };
+
+          push_notifications_service_provider_nixos =
+            inputs.nixpkgs.lib.nixosSystem {
+              system = "x86_64-linux";
+              modules = [
+                inputs.garnix-lib.nixosModules.garnix
+                { garnix.server.enable = true; }
+                push_notifications_service_provider_module
+              ];
+            };
+        in {
+          push_notifications_service_provider1 =
+            push_notifications_service_provider_nixos;
+          push_notifications_service_provider2 =
+            push_notifications_service_provider_nixos;
+        };
+      };
+
       imports = [
         ./workdir/happ.nix
         ./crates/push_notifications_service_provider/default.nix
