@@ -3,6 +3,14 @@ rec {
 
   inputs = {
     holonix.url = "github:holochain/holonix/main-0.5";
+
+    # TODO: Remove when https://github.com/holochain/holochain/issues/5130 is resolved
+    holonix.inputs.holochain.follows = "holochain";
+    holochain.url = "github:holochain/holochain/holochain-0.5.4";
+    holochain.inputs.repo-git.follows = "empty";
+    empty.url = "github:steveej/empty";
+    empty.flake = false;
+
     crane.follows = "holonix/crane";
     nixpkgs.follows = "holonix/nixpkgs";
     flake-parts.follows = "holonix/flake-parts";
@@ -32,8 +40,6 @@ rec {
       "holochain-ci.cachix.org-1:5IUSkZc0aoRS53rfkvH9Kid40NpyjwCMCzwRTXy+QN8="
       "darksoil-studio.cachix.org-1:UEi+aujy44s41XL/pscLw37KEVpTEIn8N/kn7jO8rkc="
     ];
-    # To support tests with access to networking
-    sandbox = "relaxed";
   };
 
   outputs = inputs:
