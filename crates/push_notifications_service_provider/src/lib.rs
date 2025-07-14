@@ -1,18 +1,20 @@
-use anyhow::Result;
-use clone_manager_types::NewCloneRequest;
-use clone_manager_utils::{clone_cell, reconcile_cloned_cells};
+use anyhow::{anyhow, Result};
+use clone_manager_types::{CloneRequest, NewCloneRequest};
+use clone_manager_utils::reconcile_cloned_cells;
 use holochain_client::{AdminWebsocket, AppWebsocket};
 use holochain_runtime::*;
 use holochain_types::prelude::*;
 use push_notifications_types::SendPushNotificationSignal;
 use setup::setup;
 use std::{fs, path::PathBuf, time::Duration};
+use utils::with_retries;
 
 pub mod fcm_client;
+mod utils;
 use fcm_client::FcmClient;
 mod setup;
 
-pub const SERVICE_PROVIDERS_ROLE_NAME: &'static str = "service_providers";
+pub const SERVICES_ROLE_NAME: &'static str = "services";
 
 pub async fn run<T: FcmClient>(
     data_dir: PathBuf,
@@ -66,7 +68,7 @@ pub async fn run<T: FcmClient>(
             &admin_ws,
             &app_ws,
             "push_notifications_service".into(),
-            SERVICE_PROVIDERS_ROLE_NAME.into(),
+            SERVICES_ROLE_NAME.into(),
         )
         .await
         {
@@ -107,16 +109,51 @@ pub async fn handle_signal<T: FcmClient>(
         .await?;
     }
     if let Ok(new_clone_request) = signal.into_inner().decode::<NewCloneRequest>() {
-        clone_cell(
-            &admin_ws,
-            &app_ws,
-            SERVICE_PROVIDERS_ROLE_NAME.into(),
-            new_clone_request.clone_request,
-        )
-        .await?;
+        handle_new_clone_request_signal(admin_ws, app_ws, new_clone_request).await?;
     }
     Ok(())
 }
+
+async fn handle_new_clone_request_signal(
+    admin_ws: &AdminWebsocket,
+    app_ws: &AppWebsocket,
+    new_clone_request: NewCloneRequest,
+) -> Result<()> {
+    let a = app_ws.clone();
+    with_retries(
+        async move || {
+            let clone_request: Option<CloneRequest> = a
+                .call_zome(
+                    holochain_client::ZomeCallTarget::RoleName(String::from(
+                        "push_notifications_service",
+                    )),
+                    "clone_manager".into(),
+                    "get_clone_request".into(),
+                    ExternIO::encode(new_clone_request.clone_request_hash.clone())?,
+                )
+                .await?
+                .decode()?;
+            let Some(_) = clone_request else {
+                return Err(anyhow!("CloneRequest not found."));
+            };
+
+            Ok(())
+        },
+        20,
+    )
+    .await?;
+
+    reconcile_cloned_cells(
+        &admin_ws,
+        &app_ws,
+        "push_notifications_service".into(),
+        SERVICES_ROLE_NAME.into(),
+    )
+    .await?;
+
+    Ok(())
+}
+
 pub async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
     let bytes = fs::read(happ_bundle_path)?;
     Ok(AppBundle::decode(bytes.as_slice())?)
