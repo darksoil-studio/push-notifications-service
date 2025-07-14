@@ -42,7 +42,7 @@ rec {
       flake = {
         nixosConfigurations = let
           push_notifications_service_provider = (outputs
-            inputs).outputs.packages."x86_64-linux".push-notifications-service-provider;
+            inputs).packages."x86_64-linux".push-notifications-service-provider;
           push_notifications_service_provider_module = {
             systemd.services.push_notifications_service_provider = {
               enable = true;
@@ -64,7 +64,10 @@ rec {
               system = "x86_64-linux";
               modules = [
                 inputs.garnix-lib.nixosModules.garnix
-                { garnix.server.enable = true; }
+                {
+                  garnix.server.enable = true;
+                  system.stateVersion = "25.05";
+                }
                 push_notifications_service_provider_module
               ];
             };
