@@ -3,6 +3,7 @@ let
 
   push_notifications_service_provider =
     inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
+
   push_notifications_service_provider_module = {
     systemd.services.push_notifications_service_provider1 = {
       enable = true;
