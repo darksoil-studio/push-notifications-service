@@ -7,7 +7,7 @@ use holochain_runtime::*;
 use holochain_types::prelude::*;
 use roles_types::Properties;
 use setup::setup;
-use std::{fs, path::PathBuf};
+use std::{fs, path::PathBuf, time::Duration};
 use utils::with_retries;
 
 mod setup;
@@ -92,6 +92,8 @@ impl PushNotificationsServiceClient {
         if key.ne(&from(service_account_key)) {
             return Err(anyhow!("Failed to publish service account key."));
         }
+
+        std::thread::sleep(Duration::from_secs(4));
 
         println!("");
 
