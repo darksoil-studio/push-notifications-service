@@ -1,4 +1,4 @@
-rec {
+{
   description = "Template for Holochain app development";
 
   inputs = {
