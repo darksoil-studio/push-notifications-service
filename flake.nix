@@ -52,7 +52,7 @@ rec {
                 RuntimeMaxSec = "3600"; # Restart every hour
 
                 Restart = "always";
-                RestartSec = 10;
+                RestartSec = 1;
               };
             };
           };
