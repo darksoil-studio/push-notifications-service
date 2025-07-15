@@ -8,31 +8,28 @@
       CLIENT_HAPP =
         self'.packages.push_notifications_service_client_happ.meta.debug;
 
-      END_USER_HAPP =
-        (inputs.holochain-nix-builders.outputs.builders.${system}.happ {
-          happManifest = builtins.toFile "happ.yaml" ''
-            ---
-            manifest_version: "1"
-            name: test_happ
-            description: ~
-            roles:   
-              - name: services
-                provisioning:
-                  strategy: create
-                  deferred: false
-                dna:
-                  bundled: ""
-                  modifiers:
-                    network_seed: ~
-                    properties: ~
-                  version: ~
-                  clone_limit: 100000
-          '';
+      END_USER_HAPP = (inputs.holochain-utils.outputs.builders.${system}.happ {
+        happManifest = builtins.toFile "happ.yaml" ''
+          ---
+          manifest_version: "1"
+          name: test_happ
+          description: ~
+          roles:   
+            - name: services
+              provisioning:
+                strategy: create
+                deferred: false
+              dna:
+                bundled: ""
+                modifiers:
+                  network_seed: ~
+                  properties: ~
+                version: ~
+                clone_limit: 100000
+        '';
 
-          dnas = {
-            services = inputs'.service-providers.packages.services_dna;
-          };
-        }).meta.debug;
+        dnas = { services = inputs'.service-providers.packages.services_dna; };
+      }).meta.debug;
 
       craneLib = inputs.crane.mkLib pkgs;
       src = craneLib.cleanCargoSource (craneLib.path self.outPath);
@@ -49,7 +46,7 @@
         inherit src version pname;
         doCheck = false;
         buildInputs =
-          inputs.holochain-nix-builders.outputs.dependencies.${system}.holochain.buildInputs;
+          inputs.holochain-utils.outputs.dependencies.${system}.holochain.buildInputs;
         LIBCLANG_PATH = "${pkgs.llvmPackages_18.libclang.lib}/lib";
       };
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;

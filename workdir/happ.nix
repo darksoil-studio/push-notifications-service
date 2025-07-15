@@ -7,7 +7,7 @@
 
   perSystem = { inputs', lib, self', system, ... }: {
     packages.push_notifications_service_provider_happ =
-      inputs.holochain-nix-builders.outputs.builders.${system}.happ {
+      inputs.holochain-utils.outputs.builders.${system}.happ {
         happManifest = ./happ.yaml;
 
         dnas = {
@@ -18,7 +18,7 @@
       };
 
     packages.push_notifications_service_client_happ =
-      inputs.holochain-nix-builders.outputs.builders.${system}.happ {
+      inputs.holochain-utils.outputs.builders.${system}.happ {
         happManifest = ./happ.yaml;
 
         dnas = {
