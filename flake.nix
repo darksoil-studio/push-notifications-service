@@ -73,21 +73,21 @@ rec {
                 push_notifications_service_provider_module
               ];
             };
-          push_notifications_service_provider2 =
-            inputs.nixpkgs.lib.nixosSystem {
-              system = "x86_64-linux";
-              modules = [
-                inputs.garnix-lib.nixosModules.garnix
-                {
-                  garnix.server.persistence.name =
-                    "push-notifications-service-provider2";
-                  garnix.server.enable = true;
-                  garnix.server.persistence.enable = true;
-                  system.stateVersion = "25.05";
-                }
-                push_notifications_service_provider_module
-              ];
-            };
+          # push_notifications_service_provider2 =
+          #   inputs.nixpkgs.lib.nixosSystem {
+          #     system = "x86_64-linux";
+          #     modules = [
+          #       inputs.garnix-lib.nixosModules.garnix
+          #       {
+          #         garnix.server.persistence.name =
+          #           "push-notifications-service-provider2";
+          #         garnix.server.enable = true;
+          #         garnix.server.persistence.enable = true;
+          #         system.stateVersion = "25.05";
+          #       }
+          #       push_notifications_service_provider_module
+          #     ];
+          #   };
         };
       };
 
