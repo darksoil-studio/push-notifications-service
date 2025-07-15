@@ -54,6 +54,9 @@ rec {
                 Restart = "always";
                 RestartSec = 10;
               };
+              garnix.server.enable = true;
+              garnix.server.persistence.enable = true;
+              system.stateVersion = "25.05";
             };
           };
 
@@ -64,11 +67,8 @@ rec {
               modules = [
                 inputs.garnix-lib.nixosModules.garnix
                 {
-                  garnix.server.enable = true;
-                  garnix.server.persistence.enable = true;
                   garnix.server.persistence.name =
                     "push-notifications-service-provider1";
-                  system.stateVersion = "25.05";
                 }
                 push_notifications_service_provider_module
               ];
@@ -79,11 +79,8 @@ rec {
               modules = [
                 inputs.garnix-lib.nixosModules.garnix
                 {
-                  garnix.server.enable = true;
-                  garnix.server.persistence.enable = true;
                   garnix.server.persistence.name =
                     "push-notifications-service-provider2";
-                  system.stateVersion = "25.05";
                 }
                 push_notifications_service_provider_module
               ];
