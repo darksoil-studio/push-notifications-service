@@ -28,5 +28,4 @@ jobs:
 
       - name: Install and test
         run: |
-          nix flake check -L --option sandbox relaxed
-          
+          nix flake check -L           

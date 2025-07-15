@@ -5,26 +5,17 @@
     holonix.url = "github:holochain/holonix/main-0.5";
     crane.follows = "holonix/crane";
     nixpkgs.follows = "holonix/nixpkgs";
-    flake-parts.follows = "holonix/flake-parts";
 
-    holochain-nix-builders.url =
-      "github:darksoil-studio/holochain-nix-builders/main-0.5";
-    holochain-nix-builders.inputs.nixpkgs.follows = "nixpkgs";
-    scaffolding.url = "github:darksoil-studio/scaffolding/main-0.5";
-    scaffolding.inputs.nixpkgs.follows = "nixpkgs";
-    scaffolding.inputs.holochain-nix-builders.follows =
-      "holochain-nix-builders";
-    tauri-plugin-holochain.url =
-      "github:darksoil-studio/tauri-plugin-holochain/main-0.5";
-    tauri-plugin-holochain.inputs.nixpkgs.follows = "nixpkgs";
-    tauri-plugin-holochain.inputs.holochain-nix-builders.follows =
-      "holochain-nix-builders";
+    holochain-utils.url = "github:darksoil-studio/holochain-utils/main-0.5";
+    holochain-utils.inputs.holonix.follows = "holonix";
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.5";
+    service-providers.inputs.holonix.follows = "holonix";
+    service-providers.inputs.holochain-utils.follows = "holochain-utils";
+
     clone-manager.url = "github:darksoil-studio/clone-manager-zome/main-0.5";
-    clone-manager.inputs.scaffolding.follows = "scaffolding";
-    clone-manager.inputs.holochain-nix-builders.follows =
-      "holochain-nix-builders";
+    clone-manager.inputs.holonix.follows = "holonix";
+    clone-manager.inputs.holochain-utils.follows = "holochain-utils";
 
     garnix-lib = {
       url = "github:garnix-io/garnix-lib";
@@ -41,35 +32,37 @@
       "holochain-ci.cachix.org-1:5IUSkZc0aoRS53rfkvH9Kid40NpyjwCMCzwRTXy+QN8="
       "darksoil-studio.cachix.org-1:UEi+aujy44s41XL/pscLw37KEVpTEIn8N/kn7jO8rkc="
     ];
+    sandbox = "relaxed";
   };
 
   outputs = inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+    inputs.holonix.inputs.flake-parts.lib.mkFlake { inherit inputs; } {
 
       imports = [
         ./servers.nix
         ./workdir/happ.nix
         ./crates/push_notifications_service_provider/default.nix
         ./crates/push_notifications_service_client/default.nix
-        inputs.holochain-nix-builders.outputs.flakeModules.builders
+        inputs.holochain-utils.outputs.flakeModules.dependencies
+        inputs.holochain-utils.outputs.flakeModules.builders
       ];
 
       systems = builtins.attrNames inputs.holonix.devShells;
       perSystem = { inputs', config, pkgs, system, self', ... }: {
         devShells.default = pkgs.mkShell {
           inputsFrom = [
-            inputs'.scaffolding.devShells.synchronized-pnpm
-            inputs'.holochain-nix-builders.devShells.holochainDev
+            inputs'.holochain-utils.devShells.synchronized-pnpm
+            inputs'.holochain-utils.devShells.holochainDev
             inputs'.holonix.devShells.default
           ];
 
           packages = [
-            inputs'.holochain-nix-builders.packages.holochain
-            inputs'.scaffolding.packages.hc-scaffold-zome
-            inputs'.tauri-plugin-holochain.packages.hc-pilot
+            inputs'.holochain-utils.packages.holochain
+            inputs'.holochain-utils.packages.hc-scaffold-zome
+            inputs'.holochain-utils.packages.hc-pilot
           ];
         };
-        devShells.npm-ci = inputs'.scaffolding.devShells.synchronized-pnpm;
+        devShells.npm-ci = inputs'.holochain-utils.devShells.synchronized-pnpm;
 
         packages.test-push-notifications-service = pkgs.writeShellApplication {
           name = "test-push-notifications-service";

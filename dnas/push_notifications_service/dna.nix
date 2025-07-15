@@ -8,7 +8,7 @@
 
   perSystem = { inputs', self', lib, system, ... }: {
     packages.push_notifications_service_dna =
-      inputs.holochain-nix-builders.outputs.builders.${system}.dna {
+      inputs.holochain-utils.outputs.builders.${system}.dna {
         dnaManifest = ./workdir/dna.yaml;
         zomes = {
           # This overrides all the "bundled" properties for the DNA manifest
@@ -22,7 +22,7 @@
         };
       };
     packages.push_notifications_service_client_dna =
-      inputs.holochain-nix-builders.outputs.builders.${system}.dna {
+      inputs.holochain-utils.outputs.builders.${system}.dna {
         dnaManifest = ./workdir/dna.yaml;
         zomes = {
           # This overrides all the "bundled" properties for the DNA manifest
