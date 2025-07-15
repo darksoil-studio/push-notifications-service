@@ -8,14 +8,21 @@
     flake-parts.follows = "holonix/flake-parts";
 
     scaffolding.url = "github:darksoil-studio/scaffolding/main-0.5";
+    scaffolding.inputs.nixpkgs.follows = "nixpkgs";
     holochain-nix-builders.url =
       "github:darksoil-studio/holochain-nix-builders/main-0.5";
+    holochain-nix-builders.inputs.nixpkgs.follows = "nixpkgs";
     tauri-plugin-holochain.url =
       "github:darksoil-studio/tauri-plugin-holochain/main-0.5";
-    playground.url = "github:darksoil-studio/holochain-playground/main-0.5";
+    tauri-plugin-holochain.inputs.nixpkgs.follows = "nixpkgs";
+    tauri-plugin-holochain.inputs.holochain-nix-builders.follows =
+      "holochain-nix-builders";
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.5";
     clone-manager.url = "github:darksoil-studio/clone-manager-zome/main-0.5";
+    clone-manager.inputs.scaffolding.follows = "scaffolding";
+    clone-manager.inputs.holochain-nix-builders.follows =
+      "holochain-nix-builders";
 
     garnix-lib = {
       url = "github:garnix-io/garnix-lib";
@@ -58,7 +65,6 @@
             inputs'.holochain-nix-builders.packages.holochain
             inputs'.scaffolding.packages.hc-scaffold-zome
             inputs'.tauri-plugin-holochain.packages.hc-pilot
-            inputs'.playground.packages.hc-playground
           ];
         };
         devShells.npm-ci = inputs'.scaffolding.devShells.synchronized-pnpm;
