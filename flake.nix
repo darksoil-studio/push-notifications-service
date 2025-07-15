@@ -7,11 +7,13 @@
     nixpkgs.follows = "holonix/nixpkgs";
     flake-parts.follows = "holonix/flake-parts";
 
-    scaffolding.url = "github:darksoil-studio/scaffolding/main-0.5";
-    scaffolding.inputs.nixpkgs.follows = "nixpkgs";
     holochain-nix-builders.url =
       "github:darksoil-studio/holochain-nix-builders/main-0.5";
     holochain-nix-builders.inputs.nixpkgs.follows = "nixpkgs";
+    scaffolding.url = "github:darksoil-studio/scaffolding/main-0.5";
+    scaffolding.inputs.nixpkgs.follows = "nixpkgs";
+    scaffolding.inputs.holochain-nix-builders.follows =
+      "holochain-nix-builders";
     tauri-plugin-holochain.url =
       "github:darksoil-studio/tauri-plugin-holochain/main-0.5";
     tauri-plugin-holochain.inputs.nixpkgs.follows = "nixpkgs";
