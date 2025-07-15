@@ -2,7 +2,7 @@ servers:
   - configuration: push_notifications_service_provider
     deployment:
       type: on-branch
-      branch: release-0_5
+      branch: release-v0-5-x
 builds:
   exclude:
     - "checks.*.send-push-notification-test"
