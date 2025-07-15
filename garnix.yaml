@@ -1,5 +1,5 @@
 servers:
-  - configuration: push_notifications_service_provider
+  - configuration: push-notifications-service-provider
     deployment:
       type: on-branch
       branch: release-v0-5-x

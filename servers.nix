@@ -39,7 +39,7 @@ let
 in {
   flake = {
     nixosConfigurations = {
-      push_notifications_service_provider = inputs.nixpkgs.lib.nixosSystem {
+      push-notifications-service-provider = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
           inputs.garnix-lib.nixosModules.garnix
