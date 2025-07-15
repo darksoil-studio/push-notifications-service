@@ -2,8 +2,8 @@ servers:
   - configuration: push_notifications_service_provider1
     deployment:
       type: on-branch
-      branch: main
+      branch: main-0.5
   - configuration: push_notifications_service_provider2
     deployment:
       type: on-branch
-      branch: main
+      branch: main-0.5

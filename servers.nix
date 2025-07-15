@@ -1,18 +1,8 @@
-{ inputs, outputs, ... }:
-
-{
-
-  # perSystem = { inputs', self', lib, system, ... }: {
-  #   packages.services_dna =
-  #     inputs.service-providers.outputs.builders.${system}.services_dna_with_gateway {
-  #       gatewayZome = self'.packages.push_notifications_gateway;
-  #     };
-  # };
-
+{ inputs, ... }: {
   flake = {
     nixosConfigurations = let
-      push_notifications_service_provider = (outputs
-        inputs).packages."x86_64-linux".push-notifications-service-provider;
+      push_notifications_service_provider =
+        inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
       push_notifications_service_provider_module = {
         systemd.services.push_notifications_service_provider = {
           enable = true;
