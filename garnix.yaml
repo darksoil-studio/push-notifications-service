@@ -3,3 +3,7 @@ servers:
     deployment:
       type: on-branch
       branch: main
+  - configuration: push_notifications_service_provider2
+    deployment:
+      type: on-branch
+      branch: main
