@@ -54,9 +54,6 @@ rec {
                 Restart = "always";
                 RestartSec = 10;
               };
-              garnix.server.enable = true;
-              garnix.server.persistence.enable = true;
-              system.stateVersion = "25.05";
             };
           };
 
@@ -69,6 +66,9 @@ rec {
                 {
                   garnix.server.persistence.name =
                     "push-notifications-service-provider1";
+                  garnix.server.enable = true;
+                  garnix.server.persistence.enable = true;
+                  system.stateVersion = "25.05";
                 }
                 push_notifications_service_provider_module
               ];
@@ -81,6 +81,9 @@ rec {
                 {
                   garnix.server.persistence.name =
                     "push-notifications-service-provider2";
+                  garnix.server.enable = true;
+                  garnix.server.persistence.enable = true;
+                  system.stateVersion = "25.05";
                 }
                 push_notifications_service_provider_module
               ];
