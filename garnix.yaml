@@ -2,8 +2,8 @@ servers:
   - configuration: push_notifications_service_provider1
     deployment:
       type: on-branch
-      branch: garnix
+      branch: main
   - configuration: push_notifications_service_provider2
     deployment:
       type: on-branch
-      branch: garnix
+      branch: main
