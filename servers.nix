@@ -10,39 +10,23 @@ let
     services.openssh.settings.PermitRootLogin = "without-password";
   };
 
-  push_notifications_service_provider =
+  push-notifications-service-provider =
     inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
 
-  push_notifications_service_provider_module = {
-    systemd.services.push_notifications_service_provider1 = {
+  push-notifications-service-provider-module = {
+    systemd.services.push-notifications-service-provider = {
       enable = true;
-      path = [ push_notifications_service_provider ];
+      path = [ push-notifications-service-provider ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         ExecStart =
-          "${push_notifications_service_provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider1";
+          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider";
         RuntimeMaxSec = "3600"; # Restart every hour
 
         Restart = "always";
         RestartSec = 1;
       };
     };
-    systemd.services.push_notifications_service_provider2 = {
-      enable = true;
-      path = [ push_notifications_service_provider ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart =
-          "${push_notifications_service_provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider2";
-        RuntimeMaxSec = "3600"; # Restart every hour
-
-        Restart = "always";
-        RestartSec = 1;
-      };
-    };
-    system.stateVersion = "25.05";
-    garnix.server.enable = true;
-    garnix.server.persistence.enable = true;
   };
 
 in {
@@ -54,11 +38,14 @@ in {
         modules = [
           inputs.garnix-lib.nixosModules.garnix
           sshModule
+          push-notifications-service-provider-module
           {
             garnix.server.persistence.name =
               "push-notifications-service-provider1";
+            system.stateVersion = "25.05";
+            garnix.server.enable = true;
+            garnix.server.persistence.enable = true;
           }
-          push_notifications_service_provider_module
         ];
       };
       push-notifications-service-provider2 = inputs.nixpkgs.lib.nixosSystem {
@@ -66,11 +53,14 @@ in {
         modules = [
           inputs.garnix-lib.nixosModules.garnix
           sshModule
+          push-notifications-service-provider-module
           {
             garnix.server.persistence.name =
               "push-notifications-service-provider2";
+            system.stateVersion = "25.05";
+            garnix.server.enable = true;
+            garnix.server.persistence.enable = true;
           }
-          push_notifications_service_provider_module
         ];
       };
     };
