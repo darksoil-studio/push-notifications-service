@@ -55,7 +55,7 @@ in {
           push-notifications-service-provider-module
           {
             garnix.server.persistence.name =
-              "push-notifications-service-provider1";
+              "push-notifications-service-provider-v0-5-x-1";
             system.stateVersion = "25.05";
             garnix.server.enable = true;
             garnix.server.persistence.enable = true;
@@ -70,7 +70,7 @@ in {
           push-notifications-service-provider-module
           {
             garnix.server.persistence.name =
-              "push-notifications-service-provider2";
+              "push-notifications-service-provider-v0-5-x-2";
             system.stateVersion = "25.05";
             garnix.server.enable = true;
             garnix.server.persistence.enable = true;
