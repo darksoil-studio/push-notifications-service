@@ -118,6 +118,6 @@ async fn send_push_notification() {
     .await
     .unwrap();
 
-    std::thread::sleep(Duration::from_secs(1));
+    std::thread::sleep(Duration::from_secs(5));
     ctx.checkpoint();
 }
