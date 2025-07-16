@@ -9,6 +9,7 @@ let
       builtins.attrValues sshPubKeys;
     services.openssh.settings.PermitRootLogin = "without-password";
   };
+  bootstrapServerUrl = "http://157.180.93.55:8888";
 
   push-notifications-service-provider =
     inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
@@ -20,26 +21,26 @@ let
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         ExecStart =
-          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider";
+          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl}";
         RuntimeMaxSec = "3600"; # Restart every hour
 
         Restart = "always";
         RestartSec = 1;
       };
     };
-    systemd.services.push-notifications-service-provider2 = {
-      enable = true;
-      path = [ push-notifications-service-provider ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart =
-          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider2";
-        RuntimeMaxSec = "3600"; # Restart every hour
+    # systemd.services.push-notifications-service-provider2 = {
+    #   enable = true;
+    #   path = [ push-notifications-service-provider ];
+    #   wantedBy = [ "multi-user.target" ];
+    #   serviceConfig = {
+    #     ExecStart =
+    #       "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider2";
+    #     RuntimeMaxSec = "3600"; # Restart every hour
 
-        Restart = "always";
-        RestartSec = 1;
-      };
-    };
+    #     Restart = "always";
+    #     RestartSec = 1;
+    #   };
+    # };
   };
 
 in {
