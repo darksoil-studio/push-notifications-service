@@ -26,6 +26,7 @@ pub fn publish_service_account_key(service_account_key: ServiceAccountKey) -> Ex
     )?;
 
     for link in links {
+        get(link.create_link_hash.clone(), Default::default())?;
         delete_link(link.create_link_hash)?;
     }
 
