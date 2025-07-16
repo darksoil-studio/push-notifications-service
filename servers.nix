@@ -1,5 +1,14 @@
 { inputs, ... }:
 let
+  sshPubKeys = {
+    guillem =
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDTE+RwRfcG3UNTOZwGmQOKd5R+9jN0adH4BIaZvmWjO guillem.cordoba@gmail.com";
+  };
+  sshModule = {
+    users.users.root.openssh.authorizedKeys.keys =
+      builtins.attrValues sshPubKeys;
+    services.openssh.settings.PermitRootLogin = "without-password";
+  };
 
   push_notifications_service_provider =
     inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
@@ -43,6 +52,7 @@ in {
         system = "x86_64-linux";
         modules = [
           inputs.garnix-lib.nixosModules.garnix
+          sshModule
           {
             garnix.server.persistence.name =
               "push-notifications-service-provider1";
