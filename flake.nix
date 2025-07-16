@@ -4,6 +4,7 @@
   inputs = {
     holochain-utils.url = "github:darksoil-studio/holochain-utils/main-0.5";
     nixpkgs.follows = "holochain-utils/nixpkgs";
+    crane.follows = "holochain-utils/crane";
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.5";
     service-providers.inputs.holochain-utils.follows = "holochain-utils";

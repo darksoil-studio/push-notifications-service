@@ -239,6 +239,11 @@
     },
     "holochain-utils": {
       "inputs": {
+        "crane": [
+          "holochain-utils",
+          "holonix",
+          "crane"
+        ],
         "holochain-nix-builders": "holochain-nix-builders",
         "holonix": "holonix",
         "nixpkgs": [
@@ -251,11 +256,11 @@
         "tauri-plugin-holochain": "tauri-plugin-holochain"
       },
       "locked": {
-        "lastModified": 1752594489,
-        "narHash": "sha256-lCk3x9c44kGLE+LaaOQbN9+JVgOjJUHLJqtT4h7a5vA=",
+        "lastModified": 1752663961,
+        "narHash": "sha256-4JeT25EJTZNvpZ17fJ/KNf4yePfGsw38tNbo2a++cxc=",
         "owner": "darksoil-studio",
         "repo": "holochain-utils",
-        "rev": "fc3a7b281735b3f3176b2eda94db54f9d2490c6c",
+        "rev": "9e141445c22fe57519c9cd75f068e91c633a65c8",
         "type": "github"
       },
       "original": {
@@ -696,6 +701,10 @@
     "root": {
       "inputs": {
         "clone-manager": "clone-manager",
+        "crane": [
+          "holochain-utils",
+          "crane"
+        ],
         "garnix-lib": "garnix-lib",
         "holochain-utils": "holochain-utils",
         "nixpkgs": [
