@@ -42,11 +42,6 @@ fn network_config(bootstrap_url: Option<String>, signal_url: Option<String>) -> 
     if let Some(signal_url) = signal_url {
         network_config.signal_url = url2::Url2::parse(signal_url);
     }
-    // network_config.webrtc_config = Some(serde_json::json!({
-    //     "ice_servers": {
-    //         "urls": ["stun://stun.l.google.com:19302"]
-    //     },
-    // }));
 
     network_config
 }
@@ -77,8 +72,8 @@ async fn main() -> Result<()> {
         .filter(None, log_level().to_level_filter())
         .filter_module("holochain_sqlite", log::LevelFilter::Off)
         .filter_module("tracing::span", log::LevelFilter::Off)
-        .filter_module("iroh", log::LevelFilter::Off)
-        .filter_module("kitsune2", log::LevelFilter::Off)
+        .filter_module("iroh", log::LevelFilter::Warn)
+        .filter_module("kitsune2", log::LevelFilter::Warn)
         .init();
     set_wasm_level();
 
