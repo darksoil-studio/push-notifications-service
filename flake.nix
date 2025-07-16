@@ -2,19 +2,13 @@
   description = "Template for Holochain app development";
 
   inputs = {
-    holonix.url = "github:holochain/holonix/main-0.5";
-    crane.follows = "holonix/crane";
-    nixpkgs.follows = "holonix/nixpkgs";
-
     holochain-utils.url = "github:darksoil-studio/holochain-utils/main-0.5";
-    holochain-utils.inputs.holonix.follows = "holonix";
+    nixpkgs.follows = "holochain-utils/nixpkgs";
 
     service-providers.url = "github:darksoil-studio/service-providers/main-0.5";
-    service-providers.inputs.holonix.follows = "holonix";
     service-providers.inputs.holochain-utils.follows = "holochain-utils";
 
     clone-manager.url = "github:darksoil-studio/clone-manager-zome/main-0.5";
-    clone-manager.inputs.holonix.follows = "holonix";
     clone-manager.inputs.holochain-utils.follows = "holochain-utils";
 
     garnix-lib = {
@@ -35,7 +29,9 @@
   };
 
   outputs = inputs:
-    inputs.holonix.inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+    inputs.holochain-utils.inputs.holonix.inputs.flake-parts.lib.mkFlake {
+      inherit inputs;
+    } {
 
       imports = [
         ./servers.nix
@@ -46,13 +42,14 @@
         inputs.holochain-utils.outputs.flakeModules.builders
       ];
 
-      systems = builtins.attrNames inputs.holonix.devShells;
+      systems =
+        builtins.attrNames inputs.holochain-utils.inputs.holonix.devShells;
       perSystem = { inputs', config, pkgs, system, self', ... }: {
         devShells.default = pkgs.mkShell {
           inputsFrom = [
             inputs'.holochain-utils.devShells.synchronized-pnpm
             inputs'.holochain-utils.devShells.holochainDev
-            inputs'.holonix.devShells.default
+            inputs'.holochain-utils.devShells.default
           ];
 
           packages = [
