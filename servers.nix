@@ -27,6 +27,19 @@ let
         RestartSec = 1;
       };
     };
+    systemd.services.push-notifications-service-provider2 = {
+      enable = true;
+      path = [ push-notifications-service-provider ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        ExecStart =
+          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider2";
+        RuntimeMaxSec = "3600"; # Restart every hour
+
+        Restart = "always";
+        RestartSec = 1;
+      };
+    };
   };
 
 in {
