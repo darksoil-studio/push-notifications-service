@@ -49,7 +49,7 @@ let
 in {
   flake = {
     nixosConfigurations = {
-      push-notifications-service-provider = inputs.nixpkgs.lib.nixosSystem {
+      push-notifications-service-provider1 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
           inputs.garnix-lib.nixosModules.garnix
@@ -57,6 +57,18 @@ in {
           {
             garnix.server.persistence.name =
               "push-notifications-service-provider1";
+          }
+          push_notifications_service_provider_module
+        ];
+      };
+      push-notifications-service-provider2 = inputs.nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          inputs.garnix-lib.nixosModules.garnix
+          sshModule
+          {
+            garnix.server.persistence.name =
+              "push-notifications-service-provider2";
           }
           push_notifications_service_provider_module
         ];
