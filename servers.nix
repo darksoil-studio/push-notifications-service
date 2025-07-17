@@ -22,8 +22,8 @@ let
       serviceConfig = {
         ExecStart =
           "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl}";
-        RuntimeMaxSec = "3600"; # Restart every hour
 
+        RuntimeMaxSec = "3600"; # Restart every hour
         Restart = "always";
         RestartSec = 1;
       };
