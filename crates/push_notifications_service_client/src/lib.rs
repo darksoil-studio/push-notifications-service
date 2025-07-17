@@ -108,6 +108,7 @@ impl PushNotificationsServiceClient {
     }
 
     pub async fn wait_for_clone_providers(&self) -> anyhow::Result<()> {
+        log::info!("Waiting for clone providers...");
         let app_ws = self
             .runtime
             .app_websocket(self.app_id.clone(), holochain_client::AllowedOrigins::Any)
