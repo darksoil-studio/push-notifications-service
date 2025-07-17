@@ -53,6 +53,7 @@ fn delete_all_service_account_keys(fcm_project_id: &String) -> ExternResult<()> 
     )?;
 
     for link in links {
+        get(link.create_link_hash.clone(), Default::default())?;
         delete_link(link.create_link_hash)?;
     }
     Ok(())
@@ -77,6 +78,7 @@ pub fn delete_fcm_project(fcm_project_id: String) -> ExternResult<()> {
         .collect();
 
     for link in links_to_delete {
+        get(link.create_link_hash.clone(), Default::default())?;
         delete_link(link.create_link_hash)?;
     }
 

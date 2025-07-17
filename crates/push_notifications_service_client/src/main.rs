@@ -54,11 +54,6 @@ fn network_config(bootstrap_url: Option<String>, signal_url: Option<String>) -> 
     if let Some(signal_url) = signal_url {
         network_config.signal_url = url2::Url2::parse(signal_url);
     }
-    // network_config.webrtc_config = Some(serde_json::json!({
-    //     "ice_servers": {
-    //         "urls": ["stun://stun.l.google.com:19302"]
-    //     },
-    // }));
     network_config.target_arc_factor = 0;
 
     network_config

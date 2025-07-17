@@ -18,12 +18,12 @@ let
     systemd.services.push-notifications-service-provider = {
       enable = true;
       path = [ push-notifications-service-provider ];
-      wantedBy = [ "multi-user.target" ];
+      after = [ "default.target" ];
       serviceConfig = {
         ExecStart =
           "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl}";
-        RuntimeMaxSec = "3600"; # Restart every hour
 
+        RuntimeMaxSec = "3600"; # Restart every hour
         Restart = "always";
         RestartSec = 1;
       };
@@ -31,8 +31,8 @@ let
   };
 
 in {
-  flake = {
 
+  flake = {
     nixosConfigurations = {
       push-notifications-service-provider1 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
