@@ -31,8 +31,8 @@ let
   };
 
 in {
-  flake = {
 
+  flake = {
     nixosConfigurations = {
       push-notifications-service-provider1 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
