@@ -18,7 +18,7 @@ let
     systemd.services.push-notifications-service-provider = {
       enable = true;
       path = [ push-notifications-service-provider ];
-      wantedBy = [ "multi-user.target" ];
+      after = [ "default.target" ];
       serviceConfig = {
         ExecStart =
           "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl}";
@@ -41,8 +41,6 @@ in {
           sshModule
           push-notifications-service-provider-module
           {
-            networking.firewall.enable = false;
-
             garnix.server.persistence.name =
               "push-notifications-service-provider-v0-5-x-1";
             system.stateVersion = "25.05";
@@ -58,7 +56,6 @@ in {
           sshModule
           push-notifications-service-provider-module
           {
-            networking.firewall.enable = false;
             garnix.server.persistence.name =
               "push-notifications-service-provider-v0-5-x-2";
             system.stateVersion = "25.05";
