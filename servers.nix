@@ -18,7 +18,7 @@ let
     systemd.services.push-notifications-service-provider = {
       enable = true;
       path = [ push-notifications-service-provider ];
-      after = [ "default.target" ];
+      wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         ExecStart =
           "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl}";
