@@ -1,10 +1,10 @@
 { inputs, ... }:
 let
-
   sshPubKeys = {
     guillem =
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDTE+RwRfcG3UNTOZwGmQOKd5R+9jN0adH4BIaZvmWjO guillem.cordoba@gmail.com";
-    guillemslaptop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8DVpvRgQ90MyMyiuNdvyMNAio9n2o/+57MyhZS2A5A guillem.cordoba@gmail.com";
+    guillemslaptop =
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8DVpvRgQ90MyMyiuNdvyMNAio9n2o/+57MyhZS2A5A guillem.cordoba@gmail.com";
   };
   sshModule = {
     users.users.root.openssh.authorizedKeys.keys =
@@ -21,10 +21,11 @@ let
       enable = true;
       path = [ push-notifications-service-provider ];
       wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
       serviceConfig = {
         ExecStart =
-          "sleep 1 && ${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl}";
-
+          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl}";
         RuntimeMaxSec = "3600"; # Restart every hour
         Restart = "always";
       };
@@ -43,7 +44,7 @@ in {
           push-notifications-service-provider-module
           {
             garnix.server.persistence.name =
-              "push-notifications-service-provider-v0-5-x-1";
+              "push-notifications-service-provider-v0-5-x-3";
             system.stateVersion = "25.05";
             garnix.server.enable = true;
             garnix.server.persistence.enable = true;
@@ -58,7 +59,7 @@ in {
           push-notifications-service-provider-module
           {
             garnix.server.persistence.name =
-              "push-notifications-service-provider-v0-5-x-2";
+              "push-notifications-service-provider-v0-5-x-4";
             system.stateVersion = "25.05";
             garnix.server.enable = true;
             garnix.server.persistence.enable = true;
