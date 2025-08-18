@@ -31,6 +31,14 @@ let
         Restart = "always";
       };
     };
+    # Set limits for systemd units (not systemd itself).
+    #
+    # From `man 5 systemd-system.conf`:
+    # "DefaultLimitNOFILE= defaults to 1024:524288"
+    systemd.extraConfig = ''
+      DefaultLimitNOFILE=8192:524288
+    '';
+
   };
 
 in {
