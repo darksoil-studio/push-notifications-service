@@ -75,7 +75,7 @@ async fn send_push_notification() {
             }
             Ok(())
         },
-        10,
+        20,
     )
     .await
     .unwrap();
@@ -102,6 +102,29 @@ async fn send_push_notification() {
             Box::pin(async { Ok(()) })
         },
     );
+
+
+    with_retries(
+        async || {
+            let service_providers: Vec<AgentPubKey> = sender
+                .0
+                .call_zome(
+                    ZomeCallTarget::RoleName(SERVICES_ROLE_NAME.into()),
+                    "service_providers".into(),
+                    "get_providers_for_service".into(),
+                    ExternIO::encode(push_notifications_service_trait_service_id.clone()).unwrap(),
+                )
+                .await?
+                .decode()?;
+            if service_providers.is_empty() {
+                return Err(anyhow!("No service providers yet"));
+            }
+            Ok(())
+        },
+        10,
+    )
+    .await
+    .unwrap();
 
     let _response: () = make_service_request(
         &sender.0,

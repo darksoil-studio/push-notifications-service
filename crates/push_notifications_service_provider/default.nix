@@ -55,7 +55,7 @@
       check = craneLib.buildPackage (commonArgs // {
         inherit cargoArtifacts;
         doCheck = true;
-        __noChroot = true;
+        # __noChroot = true;
         # RUST_LOG = "info";
         WASM_LOG = "info";
         # For the integration test

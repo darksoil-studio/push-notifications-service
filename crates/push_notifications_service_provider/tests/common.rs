@@ -161,7 +161,7 @@ pub async fn setup() -> Scenario {
     )
     .await;
 
-    std::thread::sleep(Duration::from_secs(20));
+    std::thread::sleep(Duration::from_secs(5));
 
     Scenario {
         network_seed,
