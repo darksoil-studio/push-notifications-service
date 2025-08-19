@@ -11,8 +11,11 @@ let
     users.users.root.openssh.authorizedKeys.keys =
       builtins.attrValues sshPubKeys;
     services.openssh.settings.PermitRootLogin = "without-password";
+    services.openssh.enable = true;
   };
-  bootstrapServerUrl = "https://bootstrap.kitsune-v0-1.kitsune.darksoil-studio.garnix.me";
+
+  bootstrapServerUrl =
+    "https://bootstrap.kitsune-v0-1.kitsune.darksoil-studio.garnix.me";
 
   push-notifications-service-provider =
     inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
