@@ -13,6 +13,7 @@ resolver = "2"
 [workspace.dependencies]
 hdi = "0.6"
 hdk = "0.5"
+kitsune2_bootstrap_srv = "0.1"
 holochain_serialized_bytes = "*"
 serde = "1"
 

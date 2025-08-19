@@ -5,6 +5,8 @@ mod push_notifications_service;
 
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
+    error!("[init] Running init");
+
     let mut fns: BTreeSet<GrantedFunction> = BTreeSet::new();
     fns.insert((zome_info()?.name, FunctionName::from("register_fcm_token")));
     fns.insert((
@@ -18,6 +20,7 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
         functions,
     };
     create_cap_grant(cap_grant)?;
+    error!("[init] Created cap grant");
 
     let response = call(
         CallTargetCell::Local,
@@ -26,11 +29,14 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
         None,
         PUSH_NOTIFICATIONS_SERVICE_HASH,
     )?;
+    error!("[init] Response: {response:?}");
     let ZomeCallResponse::Ok(_) = response else {
+        error!("[init] Init failed.");
         return Ok(InitCallbackResult::Fail(format!(
             "Failed to announce as provider: {response:?}"
         )));
     };
+    error!("[init] Init passed.");
 
     Ok(InitCallbackResult::Pass)
 }

@@ -16,6 +16,7 @@ use tempdir::TempDir;
 async fn send_push_notification() {
     let Scenario {
         network_seed,
+        bootstrap_srv,
         progenitors,
         sender,
         recipient,
@@ -40,7 +41,7 @@ async fn send_push_notification() {
 
     let client = PushNotificationsServiceClient::create(
         tmp.path().to_path_buf(),
-        network_config(),
+        network_config(&bootstrap_srv),
         "client-happ".into(),
         client_happ_path(),
         progenitors,
@@ -48,10 +49,18 @@ async fn send_push_notification() {
     .await
     .unwrap();
 
-    client
-        .publish_service_account_key(into(service_account_key))
-        .await
-        .unwrap();
+    with_retries(
+        async || {
+            client
+                .publish_service_account_key(into(service_account_key.clone()))
+                .await
+                .unwrap();
+            Ok(())
+        },
+        5,
+    )
+    .await
+    .unwrap();
 
     client.create_clone_request(network_seed).await.unwrap();
 
@@ -75,7 +84,7 @@ async fn send_push_notification() {
             }
             Ok(())
         },
-        10,
+        20,
     )
     .await
     .unwrap();
@@ -102,6 +111,28 @@ async fn send_push_notification() {
             Box::pin(async { Ok(()) })
         },
     );
+
+    with_retries(
+        async || {
+            let service_providers: Vec<AgentPubKey> = sender
+                .0
+                .call_zome(
+                    ZomeCallTarget::RoleName(SERVICES_ROLE_NAME.into()),
+                    "service_providers".into(),
+                    "get_providers_for_service".into(),
+                    ExternIO::encode(push_notifications_service_trait_service_id.clone()).unwrap(),
+                )
+                .await?
+                .decode()?;
+            if service_providers.is_empty() {
+                return Err(anyhow!("No service providers yet"));
+            }
+            Ok(())
+        },
+        10,
+    )
+    .await
+    .unwrap();
 
     let _response: () = make_service_request(
         &sender.0,

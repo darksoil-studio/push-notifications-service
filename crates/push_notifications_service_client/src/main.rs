@@ -118,5 +118,7 @@ async fn main() -> Result<()> {
         }
     }
 
+    client.runtime.shutdown().await?;
+
     Ok(())
 }

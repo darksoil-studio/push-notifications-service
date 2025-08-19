@@ -31,6 +31,13 @@ let
         Restart = "always";
       };
     };
+    # Set limits for systemd units (not systemd itself).
+    #
+    # From `man 5 systemd-system.conf`:
+    # "DefaultLimitNOFILE= defaults to 1024:524288"
+    systemd.extraConfig = ''
+      DefaultLimitNOFILE=8192:524288
+    '';
   };
 
 in {
@@ -44,11 +51,11 @@ in {
           sshModule
           push-notifications-service-provider-module
           {
-            garnix.server.persistence.name =
-              "push-notifications-service-provider-v0-5-x-3";
             system.stateVersion = "25.05";
             garnix.server.enable = true;
             garnix.server.persistence.enable = true;
+            garnix.server.persistence.name =
+              "push-notifications-service-provider-v0-5-x-3";
           }
         ];
       };
