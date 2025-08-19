@@ -12,7 +12,7 @@ let
       builtins.attrValues sshPubKeys;
     services.openssh.settings.PermitRootLogin = "without-password";
   };
-  bootstrapServerUrl = "http://157.180.93.55:8888";
+  bootstrapServerUrl = "https://bootstrap.kitsune-v0-1.kitsune.darksoil-studio.garnix.me";
 
   push-notifications-service-provider =
     inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
