@@ -73,10 +73,10 @@
 
             DIR1="$(mktemp -d)"
             DIR2="$(mktemp -d)"
-            push-notifications-service-provider --bootstrap-url "$BOOTSTRAP_URL" --data-dir "$DIR1" &
-            push-notifications-service-provider --bootstrap-url "$BOOTSTRAP_URL" --data-dir "$DIR2" &
-            push-notifications-service-client --bootstrap-url "$BOOTSTRAP_URL" publish-service-account-key --service-account-key-path "$1"
-            push-notifications-service-client --bootstrap-url "$BOOTSTRAP_URL" create-clone-request --network-seed "$2"
+            push-notifications-service-provider --bootstrap-url "$BOOTSTRAP_URL" --data-dir "$DIR1" --mdns-discovery &
+            push-notifications-service-provider --bootstrap-url "$BOOTSTRAP_URL" --data-dir "$DIR2" --mdns-discovery &
+            push-notifications-service-client --bootstrap-url "$BOOTSTRAP_URL" --mdns-discovery publish-service-account-key --service-account-key-path "$1"
+            push-notifications-service-client --bootstrap-url "$BOOTSTRAP_URL" --mdns-discovery create-clone-request --network-seed "$2"
 
             echo "The test push notifications service is now ready to be used."
 

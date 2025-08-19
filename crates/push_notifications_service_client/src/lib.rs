@@ -28,9 +28,11 @@ impl PushNotificationsServiceClient {
         app_id: String,
         push_notifications_service_provider_happ_path: PathBuf,
         progenitors: Vec<AgentPubKey>,
+        mdns_discovery: bool,
     ) -> Result<Self> {
         network_config.target_arc_factor = 0;
-        let config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
+        let mut config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
+        config.mdns_discovery = mdns_discovery;
 
         let runtime = HolochainRuntime::launch(vec_to_locked(vec![]), config).await?;
         setup(

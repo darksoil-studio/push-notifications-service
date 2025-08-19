@@ -27,6 +27,9 @@ struct Args {
     #[arg(long)]
     signal_url: Option<String>,
 
+    #[arg(long)]
+    mdns_discovery: bool,
+
     #[command(subcommand)]
     command: Commands,
 }
@@ -98,6 +101,7 @@ async fn main() -> Result<()> {
         String::from("temporary-client-app"),
         args.push_notifications_service_provider_happ,
         args.progenitors.into_iter().map(|p| p.into()).collect(),
+        args.mdns_discovery,
     )
     .await?;
 
