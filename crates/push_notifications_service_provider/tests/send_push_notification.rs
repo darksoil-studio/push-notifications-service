@@ -16,6 +16,7 @@ use tempdir::TempDir;
 async fn send_push_notification() {
     let Scenario {
         network_seed,
+        bootstrap_srv,
         progenitors,
         sender,
         recipient,
@@ -40,7 +41,7 @@ async fn send_push_notification() {
 
     let client = PushNotificationsServiceClient::create(
         tmp.path().to_path_buf(),
-        network_config(),
+        network_config(&bootstrap_srv),
         "client-happ".into(),
         client_happ_path(),
         progenitors,
@@ -48,10 +49,18 @@ async fn send_push_notification() {
     .await
     .unwrap();
 
-    client
-        .publish_service_account_key(into(service_account_key))
-        .await
-        .unwrap();
+    with_retries(
+        async || {
+            client
+                .publish_service_account_key(into(service_account_key.clone()))
+                .await
+                .unwrap();
+            Ok(())
+        },
+        5,
+    )
+    .await
+    .unwrap();
 
     client.create_clone_request(network_seed).await.unwrap();
 
@@ -102,7 +111,6 @@ async fn send_push_notification() {
             Box::pin(async { Ok(()) })
         },
     );
-
 
     with_retries(
         async || {
