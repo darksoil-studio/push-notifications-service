@@ -146,6 +146,7 @@ pub async fn setup() -> Scenario {
             String::from("test-app"),
             service_provider_happ_path(),
             p.clone(),
+            false,
         )
         .await
         .unwrap();
@@ -161,6 +162,7 @@ pub async fn setup() -> Scenario {
             String::from("test-app"),
             service_provider_happ_path(),
             p.clone(),
+            false,
         )
         .await
         .unwrap();

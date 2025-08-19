@@ -45,6 +45,7 @@ async fn send_push_notification() {
         "client-happ".into(),
         client_happ_path(),
         progenitors,
+        false,
     )
     .await
     .unwrap();
