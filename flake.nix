@@ -56,7 +56,6 @@
           packages = [
             inputs'.holochain-utils.packages.holochain
             inputs'.holochain-utils.packages.hc-scaffold-zome
-            inputs'.holochain-utils.packages.hc-pilot
           ];
         };
         devShells.npm-ci = inputs'.holochain-utils.devShells.synchronized-pnpm;
