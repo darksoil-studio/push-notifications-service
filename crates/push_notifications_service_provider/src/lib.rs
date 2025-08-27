@@ -76,6 +76,7 @@ pub async fn run<T: FcmClient>(
             Duration::from_secs(10),
         )
         .expect("Failed to block on shutdown.");
+        std::process::exit(0);
     })?;
 
     loop {
