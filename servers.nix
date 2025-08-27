@@ -59,10 +59,11 @@ in {
             garnix.server.enable = true;
             garnix.server.persistence.enable = true;
             garnix.server.persistence.name =
-              "push-notifications-service-provider-v0-501";
+              "push-notifications-service-provider-v0-501-1";
           }
         ];
       };
+
       push-notifications-service-provider2 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
@@ -71,7 +72,7 @@ in {
           push-notifications-service-provider-module
           {
             garnix.server.persistence.name =
-              "push-notifications-service-provider-v0-501";
+              "push-notifications-service-provider-v0-501-2";
             system.stateVersion = "25.05";
             garnix.server.enable = true;
             garnix.server.persistence.enable = true;
@@ -80,5 +81,6 @@ in {
       };
     };
   };
+
 }
 
