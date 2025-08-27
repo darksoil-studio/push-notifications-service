@@ -63,7 +63,6 @@ in {
           }
         ];
       };
-
       push-notifications-service-provider2 = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
