@@ -6385,7 +6385,7 @@ dependencies = [
 
 [[package]]
 name = "push-notifications-service-client"
-version = "0.1.0"
+version = "0.501.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -6421,7 +6421,7 @@ dependencies = [
 
 [[package]]
 name = "push-notifications-service-provider"
-version = "0.1.0"
+version = "0.501.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -6460,7 +6460,7 @@ dependencies = [
 
 [[package]]
 name = "push_notifications_gateway"
-version = "0.0.1"
+version = "0.501.0"
 dependencies = [
  "hc_zome_traits",
  "hdk",
@@ -6472,7 +6472,7 @@ dependencies = [
 
 [[package]]
 name = "push_notifications_service"
-version = "0.0.1"
+version = "0.501.0"
 dependencies = [
  "hdk",
  "holochain_serialized_bytes",
@@ -6483,7 +6483,7 @@ dependencies = [
 
 [[package]]
 name = "push_notifications_service_integrity"
-version = "0.0.1"
+version = "0.501.0"
 dependencies = [
  "hdi",
  "holochain_serialized_bytes",
@@ -6493,7 +6493,7 @@ dependencies = [
 
 [[package]]
 name = "push_notifications_service_trait"
-version = "0.1.0"
+version = "0.501.0"
 dependencies = [
  "hc_zome_traits",
  "hdk",
@@ -6502,7 +6502,7 @@ dependencies = [
 
 [[package]]
 name = "push_notifications_types"
-version = "0.1.0"
+version = "0.501.0"
 dependencies = [
  "hdi",
  "holochain_serialized_bytes",
