@@ -1,6 +1,6 @@
 [package]
 name = "push_notifications_service_integrity"
-version = "0.0.1"
+version.workspace = true
 edition = "2021"
 
 [lib]
