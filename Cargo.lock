@@ -6428,6 +6428,7 @@ dependencies = [
  "clap 4.5.46",
  "clone_manager_types",
  "clone_manager_utils",
+ "ctrlc",
  "env_logger",
  "fcm_v1",
  "fixt",
