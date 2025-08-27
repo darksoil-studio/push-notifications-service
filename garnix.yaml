@@ -2,11 +2,11 @@ servers:
   - configuration: push-notifications-service-provider1
     deployment:
       type: on-branch
-      branch: production-*
+      branch: production-v0-501
   - configuration: push-notifications-service-provider2
     deployment:
       type: on-branch
-      branch: production-*
+      branch: production-v0-501
 builds:
   exclude:
     - "checks.*.send-push-notification-test"
