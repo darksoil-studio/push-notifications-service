@@ -22,7 +22,7 @@ pub async fn run<T: FcmClient>(
     app_id: String,
     push_notifications_service_provider_happ_path: PathBuf,
     progenitors: Vec<AgentPubKey>,
-    mdns_discovery: bool
+    mdns_discovery: bool,
 ) -> anyhow::Result<()> {
     let mut config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
     config.mdns_discovery = mdns_discovery;
@@ -62,44 +62,47 @@ pub async fn run<T: FcmClient>(
     log::info!("Starting push notifications service provider.");
 
     let r = runtime.clone();
-
-    tokio::spawn(async move {
-        loop {
-            let Ok(app_ws) = r
-                .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
-                .await
-            else {
-                log::error!("Failed to connect to the app websocket");
-                continue;
-            };
-            let Ok(admin_ws) = r.admin_websocket().await else {
-                log::error!("Failed to connect to the admin websocket");
-                continue;
-            };
-            if let Err(err) = reconcile_cloned_cells(
-                &admin_ws,
-                &app_ws,
-                "push_notifications_service".into(),
-                SERVICES_ROLE_NAME.into(),
-            )
-            .await
-            {
-                log::error!("Failed to reconcile cloned services: {err}");
-            }
-
-            std::thread::sleep(Duration::from_secs(60));
-        }
-    });
-
     // wait for a unix signal or ctrl-c instruction to
     // shutdown holochain
-    tokio::signal::ctrl_c()
-        .await
-        .unwrap_or_else(|e| log::error!("Could not handle termination signal: {:?}", e));
-    log::info!("Gracefully shutting down conductor...");
-    runtime.shutdown().await?;
+    ctrlc::set_handler(move || {
+        let r = r.clone();
+        holochain_util::tokio_helper::block_on(
+            async move {
+                log::info!("Gracefully shutting down conductor...");
+                if let Err(err) = r.shutdown().await {
+                    log::error!("Failed to shutdown conductor: {err:?}.");
+                }
+            },
+            Duration::from_secs(10),
+        )
+        .expect("Failed to block on shutdown.");
+    })?;
 
-    Ok(())
+    loop {
+        let Ok(app_ws) = runtime
+            .app_websocket(app_id.clone(), holochain_client::AllowedOrigins::Any)
+            .await
+        else {
+            log::error!("Failed to connect to the app websocket");
+            continue;
+        };
+        let Ok(admin_ws) = runtime.admin_websocket().await else {
+            log::error!("Failed to connect to the admin websocket");
+            continue;
+        };
+        if let Err(err) = reconcile_cloned_cells(
+            &admin_ws,
+            &app_ws,
+            "push_notifications_service".into(),
+            SERVICES_ROLE_NAME.into(),
+        )
+        .await
+        {
+            log::error!("Failed to reconcile cloned services: {err}");
+        }
+
+        std::thread::sleep(Duration::from_secs(60));
+    }
 }
 
 pub async fn handle_signal<T: FcmClient>(
