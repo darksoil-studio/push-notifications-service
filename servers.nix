@@ -45,7 +45,6 @@ let
   };
 
 in {
-
   flake = {
     nixosConfigurations = {
       push-notifications-service-provider1 = inputs.nixpkgs.lib.nixosSystem {
@@ -81,6 +80,5 @@ in {
       };
     };
   };
-
 }
 
