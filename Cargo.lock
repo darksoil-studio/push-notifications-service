@@ -7808,7 +7808,7 @@ dependencies = [
 [[package]]
 name = "service_providers_types"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#cf0d0bdf8222d0785aab41bb93f100f496169ffd"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#9d1859d0eeda9ff4c9d8808b3e6efcea63f78baf"
 dependencies = [
  "hdi",
  "holochain_serialized_bytes",
@@ -7818,7 +7818,7 @@ dependencies = [
 [[package]]
 name = "service_providers_utils"
 version = "0.1.0"
-source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#cf0d0bdf8222d0785aab41bb93f100f496169ffd"
+source = "git+https://github.com/darksoil-studio/service-providers?branch=main-0.5#9d1859d0eeda9ff4c9d8808b3e6efcea63f78baf"
 dependencies = [
  "anyhow",
  "futures",
