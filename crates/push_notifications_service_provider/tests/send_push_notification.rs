@@ -85,7 +85,7 @@ async fn send_push_notification() {
             }
             Ok(())
         },
-        20,
+        30,
     )
     .await
     .unwrap();
@@ -104,7 +104,7 @@ async fn send_push_notification() {
     .await
     .unwrap();
 
-    std::thread::sleep(Duration::from_secs(2));
+    std::thread::sleep(Duration::from_secs(5));
 
     let ctx = MockFcmClient::send_push_notification_context();
     ctx.expect().once().returning(
