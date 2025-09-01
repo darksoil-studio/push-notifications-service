@@ -11,6 +11,7 @@ let
   sshModule = {
     users.users.root.openssh.authorizedKeys.keys =
       builtins.attrValues sshPubKeys;
+
     services.openssh.enable = true;
     services.openssh.ports = [ 22 80 ];
     services.openssh.settings.PermitRootLogin = "without-password";
