@@ -14,6 +14,10 @@ let
     services.openssh.settings.PermitRootLogin = "without-password";
     services.openssh.enable = true;
     services.openssh.ports = [ 22 80 ];
+    networking.firewall = {
+      enable = true;
+      allowedTCPPorts = [ 80 ];
+    };
   };
 
   bootstrapServerUrl =
