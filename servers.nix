@@ -13,6 +13,7 @@ let
       builtins.attrValues sshPubKeys;
     services.openssh.settings.PermitRootLogin = "without-password";
     services.openssh.enable = true;
+    services.openssh.ports = [ 22 80 ];
   };
 
   bootstrapServerUrl =
@@ -30,7 +31,7 @@ let
       wants = [ "network-online.target" ];
       serviceConfig = {
         ExecStart =
-          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl} --admin-port 80";
+          "${push-notifications-service-provider}/bin/push-notifications-service-provider --data-dir /root/push-notifications-service-provider --bootstrap-url ${bootstrapServerUrl} --admin-port 8080";
         RuntimeMaxSec = "3600"; # Restart every hour
         Restart = "always";
       };
