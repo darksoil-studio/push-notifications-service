@@ -147,6 +147,7 @@ pub async fn setup() -> Scenario {
             service_provider_happ_path(),
             p.clone(),
             false,
+            None
         )
         .await
         .unwrap();
@@ -163,6 +164,7 @@ pub async fn setup() -> Scenario {
             service_provider_happ_path(),
             p.clone(),
             false,
+            None
         )
         .await
         .unwrap();

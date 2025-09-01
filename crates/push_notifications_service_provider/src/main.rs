@@ -19,6 +19,9 @@ struct Args {
     #[arg(long)]
     app_id: InstalledAppId,
 
+    #[arg(long)]
+    admin_port: Option<u16>,
+
     /// Directory to store all holochain data
     #[arg(long)]
     data_dir: PathBuf,
@@ -96,6 +99,7 @@ async fn main() -> Result<()> {
         args.push_notifications_service_provider_happ,
         args.progenitors.into_iter().map(|p| p.into()).collect(),
         args.mdns_discovery,
+        args.admin_port
     )
     .await
 }
