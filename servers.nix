@@ -16,7 +16,7 @@ let
   };
 
   bootstrapServerUrl =
-    "https://bootstrap.kitsune-v0-1.kitsune.darksoil-studio.garnix.me";
+    "https://bootstrap.kitsune-v0-2.kitsune.darksoil-studio.garnix.me";
 
   push-notifications-service-provider =
     inputs.self.outputs.packages."x86_64-linux".push-notifications-service-provider;
