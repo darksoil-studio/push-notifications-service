@@ -11,7 +11,7 @@
       END_USER_HAPP = (inputs.holochain-utils.outputs.builders.${system}.happ {
         happManifest = builtins.toFile "happ.yaml" ''
           ---
-          manifest_version: "1"
+          manifest_version: "0"
           name: test_happ
           description: ~
           roles:   
@@ -20,7 +20,7 @@
                 strategy: create
                 deferred: false
               dna:
-                bundled: ""
+                path: ""
                 modifiers:
                   network_seed: ~
                   properties: ~
@@ -51,9 +51,8 @@
       };
 
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
-      binary = craneLib.buildPackage (commonArgs // {
-        inherit cargoArtifacts;
-      });
+      binary =
+        craneLib.buildPackage (commonArgs // { inherit cargoArtifacts; });
 
       checkArgs = commonArgs // {
         doCheck = true;
@@ -87,6 +86,7 @@
           makeWrapper ${binary}/bin/push-notifications-service-provider $out/bin/push-notifications-service-provider \
             --add-flags "${self'.packages.push_notifications_service_provider_happ} --app-id $DNA_HASHES"
         '';
+
     in rec {
 
       builders.push-notifications-service-provider = { progenitors }:

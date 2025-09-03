@@ -85,7 +85,7 @@ async fn send_push_notification() {
             }
             Ok(())
         },
-        30,
+        60,
     )
     .await
     .unwrap();

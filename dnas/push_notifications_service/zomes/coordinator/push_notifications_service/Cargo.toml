@@ -1,6 +1,6 @@
 [package]
 name = "push_notifications_service"
-version = "0.502.0"
+version = "0.600.0-dev"
 edition = "2021"
 
 [lib]

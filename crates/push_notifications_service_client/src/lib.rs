@@ -210,7 +210,7 @@ impl PushNotificationsServiceClient {
 
 pub async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
     let bytes = fs::read(happ_bundle_path)?;
-    Ok(AppBundle::decode(bytes.as_slice())?)
+    Ok(AppBundle::unpack(bytes.as_slice())?)
 }
 
 pub fn into(key: push_notifications_types::ServiceAccountKey) -> fcm_v1::auth::ServiceAccountKey {

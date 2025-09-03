@@ -21,13 +21,12 @@ pub fn publish_service_account_key(service_account_key: ServiceAccountKey) -> Ex
     path.ensure()?;
 
     let links = get_links(
-        GetLinksInputBuilder::try_new(path.path_entry_hash()?, LinkTypes::ServiceAccountKeys)?
-            .build(),
+        LinkQuery::try_new(path.path_entry_hash()?, LinkTypes::ServiceAccountKeys)?,
+        GetStrategy::Network,
     )?;
 
     for link in links {
-        get(link.create_link_hash.clone(), Default::default())?;
-        delete_link(link.create_link_hash)?;
+        delete_link(link.create_link_hash, GetOptions::network())?;
     }
 
     let action_hash = create_entry(EntryTypes::ServiceAccountKey(service_account_key))?;
@@ -48,13 +47,12 @@ fn delete_all_service_account_keys(fcm_project_id: &String) -> ExternResult<()> 
     let path = fcm_project_path(fcm_project_id)?;
 
     let links = get_links(
-        GetLinksInputBuilder::try_new(path.path_entry_hash()?, LinkTypes::ServiceAccountKeys)?
-            .build(),
+        LinkQuery::try_new(path.path_entry_hash()?, LinkTypes::ServiceAccountKeys)?,
+        GetStrategy::Network,
     )?;
 
     for link in links {
-        get(link.create_link_hash.clone(), Default::default())?;
-        delete_link(link.create_link_hash)?;
+        delete_link(link.create_link_hash, GetOptions::network())?;
     }
     Ok(())
 }
@@ -78,8 +76,7 @@ pub fn delete_fcm_project(fcm_project_id: String) -> ExternResult<()> {
         .collect();
 
     for link in links_to_delete {
-        get(link.create_link_hash.clone(), Default::default())?;
-        delete_link(link.create_link_hash)?;
+        delete_link(link.create_link_hash, GetOptions::network())?;
     }
 
     Ok(())
@@ -104,11 +101,11 @@ pub fn get_current_service_account_key(
     fcm_project_id: String,
 ) -> ExternResult<Option<ServiceAccountKey>> {
     let links = get_links(
-        GetLinksInputBuilder::try_new(
+        LinkQuery::try_new(
             fcm_project_path(&fcm_project_id)?.path_entry_hash()?,
             LinkTypes::ServiceAccountKeys,
-        )?
-        .build(),
+        )?,
+        GetStrategy::Network,
     )?;
 
     let Some(link) = links.first().cloned() else {

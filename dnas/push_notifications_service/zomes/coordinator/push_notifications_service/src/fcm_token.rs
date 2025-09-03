@@ -23,12 +23,12 @@ pub fn register_fcm_token_for_agent(input: RegisterFcmTokenForAgentInput) -> Ext
     }
 
     let links = get_links(
-        GetLinksInputBuilder::try_new(input.agent.clone(), LinkTypes::FcmToken)?.build(),
+        LinkQuery::try_new(input.agent.clone(), LinkTypes::FcmToken)?,
+        GetStrategy::Network,
     )?;
 
     for link in links {
-        get(link.create_link_hash.clone(), Default::default())?;
-        delete_link(link.create_link_hash)?;
+        delete_link(link.create_link_hash, GetOptions::network())?;
     }
 
     let tag_bytes = SerializedBytes::try_from(tag).map_err(|err| wasm_error!(err))?;
@@ -46,8 +46,10 @@ pub fn register_fcm_token_for_agent(input: RegisterFcmTokenForAgentInput) -> Ext
 }
 
 pub fn get_fcm_token_for_agent(agent: AgentPubKey) -> ExternResult<Option<FcmTokenTag>> {
-    let links =
-        get_links(GetLinksInputBuilder::try_new(agent.clone(), LinkTypes::FcmToken)?.build())?;
+    let links = get_links(
+        LinkQuery::try_new(agent.clone(), LinkTypes::FcmToken)?,
+        GetStrategy::Network,
+    )?;
 
     let Some(link) = links.first().cloned() else {
         return Ok(None);

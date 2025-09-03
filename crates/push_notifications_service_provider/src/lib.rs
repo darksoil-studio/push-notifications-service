@@ -23,7 +23,7 @@ pub async fn run<T: FcmClient>(
     push_notifications_service_provider_happ_path: PathBuf,
     progenitors: Vec<AgentPubKey>,
     mdns_discovery: bool,
-    admin_port: Option<u16>
+    admin_port: Option<u16>,
 ) -> anyhow::Result<()> {
     let mut config = HolochainRuntimeConfig::new(data_dir.clone(), network_config);
     config.mdns_discovery = mdns_discovery;
@@ -185,7 +185,7 @@ async fn handle_new_clone_request_signal(
 
 pub async fn read_from_file(happ_bundle_path: &PathBuf) -> Result<AppBundle> {
     let bytes = fs::read(happ_bundle_path)?;
-    Ok(AppBundle::decode(bytes.as_slice())?)
+    Ok(AppBundle::unpack(bytes.as_slice())?)
 }
 
 pub fn into(key: push_notifications_types::ServiceAccountKey) -> fcm_v1::auth::ServiceAccountKey {
