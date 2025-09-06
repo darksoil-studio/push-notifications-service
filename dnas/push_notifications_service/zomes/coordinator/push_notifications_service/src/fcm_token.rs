@@ -28,6 +28,7 @@ pub fn register_fcm_token_for_agent(input: RegisterFcmTokenForAgentInput) -> Ext
     )?;
 
     for link in links {
+        get(link.create_link_hash.clone(), GetOptions::default())?;
         delete_link(link.create_link_hash, GetOptions::network())?;
     }
 
